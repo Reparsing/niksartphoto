@@ -72,10 +72,14 @@
             overlay.addEventListener('click', closeSidebar);
         }
 
-        // Allow native link navigation for sidebar links without preventDefault blocking
+        // Direct, bulletproof navigation for mobile sidebar links
         document.querySelectorAll('.kumo-sidebar-nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                closeSidebar();
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+                    e.preventDefault();
+                    window.location.href = href;
+                }
             });
         });
 
