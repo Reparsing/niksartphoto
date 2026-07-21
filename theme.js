@@ -83,6 +83,26 @@
             });
         });
 
+        // --- GENERAL PAGE TRANSITION ANIMATIONS ON TAB CLICK ---
+        document.querySelectorAll('a[href]').forEach(link => {
+            if (link.closest('.kumo-sidebar-nav')) return; // Skip sidebar links safely
+            const href = link.getAttribute('href');
+            if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+                link.addEventListener('click', (e) => {
+                    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+                    
+                    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+                    if (href === currentPath) return;
+
+                    e.preventDefault();
+                    document.body.classList.add('page-leaving');
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 180);
+                });
+            }
+        });
+
         // --- NAVBAR SCROLL STATE ---
         const navbar = document.querySelector('.kumo-navbar');
         if (navbar) {
