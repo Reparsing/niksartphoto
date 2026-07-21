@@ -267,6 +267,21 @@ img {
     padding: 0 24px;
 }
 
+/* --- REUSABLE RESPONSIVE GRID CLASSES --- */
+.kumo-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+}
+
+.kumo-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
 /* --- KUMO NAVBAR --- */
 .kumo-navbar {
     position: fixed;
@@ -1073,7 +1088,7 @@ textarea:focus {
     color: var(--kumo-muted);
 }
 
-/* --- RESPONSIVE BREAKPOINTS --- */
+/* --- RESPONSIVE BREAKPOINTS & MOBILE FIXES --- */
 @media (max-width: 1024px) {
     .hero-grid {
         grid-template-columns: 1fr;
@@ -1085,28 +1100,81 @@ textarea:focus {
 }
 
 @media (max-width: 768px) {
+    .container {
+        padding: 0 16px !important;
+    }
     .kumo-nav-menu {
         display: none;
     }
     .kumo-mobile-toggle {
         display: flex;
     }
-    .hero-content h1 {
-        font-size: 2.5rem;
+    .hero-section {
+        padding: 100px 0 40px !important;
     }
+    .hero-grid {
+        grid-template-columns: 1fr !important;
+        gap: 28px !important;
+    }
+    .hero-content h1 {
+        font-size: 2.15rem !important;
+        line-height: 1.25 !important;
+    }
+    .hero-image-card img {
+        height: 320px !important;
+    }
+
+    /* Intercept inline 2-column grids on mobile */
+    .kumo-grid-2,
+    div[style*="grid-template-columns: 1fr 1fr"],
+    div[style*="grid-template-columns:1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr;"] {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+
+    .kumo-stats-grid {
+        gap: 12px !important;
+    }
+
+    .kumo-gallery-grid,
+    .gallery,
+    .blog-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .kumo-gallery-item img,
+    .gallery-item img {
+        height: 240px !important;
+    }
+
+    .kumo-tabs,
+    .filters {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding: 6px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .kumo-tab-btn,
+    .filter-btn {
+        padding: 8px 14px !important;
+        font-size: 0.825rem !important;
+        flex-shrink: 0 !important;
+    }
+
     .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
     }
     .footer-bottom {
         flex-direction: column;
         gap: 12px;
         text-align: center;
-    }
-    .kumo-gallery-grid,
-    .gallery,
-    .blog-grid {
-        grid-template-columns: 1fr;
     }
     .kumo-lightbox-prev {
         left: 10px;
@@ -1117,5 +1185,20 @@ textarea:focus {
         right: 10px;
         width: 40px;
         height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 1.85rem !important;
+    }
+    .hero-image-card img {
+        height: 260px !important;
+    }
+    .kumo-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .kumo-btn-lg {
+        width: 100% !important;
     }
 }
