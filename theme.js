@@ -49,8 +49,53 @@
             }
         });
 
-        // --- PAGE TRANSITION ANIMATIONS ON TAB CLICK ---
-        document.querySelectorAll('a[href]').forEach(link => {
+        // --- MOBILE SIDEBAR DRAWER & NAVIGATION ---
+        const mobileBtn = document.querySelector('.kumo-mobile-toggle');
+        let sidebar = document.querySelector('.kumo-sidebar');
+        let overlay = document.querySelector('.kumo-sidebar-overlay');
+
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (sidebar) sidebar.classList.toggle('open');
+                if (overlay) overlay.classList.toggle('open');
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', closeSidebar);
+        }
+
+        // Dedicated click & touch handler for sidebar links
+        document.querySelectorAll('.kumo-sidebar-nav a').forEach(link => {
+            const handleSidebarClick = (e) => {
+                const href = link.getAttribute('href');
+                closeSidebar();
+                
+                if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+                    if (href !== currentPath) {
+                        document.body.classList.add('page-leaving');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 80);
+                    }
+                }
+            };
+
+            link.addEventListener('click', handleSidebarClick);
+        });
+
+        // --- GENERAL PAGE TRANSITION ANIMATIONS ON TAB CLICK ---
+        document.querySelectorAll('a[href]:not(.kumo-sidebar-nav a)').forEach(link => {
             const href = link.getAttribute('href');
             if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
                 link.addEventListener('click', (e) => {
@@ -78,25 +123,6 @@
                     navbar.classList.remove('scrolled');
                 }
             }, { passive: true });
-        }
-
-        // --- MOBILE SIDEBAR DRAWER ---
-        const mobileBtn = document.querySelector('.kumo-mobile-toggle');
-        let sidebar = document.querySelector('.kumo-sidebar');
-        let overlay = document.querySelector('.kumo-sidebar-overlay');
-
-        if (mobileBtn) {
-            mobileBtn.addEventListener('click', () => {
-                if (sidebar) sidebar.classList.toggle('open');
-                if (overlay) overlay.classList.toggle('open');
-            });
-        }
-
-        if (overlay) {
-            overlay.addEventListener('click', () => {
-                if (sidebar) sidebar.classList.remove('open');
-                overlay.classList.remove('open');
-            });
         }
 
         // --- FULLSCREEN LIGHTBOX & GALLERY SLIDER ---
