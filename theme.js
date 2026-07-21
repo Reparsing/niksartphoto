@@ -72,45 +72,11 @@
             overlay.addEventListener('click', closeSidebar);
         }
 
-        // Dedicated click & touch handler for sidebar links
+        // Allow native link navigation for sidebar links without preventDefault blocking
         document.querySelectorAll('.kumo-sidebar-nav a').forEach(link => {
-            const handleSidebarClick = (e) => {
-                const href = link.getAttribute('href');
+            link.addEventListener('click', () => {
                 closeSidebar();
-                
-                if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-                    if (href !== currentPath) {
-                        document.body.classList.add('page-leaving');
-                        setTimeout(() => {
-                            window.location.href = href;
-                        }, 80);
-                    }
-                }
-            };
-
-            link.addEventListener('click', handleSidebarClick);
-        });
-
-        // --- GENERAL PAGE TRANSITION ANIMATIONS ON TAB CLICK ---
-        document.querySelectorAll('a[href]:not(.kumo-sidebar-nav a)').forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
-                link.addEventListener('click', (e) => {
-                    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-                    
-                    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-                    if (href === currentPath) return;
-
-                    e.preventDefault();
-                    document.body.classList.add('page-leaving');
-                    setTimeout(() => {
-                        window.location.href = href;
-                    }, 180);
-                });
-            }
+            });
         });
 
         // --- NAVBAR SCROLL STATE ---
