@@ -2,7 +2,7 @@
 """
 NIKS ARTPHOTO — Telegram Management Bot
 Enables the site owner to publish blog articles with full rich formatting, edit/delete existing posts (both step-by-step and PRO all-in-one editor), and post portfolio images.
-Automatically commits and pushes every update to GitHub Pages with live status notifications and single-message button navigation.
+Automatically commits and pushes every update to BOTH 'main' (GitHub Pages deployment) and 'dev' branches with live status notifications and startup/shutdown alerts.
 """
 
 import os
@@ -10,6 +10,8 @@ import sys
 import json
 import re
 import html
+import signal
+import atexit
 import datetime
 import subprocess
 import logging
@@ -82,8 +84,31 @@ def is_admin(user_id):
         return True # Allow initial setup if ADMIN_IDS is empty
     return user_id in ADMIN_IDS
 
+def notify_admins(text):
+    """Sends a system notification message to all registered admins."""
+    for uid in list(ADMIN_IDS):
+        try:
+            bot.send_message(uid, text)
+        except Exception as e:
+            logging.error(f"Failed to send notification to admin {uid}: {e}")
+
+_shutdown_done = False
+def shutdown_handler(signum=None, frame=None):
+    """Graceful shutdown notification handler."""
+    global _shutdown_done
+    if _shutdown_done:
+        return
+    _shutdown_done = True
+    now_str = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+    logging.info(f"Bot shutting down at {now_str}")
+    notify_admins(f"🔴 <b>Бот управления сайтом остановлен.</b>\n⏰ <i>Время выключения: {now_str}</i>")
+
+signal.signal(signal.SIGINT, shutdown_handler)
+signal.signal(signal.SIGTERM, shutdown_handler)
+atexit.register(shutdown_handler)
+
 def run_git_commit_and_push(commit_message, chat_id=None):
-    """Executes git add, commit, and push automatically with live Telegram progress updates."""
+    """Executes git add, commit, and pushes to BOTH 'main' and 'dev' branches automatically."""
     status_msg = None
     if chat_id:
         try:
@@ -94,24 +119,30 @@ def run_git_commit_and_push(commit_message, chat_id=None):
     try:
         logging.info("Executing git add .")
         if status_msg:
-            try: bot.edit_message_text("🔄 <b>Шаг 2 из 3:</b> Выполнение <code>git add .</code> и запись коммита...", chat_id, status_msg.message_id)
+            try: bot.edit_message_text("🔄 <b>Шаг 2 из 3:</b> Выполнение <code>git add .</code> и создание коммита...", chat_id, status_msg.message_id)
             except: pass
         subprocess.run(["git", "add", "."], cwd=BASE_DIR, check=True)
         
         logging.info(f"Executing git commit -m '{commit_message}'")
         res_commit = subprocess.run(["git", "commit", "-m", commit_message], cwd=BASE_DIR, capture_output=True, text=True)
         
-        logging.info("Executing git push origin main")
+        logging.info("Executing git push origin HEAD:main")
         if status_msg:
-            try: bot.edit_message_text("🚀 <b>Шаг 3 из 3:</b> Отправка изменений на GitHub (<code>git push origin main</code>)...", chat_id, status_msg.message_id)
+            try: bot.edit_message_text("🚀 <b>Шаг 3 из 3:</b> Отправка изменений в ветку <code>main</code> (GitHub Pages) и <code>dev</code>...", chat_id, status_msg.message_id)
             except: pass
-        res_push = subprocess.run(["git", "push", "origin", "main"], cwd=BASE_DIR, capture_output=True, text=True)
+        
+        res_push_main = subprocess.run(["git", "push", "origin", "HEAD:main"], cwd=BASE_DIR, capture_output=True, text=True)
+        
+        logging.info("Executing git push origin HEAD:dev")
+        res_push_dev = subprocess.run(["git", "push", "origin", "HEAD:dev"], cwd=BASE_DIR, capture_output=True, text=True)
+
+        combined_log = f"MAIN PUSH:\n{res_push_main.stdout}{res_push_main.stderr}\nDEV PUSH:\n{res_push_dev.stdout}{res_push_dev.stderr}"
 
         if status_msg:
-            try: bot.edit_message_text("✅ <b>Успешно!</b> Все изменения опубликованы на GitHub Pages.", chat_id, status_msg.message_id)
+            try: bot.edit_message_text("✅ <b>Успешно!</b> Изменения выгружены в обе ветки: <b>main</b> (GitHub Pages) и <b>dev</b>.", chat_id, status_msg.message_id)
             except: pass
 
-        return True, res_push.stdout + res_push.stderr
+        return True, combined_log
     except subprocess.CalledProcessError as e:
         err_msg = e.stderr if hasattr(e, 'stderr') and e.stderr else str(e)
         logging.error(f"Git error: {err_msg}")
@@ -539,10 +570,11 @@ def cmd_help(message):
         "        <code>[IMG: media/photo.jpg] Подпись</code>\n"
         "   • <b>Кнопка «Отмена»</b> в любом режиме редактора\n\n"
         "2. <b>Портфолио</b>: Загрузка снимков в категории (Портреты / Улица / Граффити).\n\n"
-        "3. <b>Управление доступом</b>:\n"
+        "3. <b>Управление доступом & Системой</b>:\n"
         "   • <code>/myid</code> — узнать свой Telegram ID\n"
-        "   • <code>/addadmin ID</code> — добавить нового администратора\n\n"
-        "4. <b>Живой статус отправки в GitHub Pages</b>: Пошаговое отображение записи коммита и `git push`!"
+        "   • <code>/addadmin ID</code> — добавить нового администратора\n"
+        "   • <b>Уведомления о статусе</b>: бот сообщает о своем включении 🟢 и выключении 🔴\n\n"
+        "4. <b>Двойная синхронизация Git</b>: Каждое изменение одновременно отправляется в ветку <b>main</b> (деплой на GitHub Pages) и ветку <b>dev</b>!"
     )
 
 # --- CALLBACK QUERY HANDLER ---
@@ -601,7 +633,7 @@ def handle_callback(call):
             types.InlineKeyboardButton("❌ Отмена", callback_data=f"view_post:{filename}")
         )
         bot.edit_message_text(
-            f"⚠️ <b>Подтверждение удаления:</b>\n\nВы уверены, что хотите полностью удалить пост <code>{html.escape(filename)}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
+            f"⚠️ <b>Подтверждение удаления:</b>\n\nВы уверены, что хотите полностью удалить пост <code>{html.escape(filename)}</code>?\nФайл будет удален, а изменения закоммичены в Git (main + dev).",
             chat_id,
             call.message.message_id,
             reply_markup=markup
@@ -614,7 +646,7 @@ def handle_callback(call):
         
         success, git_log = delete_blog_post_by_filename(filename, chat_id=chat_id)
         if success:
-            bot.send_message(chat_id, f"🎉 <b>Статья <code>{html.escape(filename)}</code> успешно удалена с сайта и GitHub Pages!</b>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Статья <code>{html.escape(filename)}</code> успешно удалена с сайта и в обоих ветках Git!</b>", reply_markup=get_main_keyboard())
         else:
             bot.send_message(chat_id, f"⚠️ Файл удален локально, но произошла ошибка при Git Push:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
         return
@@ -1389,5 +1421,7 @@ if __name__ == "__main__":
         print("Bot cannot start without a valid BOT_TOKEN.")
         print("Please edit bot_config.json and specify 'bot_token' and your admin telegram user id in 'admin_ids'.")
     else:
-        print("Bot is starting polling...")
+        now_str = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+        print(f"Bot is starting polling at {now_str}...")
+        notify_admins(f"🟢 <b>Бот управления сайтом успешно запущен!</b>\n⏰ <i>Время запуска: {now_str}</i>\n🌐 <i>Синхронизация веток: main + dev</i>")
         bot.infinity_polling()
