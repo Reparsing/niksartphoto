@@ -46,6 +46,17 @@ def load_config():
         "admin_ids": [int(uid) for uid in os.environ.get("ADMIN_IDS", "").split(",") if uid.strip().isdigit()],
         "site_url": "https://reparsing.github.io/niksartphoto"
     }
+    
+    # Auto-create bot_config.json from template if missing
+    example_file = os.path.join(BASE_DIR, 'bot_config.example.json')
+    if not os.path.exists(CONFIG_FILE) and os.path.exists(example_file):
+        import shutil
+        try:
+            shutil.copyfile(example_file, CONFIG_FILE)
+            print("💡 Создан файл конфигурации bot_config.json из шаблона bot_config.example.json!")
+        except Exception as e:
+            logging.error(f"Error creating bot_config.json from template: {e}")
+
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, 'r', encoding='utf-8') as f:

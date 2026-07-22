@@ -1,0 +1,8 @@
+{
+  "bot_token": "YOUR_TELEGRAM_BOT_TOKEN_HERE",
+  "admin_ids": [
+    646815112,
+    7709067838
+  ],
+  "site_url": "https://reparsing.github.io/niksartphoto"
+}
