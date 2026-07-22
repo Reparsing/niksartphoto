@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 NIKS ARTPHOTO — Telegram Management Bot
-Enables the site owner to publish blog articles with full rich formatting and post portfolio images.
+Enables the site owner to publish blog articles with full rich formatting, edit/delete existing posts, and post portfolio images.
 Automatically commits and pushes every update to GitHub Pages.
 """
 
@@ -67,7 +67,7 @@ if not BOT_TOKEN:
 
 bot = telebot.TeleBot(BOT_TOKEN if BOT_TOKEN else "DUMMY_TOKEN", parse_mode='HTML')
 
-# In-memory user states for interactive blog editor and portfolio uploader
+# In-memory user states for interactive blog editor, post management, and portfolio uploader
 user_states = {}
 
 def is_admin(user_id):
@@ -119,16 +119,147 @@ def format_date_ru(dt):
     months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
     return f"{dt.day} {months[dt.month - 1]} {dt.year}"
 
+# --- BLOG PARSING & MANAGEMENT UTILS ---
+
+def parse_blog_posts():
+    """Parses all published blog posts from blog.html."""
+    blog_file = os.path.join(BASE_DIR, 'blog.html')
+    if not os.path.exists(blog_file):
+        return []
+
+    with open(blog_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    pattern = r'<article class="blog-card"[^>]*data-category="([^"]*)"[^>]*data-date="([^"]*)"[^>]*>(.*?)</article>'
+    matches = re.findall(pattern, content, re.DOTALL)
+
+    posts = []
+    for idx, (cat, date_iso, body) in enumerate(matches):
+        title_match = re.search(r'<a href="([^"]*)">([^<]*)</a>', body)
+        excerpt_match = re.search(r'<p class="blog-card-excerpt">\s*(.*?)\s*</p>', body, re.DOTALL)
+        date_ru_match = re.search(r'<span>([^<]*)</span>', body)
+        img_match = re.search(r'<img src="([^"]*)"', body)
+
+        if title_match:
+            filename = title_match.group(1).strip()
+            title = title_match.group(2).strip()
+            excerpt = excerpt_match.group(1).strip() if excerpt_match else ""
+            date_ru = date_ru_match.group(1).strip() if date_ru_match else date_iso
+            img_src = img_match.group(1).strip() if img_match else ""
+
+            posts.append({
+                'id': idx,
+                'filename': filename,
+                'title': title,
+                'category': cat,
+                'excerpt': excerpt,
+                'date_iso': date_iso,
+                'date_ru': date_ru,
+                'img_src': img_src
+            })
+
+    return posts
+
+def delete_blog_post_by_filename(filename):
+    """Deletes a blog post file and removes its card from blog.html."""
+    blog_file = os.path.join(BASE_DIR, 'blog.html')
+    if os.path.exists(blog_file):
+        with open(blog_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        articles = re.findall(r'<article class="blog-card"[\s\S]*?</article>\s*', content)
+        for art in articles:
+            if filename in art:
+                content = content.replace(art, '')
+
+        with open(blog_file, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+    post_file = os.path.join(BASE_DIR, filename)
+    if os.path.exists(post_file):
+        try:
+            os.remove(post_file)
+        except Exception as e:
+            logging.error(f"Error deleting file {post_file}: {e}")
+
+    success, git_log = run_git_commit_and_push(f"Delete blog post: {filename}")
+    return success, git_log
+
+def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None):
+    """Edits title, category, or excerpt of a published post."""
+    blog_file = os.path.join(BASE_DIR, 'blog.html')
+    post_file = os.path.join(BASE_DIR, filename)
+
+    category_names = {"личное": "Личное", "техника": "Техника", "стрит": "Стрит"}
+
+    # 1. Update in blog.html
+    if os.path.exists(blog_file):
+        with open(blog_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        articles = re.findall(r'<article class="blog-card"[\s\S]*?</article>', content)
+        for art in articles:
+            if filename in art:
+                new_art = art
+                if new_category:
+                    cat_name = category_names.get(new_category, new_category.capitalize())
+                    badge_cls = "kumo-badge kumo-badge-brand" if new_category == "личное" else "kumo-badge"
+                    new_art = re.sub(r'data-category="[^"]*"', f'data-category="{new_category}"', new_art, count=1)
+                    new_art = re.sub(r'<span class="kumo-badge[^"]*">[^<]*</span>', f'<span class="{badge_cls}">{cat_name}</span>', new_art, count=1)
+
+                if new_title:
+                    new_art = re.sub(rf'(<a href="{re.escape(filename)}">)[^<]*(</a>)', rf'\g<1>{new_title}\2', new_art, count=1)
+
+                if new_excerpt:
+                    new_art = re.sub(r'(<p class="blog-card-excerpt">\s*)[\s\S]*?(\s*</p>)', rf'\g<1>{new_excerpt}\2', new_art, count=1)
+
+                content = content.replace(art, new_art)
+
+        with open(blog_file, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+    # 2. Update standalone post HTML file if exists
+    if os.path.exists(post_file):
+        with open(post_file, 'r', encoding='utf-8') as f:
+            pcontent = f.read()
+
+        if new_title:
+            pcontent = re.sub(r'<title>[^<]*</title>', f'<title>{new_title} — Никс Фотограф</title>', pcontent, count=1)
+            pcontent = re.sub(r'<h1[^>]*>[\s\S]*?</h1>', f'<h1 style="font-size: 2.25rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.25;">\n                {new_title}\n            </h1>', pcontent, count=1)
+
+        if new_category:
+            cat_name = category_names.get(new_category, new_category.capitalize())
+            badge_cls = "kumo-badge kumo-badge-brand" if new_category == "личное" else "kumo-badge"
+            pcontent = re.sub(r'<span class="kumo-badge[^"]*"[^>]*>[^<]*</span>', f'<span class="{badge_cls}" style="margin-bottom: 12px;">{cat_name}</span>', pcontent, count=1)
+
+        if new_excerpt:
+            pcontent = re.sub(r'<meta name="description" content="[^"]*"', f'<meta name="description" content="{new_excerpt}"', pcontent, count=1)
+
+        with open(post_file, 'w', encoding='utf-8') as f:
+            f.write(pcontent)
+
+    # 3. Git commit & push
+    action_desc = []
+    if new_title: action_desc.append(f"title='{new_title}'")
+    if new_category: action_desc.append(f"category='{new_category}'")
+    if new_excerpt: action_desc.append("excerpt")
+
+    success, git_log = run_git_commit_and_push(f"Edit blog post {filename}: {', '.join(action_desc)}")
+    return success, git_log
+
 # --- BOT MAIN KEYBOARDS ---
 
 def get_main_keyboard():
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton("📝 Создать новость в блог", callback_data="btn_new_blog"),
-        types.InlineKeyboardButton("📸 Добавить фото в портфолио", callback_data="btn_new_portfolio")
+        types.InlineKeyboardButton("📚 Посты (просмотр/ред/удал)", callback_data="btn_manage_posts")
     )
     markup.add(
-        types.InlineKeyboardButton("📊 Статус сайта & Git", callback_data="btn_status"),
+        types.InlineKeyboardButton("📸 Добавить фото в портфолио", callback_data="btn_new_portfolio"),
+        types.InlineKeyboardButton("📊 Статус сайта & Git", callback_data="btn_status")
+    )
+    markup.add(
         types.InlineKeyboardButton("ℹ️ Справка", callback_data="btn_help")
     )
     return markup
@@ -186,7 +317,7 @@ def cmd_start(message):
 
 @bot.message_handler(commands=['myid'])
 def cmd_myid(message):
-    bot.reply_to(message, f"🆔 ваш Telegram ID: <code>{message.from_user.id}</code>")
+    bot.reply_to(message, f"🆔 Ваш Telegram ID: <code>{message.from_user.id}</code>")
 
 @bot.message_handler(commands=['addadmin'])
 def cmd_addadmin(message):
@@ -211,17 +342,14 @@ def cmd_help(message):
     bot.send_message(
         message.chat.id,
         "📖 <b>Справка по возможностям бота:</b>\n\n"
-        "1. <b>Блог</b>: Позволяет пошагово составить статью любой сложности:\n"
-        "   • Название, обложка, категория (Личное / Техника / Стрит)\n"
-        "   • Абзацы текста, подзаголовки\n"
-        "   • Фирменные синие цитаты («📷 Я выбрал компетенцию...»)\n"
-        "   • Фирменные красные предупреждения/акценты\n"
-        "   • Изображения внутри текста с подписями\n\n"
+        "1. <b>Блог</b>:\n"
+        "   • Создание статей со всеми видами форматирования\n"
+        "   • <b>Просмотр, редактирование и удаление</b> существующих статей\n\n"
         "2. <b>Портфолио</b>: Загрузка снимков в категории (Портреты / Улица / Граффити).\n\n"
         "3. <b>Управление доступом</b>:\n"
         "   • <code>/myid</code> — узнать свой Telegram ID\n"
         "   • <code>/addadmin ID</code> — добавить нового администратора\n\n"
-        "4. <b>Автоматический Git Commit & Push</b>: Каждая публикация сразу выгружается на GitHub Pages!"
+        "4. <b>Автоматический Git Commit & Push</b>: Каждая публикация или правка сразу отправляется на GitHub Pages!"
     )
 
 # --- CALLBACK QUERY HANDLER ---
@@ -256,6 +384,86 @@ def handle_callback(call):
         cmd_help(call.message)
         return
 
+    # --- MANAGE POSTS LIST ---
+    elif data == "btn_manage_posts":
+        bot.answer_callback_query(call.id)
+        show_posts_list(chat_id)
+        return
+
+    # --- DELETE POST FLOW ---
+    elif data.startswith("del_post:"):
+        filename = data.split("del_post:")[1]
+        bot.answer_callback_query(call.id)
+        markup = types.InlineKeyboardMarkup(row_width=2)
+        markup.add(
+            types.InlineKeyboardButton("⚠️ Да, удалить навсегда", callback_data=f"confirm_del:{filename}"),
+            types.InlineKeyboardButton("❌ Отмена", callback_data="btn_manage_posts")
+        )
+        bot.send_message(
+            chat_id,
+            f"⚠️ <b>Подтверждение удаления:</b>\n\n Вы уверены, что хотите полностью удалить пост <code>{filename}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
+            reply_markup=markup
+        )
+        return
+
+    elif data.startswith("confirm_del:"):
+        filename = data.split("confirm_del:")[1]
+        bot.answer_callback_query(call.id, "Удаление статьи...")
+        bot.send_message(chat_id, f"⏳ Удаление статьи `{filename}` и публикация в Git...")
+        
+        success, git_log = delete_blog_post_by_filename(filename)
+        if success:
+            bot.send_message(chat_id, f"✅ Статья <code>{filename}</code> успешно удалена с сайта и GitHub Pages!", reply_markup=get_main_keyboard())
+        else:
+            bot.send_message(chat_id, f"⚠️ Файл удален локально, но произошла ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+        return
+
+    # --- EDIT POST FLOW ---
+    elif data.startswith("edit_post:"):
+        filename = data.split("edit_post:")[1]
+        bot.answer_callback_query(call.id)
+        show_edit_post_menu(chat_id, filename)
+        return
+
+    elif data.startswith("edit_title:"):
+        filename = data.split("edit_title:")[1]
+        bot.answer_callback_query(call.id)
+        user_states[chat_id] = {'step': 'WAIT_EDIT_TITLE', 'filename': filename}
+        bot.send_message(chat_id, f"📝 Введите **новый заголовок** для статьи <code>{filename}</code>:")
+        return
+
+    elif data.startswith("edit_excerpt:"):
+        filename = data.split("edit_excerpt:")[1]
+        bot.answer_callback_query(call.id)
+        user_states[chat_id] = {'step': 'WAIT_EDIT_EXCERPT', 'filename': filename}
+        bot.send_message(chat_id, f"💬 Введите **новое краткое описание** для статьи <code>{filename}</code>:")
+        return
+
+    elif data.startswith("edit_cat:"):
+        filename = data.split("edit_cat:")[1]
+        bot.answer_callback_query(call.id)
+        markup = types.InlineKeyboardMarkup(row_width=3)
+        markup.add(
+            types.InlineKeyboardButton("✨ Личное", callback_data=f"set_edit_cat:{filename}:личное"),
+            types.InlineKeyboardButton("📷 Техника", callback_data=f"set_edit_cat:{filename}:техника"),
+            types.InlineKeyboardButton("🏙️ Стрит", callback_data=f"set_edit_cat:{filename}:стрит")
+        )
+        markup.add(types.InlineKeyboardButton("⬅️ Назад", callback_data=f"edit_post:{filename}"))
+        bot.send_message(chat_id, f"🏷 Выберите новую категорию для статьи <code>{filename}</code>:", reply_markup=markup)
+        return
+
+    elif data.startswith("set_edit_cat:"):
+        _, filename, new_cat = data.split(":")
+        bot.answer_callback_query(call.id, "Обновление категории...")
+        bot.send_message(chat_id, f"⏳ Обновление категории статьи `{filename}` и пуш в Git...")
+        
+        success, git_log = edit_blog_post(filename, new_category=new_cat)
+        if success:
+            bot.send_message(chat_id, f"✅ Категория статьи <code>{filename}</code> изменена на <b>{new_cat}</b>!", reply_markup=get_main_keyboard())
+        else:
+            bot.send_message(chat_id, f"⚠️ Изменения внесены, но при Git Push произошла ошибка:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+        return
+
     # --- PORTFOLIO FLOW ---
     elif data == "btn_new_portfolio":
         bot.answer_callback_query(call.id)
@@ -263,7 +471,7 @@ def handle_callback(call):
         bot.send_message(chat_id, "📸 <b>Отправьте фотографию</b>, которую хотите добавить в портфолио:")
         return
 
-    # --- BLOG FLOW ---
+    # --- BLOG CREATION FLOW ---
     elif data == "btn_new_blog":
         bot.answer_callback_query(call.id)
         dt = datetime.datetime.now()
@@ -367,6 +575,56 @@ def handle_callback(call):
             publish_portfolio_photo(chat_id, photo_path, cat)
         return
 
+def show_posts_list(chat_id):
+    posts = parse_blog_posts()
+    if not posts:
+        bot.send_message(chat_id, "📭 Опубликованных постов пока нет.", reply_markup=get_main_keyboard())
+        return
+
+    bot.send_message(chat_id, f"📚 <b>Список опубликованных постов в блоге ({len(posts)}):</b>")
+    site_url = config.get("site_url", "")
+
+    for p in posts:
+        msg = (
+            f"📌 <b>{p['title']}</b>\n"
+            f"📅 <b>Дата:</b> {p['date_ru']}\n"
+            f"🏷 <b>Категория:</b> {p['category']}\n"
+            f"📄 <b>Файл:</b> <code>{p['filename']}</code>\n"
+            f"💬 <i>{p['excerpt']}</i>"
+        )
+        markup = types.InlineKeyboardMarkup(row_width=3)
+        markup.add(
+            types.InlineKeyboardButton("✏️ Изменить", callback_data=f"edit_post:{p['filename']}"),
+            types.InlineKeyboardButton("🗑️ Удалить", callback_data=f"del_post:{p['filename']}"),
+            types.InlineKeyboardButton("🌐 Ссылка", url=f"{site_url}/{p['filename']}")
+        )
+        bot.send_message(chat_id, msg, reply_markup=markup)
+
+def show_edit_post_menu(chat_id, filename):
+    posts = parse_blog_posts()
+    post = next((p for p in posts if p['filename'] == filename), None)
+    
+    title = post['title'] if post else filename
+    cat = post['category'] if post else "личное"
+    excerpt = post['excerpt'] if post else ""
+
+    msg = (
+        f"✏️ <b>Редактирование поста:</b> <code>{filename}</code>\n\n"
+        f"📌 <b>Заголовок:</b> {title}\n"
+        f"🏷 <b>Категория:</b> {cat}\n"
+        f"💬 <b>Описание:</b> {excerpt}\n\n"
+        f"Выберите, что вы хотите изменить:"
+    )
+
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        types.InlineKeyboardButton("📝 Изменить заголовок", callback_data=f"edit_title:{filename}"),
+        types.InlineKeyboardButton("🏷 Изменить категорию", callback_data=f"edit_cat:{filename}"),
+        types.InlineKeyboardButton("💬 Изменить краткое описание", callback_data=f"edit_excerpt:{filename}"),
+        types.InlineKeyboardButton("⬅️ Вернуться к списку постов", callback_data="btn_manage_posts")
+    )
+    bot.send_message(chat_id, msg, reply_markup=markup)
+
 def show_blog_constructor(chat_id):
     state = user_states.get(chat_id, {})
     title = state.get('title', 'Без заголовка')
@@ -394,7 +652,6 @@ def handle_photo(message):
     current_step = state.get('step')
 
     if current_step == 'WAIT_PORTFOLIO_PHOTO':
-        # Download portfolio photo
         file_info = bot.get_file(message.photo[-1].file_id)
         downloaded = bot.download_file(file_info.file_path)
         
@@ -455,8 +712,31 @@ def handle_text(message):
 
     state = user_states.get(chat_id, {})
     step = state.get('step')
+    filename = state.get('filename')
 
-    if step == 'WAIT_BLOG_TITLE':
+    if step == 'WAIT_EDIT_TITLE':
+        new_title = message.text.strip()
+        bot.send_message(chat_id, f"⏳ Обновление заголовка статьи `{filename}` и публикация в Git...")
+        success, git_log = edit_blog_post(filename, new_title=new_title)
+        user_states.pop(chat_id, None)
+        if success:
+            bot.send_message(chat_id, f"✅ Заголовок статьи <code>{filename}</code> успешно изменен на:\n<b>{new_title}</b>", reply_markup=get_main_keyboard())
+        else:
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+        return
+
+    elif step == 'WAIT_EDIT_EXCERPT':
+        new_excerpt = message.text.strip()
+        bot.send_message(chat_id, f"⏳ Обновление описания статьи `{filename}` и публикация в Git...")
+        success, git_log = edit_blog_post(filename, new_excerpt=new_excerpt)
+        user_states.pop(chat_id, None)
+        if success:
+            bot.send_message(chat_id, f"✅ Краткое описание статьи <code>{filename}</code> успешно изменено!", reply_markup=get_main_keyboard())
+        else:
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+        return
+
+    elif step == 'WAIT_BLOG_TITLE':
         title = message.text.strip()
         state['title'] = title
         state['slug'] = slugify(title)
@@ -546,11 +826,9 @@ def publish_blog_post(chat_id):
 
     bot.send_message(chat_id, "⏳ Создание файла статьи, обновление блога и отправка на GitHub...")
 
-    # Calculate reading time (avg 150 words per min)
     total_words = sum(len(b.get('content', '').split()) for b in blocks if 'content' in b)
     read_time = max(1, round(total_words / 150))
 
-    # Generate article HTML content
     article_html_body = ""
     for b in blocks:
         btype = b['type']
