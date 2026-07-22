@@ -2,7 +2,7 @@
 """
 NIKS ARTPHOTO — Telegram Management Bot
 Enables the site owner to publish blog articles with full rich formatting, edit/delete existing posts (both step-by-step and PRO all-in-one editor), and post portfolio images.
-Automatically commits and pushes every update to GitHub Pages with live status notifications.
+Automatically commits and pushes every update to GitHub Pages with live status notifications and single-message button navigation.
 """
 
 import os
@@ -438,7 +438,7 @@ def get_main_keyboard():
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton("📝 Создать новость в блог", callback_data="btn_new_blog"),
-        types.InlineKeyboardButton("📚 Посты (просмотр/ред/удал)", callback_data="btn_manage_posts")
+        types.InlineKeyboardButton("📚 Посты (кнопками)", callback_data="btn_manage_posts")
     )
     markup.add(
         types.InlineKeyboardButton("📸 Добавить фото в портфолио", callback_data="btn_new_portfolio"),
@@ -528,6 +528,7 @@ def cmd_help(message):
         "📖 <b>Справка по возможностям бота:</b>\n\n"
         "1. <b>Блог</b>:\n"
         "   • Создание статей со всеми видами форматирования\n"
+        "   • <b>Компактное меню кнопок</b> — выбор постов без лишнего спама сообщениями!\n"
         "   • <b>Просмотр, удаление и 2 режима редактирования</b>:\n"
         "     1) <b>Пошаговый режим</b> (изменить заголовок, категорию или описание)\n"
         "     2) <b>⚡ PRO Редактор (Всё в одном)</b> — полное редактирование текста всей статьи со спецтегами:\n"
@@ -580,7 +581,13 @@ def handle_callback(call):
 
     elif data == "btn_manage_posts":
         bot.answer_callback_query(call.id)
-        show_posts_list(chat_id)
+        show_posts_list(chat_id, message_id=call.message.message_id)
+        return
+
+    elif data.startswith("view_post:"):
+        filename = data.split("view_post:")[1]
+        bot.answer_callback_query(call.id)
+        show_single_post_view(chat_id, filename, message_id=call.message.message_id)
         return
 
     # --- DELETE POST FLOW ---
@@ -590,11 +597,12 @@ def handle_callback(call):
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(
             types.InlineKeyboardButton("⚠️ Да, удалить навсегда", callback_data=f"confirm_del:{filename}"),
-            types.InlineKeyboardButton("❌ Отмена", callback_data="btn_manage_posts")
+            types.InlineKeyboardButton("❌ Отмена", callback_data=f"view_post:{filename}")
         )
-        bot.send_message(
-            chat_id,
+        bot.edit_message_text(
             f"⚠️ <b>Подтверждение удаления:</b>\n\nВы уверены, что хотите полностью удалить пост <code>{filename}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
+            chat_id,
+            call.message.message_id,
             reply_markup=markup
         )
         return
@@ -614,7 +622,7 @@ def handle_callback(call):
     elif data.startswith("edit_post:"):
         filename = data.split("edit_post:")[1]
         bot.answer_callback_query(call.id)
-        show_edit_post_menu(chat_id, filename)
+        show_edit_post_menu(chat_id, filename, message_id=call.message.message_id)
         return
 
     elif data.startswith("edit_pro:"):
@@ -675,7 +683,7 @@ def handle_callback(call):
             types.InlineKeyboardButton("🏙️ Стрит", callback_data=f"set_edit_cat:{filename}:стрит")
         )
         markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
-        bot.send_message(chat_id, f"🏷 Выберите новую категорию для статьи <code>{filename}</code>:", reply_markup=markup)
+        bot.edit_message_text(f"🏷 Выберите новую категорию для статьи <code>{filename}</code>:", chat_id, call.message.message_id, reply_markup=markup)
         return
 
     elif data.startswith("set_edit_cat:"):
@@ -807,32 +815,73 @@ def handle_callback(call):
             publish_portfolio_photo(chat_id, photo_path, cat)
         return
 
-def show_posts_list(chat_id):
+def show_posts_list(chat_id, message_id=None):
     posts = parse_blog_posts()
     if not posts:
-        bot.send_message(chat_id, "📭 Опубликованных постов пока нет.", reply_markup=get_main_keyboard())
+        msg = "📭 Опубликованных постов пока нет."
+        markup = get_main_keyboard()
+        if message_id:
+            try: bot.edit_message_text(msg, chat_id, message_id, reply_markup=markup); return
+            except: pass
+        bot.send_message(chat_id, msg, reply_markup=markup)
         return
 
-    bot.send_message(chat_id, f"📚 <b>Список опубликованных постов в блоге ({len(posts)}):</b>")
-    site_url = config.get("site_url", "")
+    msg = f"📚 <b>Управление постами блога ({len(posts)}):</b>\n\nВыберите пост из списка ниже:"
+    markup = types.InlineKeyboardMarkup(row_width=1)
 
     for p in posts:
-        msg = (
-            f"📌 <b>{p['title']}</b>\n"
-            f"📅 <b>Дата:</b> {p['date_ru']}\n"
-            f"🏷 <b>Категория:</b> {p['category']}\n"
-            f"📄 <b>Файл:</b> <code>{p['filename']}</code>\n"
-            f"💬 <i>{p['excerpt']}</i>"
-        )
-        markup = types.InlineKeyboardMarkup(row_width=3)
-        markup.add(
-            types.InlineKeyboardButton("✏️ Изменить", callback_data=f"edit_post:{p['filename']}"),
-            types.InlineKeyboardButton("🗑️ Удалить", callback_data=f"del_post:{p['filename']}"),
-            types.InlineKeyboardButton("🌐 Ссылка", url=f"{site_url}/{p['filename']}")
-        )
-        bot.send_message(chat_id, msg, reply_markup=markup)
+        cat_icon = "✨" if p['category'] == 'личное' else ("📷" if p['category'] == 'техника' else "🏙️")
+        btn_text = f"{cat_icon} {p['title']}"
+        if len(btn_text) > 48:
+            btn_text = btn_text[:45] + "..."
+        markup.add(types.InlineKeyboardButton(btn_text, callback_data=f"view_post:{p['filename']}"))
 
-def show_edit_post_menu(chat_id, filename):
+    markup.add(types.InlineKeyboardButton("🏠 Главное меню", callback_data="btn_cancel"))
+
+    if message_id:
+        try:
+            bot.edit_message_text(msg, chat_id, message_id, reply_markup=markup)
+            return
+        except:
+            pass
+    bot.send_message(chat_id, msg, reply_markup=markup)
+
+def show_single_post_view(chat_id, filename, message_id=None):
+    posts = parse_blog_posts()
+    post = next((p for p in posts if p['filename'] == filename), None)
+    site_url = config.get("site_url", "")
+
+    if not post:
+        bot.send_message(chat_id, f"⚠️ Пост <code>{filename}</code> не найден.")
+        return
+
+    cat_icon = "✨" if post['category'] == 'личное' else ("📷" if post['category'] == 'техника' else "🏙️")
+    msg = (
+        f"📌 <b>{post['title']}</b>\n\n"
+        f"📅 <b>Дата:</b> {post['date_ru']}\n"
+        f"{cat_icon} <b>Категория:</b> {post['category']}\n"
+        f"📄 <b>Файл:</b> <code>{post['filename']}</code>\n"
+        f"💬 <i>{post['excerpt']}</i>"
+    )
+
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        types.InlineKeyboardButton("⚡ PRO-Редактор (Всё в одном)", callback_data=f"edit_pro:{filename}"),
+        types.InlineKeyboardButton("📝 Изменить заголовок / категорию / описание", callback_data=f"edit_post:{filename}"),
+        types.InlineKeyboardButton("🗑️ Удалить пост", callback_data=f"del_post:{filename}"),
+        types.InlineKeyboardButton("🌐 Ссылка на статью", url=f"{site_url}/{filename}"),
+        types.InlineKeyboardButton("⬅️ К списку постов", callback_data="btn_manage_posts")
+    )
+
+    if message_id:
+        try:
+            bot.edit_message_text(msg, chat_id, message_id, reply_markup=markup)
+            return
+        except:
+            pass
+    bot.send_message(chat_id, msg, reply_markup=markup)
+
+def show_edit_post_menu(chat_id, filename, message_id=None):
     posts = parse_blog_posts()
     post = next((p for p in posts if p['filename'] == filename), None)
     
@@ -845,7 +894,7 @@ def show_edit_post_menu(chat_id, filename):
         f"📌 <b>Заголовок:</b> {title}\n"
         f"🏷 <b>Категория:</b> {cat}\n"
         f"💬 <b>Описание:</b> {excerpt}\n\n"
-        f"Выберите способ редактирования:"
+        f"Выберите вариант редактирования:"
     )
 
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -854,8 +903,15 @@ def show_edit_post_menu(chat_id, filename):
         types.InlineKeyboardButton("📝 Изменить только заголовок", callback_data=f"edit_title:{filename}"),
         types.InlineKeyboardButton("🏷 Изменить только категорию", callback_data=f"edit_cat:{filename}"),
         types.InlineKeyboardButton("💬 Изменить только описание", callback_data=f"edit_excerpt:{filename}"),
-        types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel")
+        types.InlineKeyboardButton("⬅️ Назад к посту", callback_data=f"view_post:{filename}")
     )
+
+    if message_id:
+        try:
+            bot.edit_message_text(msg, chat_id, message_id, reply_markup=markup)
+            return
+        except:
+            pass
     bot.send_message(chat_id, msg, reply_markup=markup)
 
 def show_blog_constructor(chat_id):
