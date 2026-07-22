@@ -242,9 +242,21 @@
 
         bindGalleryClickHandlers();
 
-        // --- CATEGORY FILTERING WITH STAGGER ---
+        // --- CATEGORY FILTERING & SORTING WITH STAGGER ---
         const filterBtns = document.querySelectorAll('.filter-btn, .kumo-tab-btn');
-        const galleryItems = document.querySelectorAll('.gallery-item, .kumo-gallery-item');
+        const filterableItems = document.querySelectorAll('.gallery-item, .kumo-gallery-item, .blog-card');
+
+        // Auto-sort blog posts by date descending (newest first)
+        const blogGrid = document.querySelector('.blog-grid');
+        if (blogGrid) {
+            const blogCards = Array.from(blogGrid.querySelectorAll('.blog-card'));
+            blogCards.sort((a, b) => {
+                const dateA = a.getAttribute('data-date') || '';
+                const dateB = b.getAttribute('data-date') || '';
+                return dateB.localeCompare(dateA);
+            });
+            blogCards.forEach(card => blogGrid.appendChild(card));
+        }
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -254,7 +266,7 @@
                 const filter = btn.getAttribute('data-filter') || 'all';
 
                 let count = 0;
-                galleryItems.forEach(item => {
+                filterableItems.forEach(item => {
                     const category = item.getAttribute('data-category');
                     if (filter === 'all' || category === filter) {
                         item.style.display = '';
