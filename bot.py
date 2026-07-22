@@ -48,6 +48,11 @@ def load_config():
             with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
                 saved = json.load(f)
                 config.update(saved)
+        except json.JSONDecodeError as e:
+            print(f"\n❌ Ошибка в синтаксисе файла bot_config.json на строке {e.lineno}, колонка {e.colno}:")
+            print(f"   --> {e.msg}")
+            print("💡 Проверьте, чтобы между значениями (например, элементами списков) стояли запятые.\n")
+            logging.error(f"JSON Syntax error in {CONFIG_FILE}: {e}")
         except Exception as e:
             logging.error(f"Error reading {CONFIG_FILE}: {e}")
     return config
@@ -58,14 +63,15 @@ def save_config(config):
 
 config = load_config()
 
-# If token not in config, prompt or check env
-BOT_TOKEN = config.get("bot_token", "")
+BOT_TOKEN = config.get("bot_token", "").strip()
 ADMIN_IDS = set(config.get("admin_ids", []))
 
-if not BOT_TOKEN:
-    print("Warning: BOT_TOKEN is empty in config or environment. Please set BOT_TOKEN in bot_config.json or environment variable.")
+if not BOT_TOKEN or ":" not in BOT_TOKEN:
+    print("❌ Токен бота не задан или указан неверно в файле bot_config.json!")
+    print("💡 Пожалуйста, откройте bot_config.json и укажите правильный bot_token от @BotFather.")
+    sys.exit(1)
 
-bot = telebot.TeleBot(BOT_TOKEN if BOT_TOKEN else "DUMMY_TOKEN", parse_mode='HTML')
+bot = telebot.TeleBot(BOT_TOKEN, parse_mode='HTML')
 
 # In-memory user states for interactive blog editor, post management, and portfolio uploader
 user_states = {}
