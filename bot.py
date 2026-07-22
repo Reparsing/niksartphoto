@@ -2,7 +2,7 @@
 """
 NIKS ARTPHOTO — Telegram Management Bot
 Enables the site owner to publish blog articles with full rich formatting, edit/delete existing posts (both step-by-step and PRO all-in-one editor), and post portfolio images.
-Automatically commits and pushes every update to GitHub Pages.
+Automatically commits and pushes every update to GitHub Pages with live status notifications.
 """
 
 import os
@@ -81,25 +81,48 @@ def is_admin(user_id):
         return True # Allow initial setup if ADMIN_IDS is empty
     return user_id in ADMIN_IDS
 
-def run_git_commit_and_push(commit_message):
-    """Executes git add, commit, and push automatically."""
+def run_git_commit_and_push(commit_message, chat_id=None):
+    """Executes git add, commit, and push automatically with live Telegram progress updates."""
+    status_msg = None
+    if chat_id:
+        try:
+            status_msg = bot.send_message(chat_id, "📝 <b>Шаг 1 из 3:</b> Сохранение локальных файлов статьи...")
+        except Exception as e:
+            logging.error(f"Error sending status msg: {e}")
+
     try:
         logging.info("Executing git add .")
+        if status_msg:
+            try: bot.edit_message_text("🔄 <b>Шаг 2 из 3:</b> Выполнение <code>git add .</code> и запись коммита...", chat_id, status_msg.message_id)
+            except: pass
         subprocess.run(["git", "add", "."], cwd=BASE_DIR, check=True)
         
         logging.info(f"Executing git commit -m '{commit_message}'")
         res_commit = subprocess.run(["git", "commit", "-m", commit_message], cwd=BASE_DIR, capture_output=True, text=True)
         
         logging.info("Executing git push origin main")
+        if status_msg:
+            try: bot.edit_message_text("🚀 <b>Шаг 3 из 3:</b> Отправка изменений на GitHub (<code>git push origin main</code>)...", chat_id, status_msg.message_id)
+            except: pass
         res_push = subprocess.run(["git", "push", "origin", "main"], cwd=BASE_DIR, capture_output=True, text=True)
-        
+
+        if status_msg:
+            try: bot.edit_message_text("✅ <b>Успешно!</b> Все изменения опубликованы на GitHub Pages.", chat_id, status_msg.message_id)
+            except: pass
+
         return True, res_push.stdout + res_push.stderr
     except subprocess.CalledProcessError as e:
         err_msg = e.stderr if hasattr(e, 'stderr') and e.stderr else str(e)
         logging.error(f"Git error: {err_msg}")
+        if status_msg:
+            try: bot.edit_message_text(f"❌ <b>Ошибка при отправке на GitHub:</b>\n<code>{err_msg}</code>", chat_id, status_msg.message_id)
+            except: pass
         return False, err_msg
     except Exception as e:
         logging.error(f"Unexpected git error: {e}")
+        if status_msg:
+            try: bot.edit_message_text(f"❌ <b>Ошибка:</b> {e}", chat_id, status_msg.message_id)
+            except: pass
         return False, str(e)
 
 def slugify(text):
@@ -166,7 +189,7 @@ def parse_blog_posts():
 
     return posts
 
-def delete_blog_post_by_filename(filename):
+def delete_blog_post_by_filename(filename, chat_id=None):
     """Deletes a blog post file and removes its card from blog.html."""
     blog_file = os.path.join(BASE_DIR, 'blog.html')
     if os.path.exists(blog_file):
@@ -188,10 +211,10 @@ def delete_blog_post_by_filename(filename):
         except Exception as e:
             logging.error(f"Error deleting file {post_file}: {e}")
 
-    success, git_log = run_git_commit_and_push(f"Delete blog post: {filename}")
+    success, git_log = run_git_commit_and_push(f"Delete blog post: {filename}", chat_id=chat_id)
     return success, git_log
 
-def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None, new_blocks=None):
+def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None, new_blocks=None, chat_id=None):
     """Edits title, category, excerpt, or blocks of a published post."""
     blog_file = os.path.join(BASE_DIR, 'blog.html')
     post_file = os.path.join(BASE_DIR, filename)
@@ -283,7 +306,7 @@ def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None
     if new_excerpt: action_desc.append("excerpt")
     if new_blocks: action_desc.append("full body blocks")
 
-    success, git_log = run_git_commit_and_push(f"Edit blog post {filename}: {', '.join(action_desc)}")
+    success, git_log = run_git_commit_and_push(f"Edit blog post {filename}: {', '.join(action_desc)}", chat_id=chat_id)
     return success, git_log
 
 # --- ADVANCED ALL-IN-ONE PRO EDITOR UTILS ---
@@ -506,17 +529,18 @@ def cmd_help(message):
         "1. <b>Блог</b>:\n"
         "   • Создание статей со всеми видами форматирования\n"
         "   • <b>Просмотр, удаление и 2 режима редактирования</b>:\n"
-        "     1) <b>Пошаговый режим</b> (изменить только заголовок, категорию или описание)\n"
+        "     1) <b>Пошаговый режим</b> (изменить заголовок, категорию или описание)\n"
         "     2) <b>⚡ PRO Редактор (Всё в одном)</b> — полное редактирование текста всей статьи со спецтегами:\n"
         "        <code>[H2] Заголовок</code>\n"
         "        <code>[BLUE] Синяя цитата</code>\n"
         "        <code>[RED] Красное предупреждение</code>\n"
-        "        <code>[IMG: media/photo.jpg] Подпись</code>\n\n"
+        "        <code>[IMG: media/photo.jpg] Подпись</code>\n"
+        "   • <b>Кнопка «Отмена»</b> в любом режиме редактора\n\n"
         "2. <b>Портфолио</b>: Загрузка снимков в категории (Портреты / Улица / Граффити).\n\n"
         "3. <b>Управление доступом</b>:\n"
         "   • <code>/myid</code> — узнать свой Telegram ID\n"
         "   • <code>/addadmin ID</code> — добавить нового администратора\n\n"
-        "4. <b>Автоматический Git Commit & Push</b>: Каждая публикация сразу выгружается на GitHub Pages!"
+        "4. <b>Живой статус отправки в GitHub Pages</b>: Пошаговое отображение записи коммита и `git push`!"
     )
 
 # --- CALLBACK QUERY HANDLER ---
@@ -534,7 +558,10 @@ def handle_callback(call):
 
     if data == "btn_cancel":
         user_states.pop(chat_id, None)
-        bot.edit_message_text("❌ Операция отменена.", chat_id, call.message.message_id)
+        try:
+            bot.edit_message_text("❌ <b>Редактирование или действие отменено.</b> Изменения не сохранены.", chat_id, call.message.message_id)
+        except:
+            bot.send_message(chat_id, "❌ <b>Редактирование или действие отменено.</b> Изменения не сохранены.")
         bot.send_message(chat_id, "Главное меню:", reply_markup=get_main_keyboard())
         bot.answer_callback_query(call.id)
         return
@@ -575,11 +602,10 @@ def handle_callback(call):
     elif data.startswith("confirm_del:"):
         filename = data.split("confirm_del:")[1]
         bot.answer_callback_query(call.id, "Удаление статьи...")
-        bot.send_message(chat_id, f"⏳ Удаление статьи `{filename}` и публикация в Git...")
         
-        success, git_log = delete_blog_post_by_filename(filename)
+        success, git_log = delete_blog_post_by_filename(filename, chat_id=chat_id)
         if success:
-            bot.send_message(chat_id, f"✅ Статья <code>{filename}</code> успешно удалена с сайта и GitHub Pages!", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Статья <code>{filename}</code> успешно удалена с сайта и GitHub Pages!</b>", reply_markup=get_main_keyboard())
         else:
             bot.send_message(chat_id, f"⚠️ Файл удален локально, но произошла ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
         return
@@ -612,11 +638,12 @@ def handle_callback(call):
             f"• <code>[H2] Текст</code> — подзаголовок раздела\n"
             f"• <code>[BLUE] Текст</code> — синяя цитата (акцент)\n"
             f"• <code>[RED] Текст</code> — красное предупреждение\n"
-            f"• <code>[IMG: media/photo.jpg] Подпись</code> — картинка в тексте\n"
-            f"• Обычные абзацы пишите стандартным текстом.\n\n"
+            f"• <code>[IMG: media/photo.jpg] Подпись</code> — картинка в тексте\n\n"
             f"👇 <b>Скопируйте готовый шаблон статьи:</b>"
         )
-        bot.send_message(chat_id, instructions)
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
+        bot.send_message(chat_id, instructions, reply_markup=markup)
         bot.send_message(chat_id, f"<code>{pro_text}</code>")
         return
 
@@ -624,14 +651,18 @@ def handle_callback(call):
         filename = data.split("edit_title:")[1]
         bot.answer_callback_query(call.id)
         user_states[chat_id] = {'step': 'WAIT_EDIT_TITLE', 'filename': filename}
-        bot.send_message(chat_id, f"📝 Введите <b>новый заголовок</b> для статьи <code>{filename}</code>:")
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
+        bot.send_message(chat_id, f"📝 Введите <b>новый заголовок</b> для статьи <code>{filename}</code>:", reply_markup=markup)
         return
 
     elif data.startswith("edit_excerpt:"):
         filename = data.split("edit_excerpt:")[1]
         bot.answer_callback_query(call.id)
         user_states[chat_id] = {'step': 'WAIT_EDIT_EXCERPT', 'filename': filename}
-        bot.send_message(chat_id, f"💬 Введите <b>новое краткое описание</b> для статьи <code>{filename}</code>:")
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
+        bot.send_message(chat_id, f"💬 Введите <b>новое краткое описание</b> для статьи <code>{filename}</code>:", reply_markup=markup)
         return
 
     elif data.startswith("edit_cat:"):
@@ -643,27 +674,28 @@ def handle_callback(call):
             types.InlineKeyboardButton("📷 Техника", callback_data=f"set_edit_cat:{filename}:техника"),
             types.InlineKeyboardButton("🏙️ Стрит", callback_data=f"set_edit_cat:{filename}:стрит")
         )
-        markup.add(types.InlineKeyboardButton("⬅️ Назад", callback_data=f"edit_post:{filename}"))
+        markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
         bot.send_message(chat_id, f"🏷 Выберите новую категорию для статьи <code>{filename}</code>:", reply_markup=markup)
         return
 
     elif data.startswith("set_edit_cat:"):
         _, filename, new_cat = data.split(":")
         bot.answer_callback_query(call.id, "Обновление категории...")
-        bot.send_message(chat_id, f"⏳ Обновление категории статьи `{filename}` и пуш в Git...")
         
-        success, git_log = edit_blog_post(filename, new_category=new_cat)
+        success, git_log = edit_blog_post(filename, new_category=new_cat, chat_id=chat_id)
         if success:
-            bot.send_message(chat_id, f"✅ Категория статьи <code>{filename}</code> изменена на <b>{new_cat}</b>!", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Категория статьи <code>{filename}</code> успешно изменена на {new_cat}!</b>", reply_markup=get_main_keyboard())
         else:
-            bot.send_message(chat_id, f"⚠️ Изменения внесены, но при Git Push произошла ошибка:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
         return
 
     # --- PORTFOLIO FLOW ---
     elif data == "btn_new_portfolio":
         bot.answer_callback_query(call.id)
         user_states[chat_id] = {'step': 'WAIT_PORTFOLIO_PHOTO'}
-        bot.send_message(chat_id, "📸 <b>Отправьте фотографию</b>, которую хотите добавить в портфолио:")
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отмена", callback_data="btn_cancel"))
+        bot.send_message(chat_id, "📸 <b>Отправьте фотографию</b>, которую хотите добавить в портфолио:", reply_markup=markup)
         return
 
     # --- BLOG CREATION FLOW ---
@@ -681,7 +713,9 @@ def handle_callback(call):
             'date_ru': format_date_ru(dt),
             'blocks': []
         }
-        bot.send_message(chat_id, "📝 <b>Шаг 1 из 3:</b> Введите заголовок новой статьи:")
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отмена", callback_data="btn_cancel"))
+        bot.send_message(chat_id, "📝 <b>Шаг 1 из 3:</b> Введите заголовок новой статьи:", reply_markup=markup)
         return
 
     elif data == "blog_set_category":
@@ -692,6 +726,7 @@ def handle_callback(call):
             types.InlineKeyboardButton("📷 Техника", callback_data="cat_техника"),
             types.InlineKeyboardButton("🏙️ Стрит", callback_data="cat_стрит")
         )
+        markup.add(types.InlineKeyboardButton("❌ Отмена", callback_data="btn_cancel"))
         bot.send_message(chat_id, "Выберите категорию для статьи:", reply_markup=markup)
         return
 
@@ -708,25 +743,27 @@ def handle_callback(call):
     elif data in ["blog_add_p", "blog_add_h2", "blog_add_qblue", "blog_add_qred", "blog_add_img", "blog_set_cover"]:
         bot.answer_callback_query(call.id)
         state = user_states.get(chat_id, {})
-        
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отмена", callback_data="btn_cancel"))
+
         if data == "blog_add_p":
             state['step'] = 'WAIT_BLOG_BLOCK_P'
-            bot.send_message(chat_id, "💬 Отправьте текст нового абзаца (<p>):")
+            bot.send_message(chat_id, "💬 Отправьте текст нового абзаца (<p>):", reply_markup=markup)
         elif data == "blog_add_h2":
             state['step'] = 'WAIT_BLOG_BLOCK_H2'
-            bot.send_message(chat_id, "📌 Отправьте текст подзаголовка (<h2>):")
+            bot.send_message(chat_id, "📌 Отправьте текст подзаголовка (<h2>):", reply_markup=markup)
         elif data == "blog_add_qblue":
             state['step'] = 'WAIT_BLOG_BLOCK_QBLUE'
-            bot.send_message(chat_id, "📷 Отправьте текст для <b>фирменной синей цитаты</b> (акцент):")
+            bot.send_message(chat_id, "📷 Отправьте текст для <b>фирменной синей цитаты</b> (акцент):", reply_markup=markup)
         elif data == "blog_add_qred":
             state['step'] = 'WAIT_BLOG_BLOCK_QRED'
-            bot.send_message(chat_id, "⚠️ Отправьте текст для <b>фирменного красного предупреждения</b>:")
+            bot.send_message(chat_id, "⚠️ Отправьте текст для <b>фирменного красного предупреждения</b>:", reply_markup=markup)
         elif data == "blog_add_img":
             state['step'] = 'WAIT_BLOG_BLOCK_IMG'
-            bot.send_message(chat_id, "📷 Отправьте фотографию для вставки внутрь статьи:")
+            bot.send_message(chat_id, "📷 Отправьте фотографию для вставки внутрь статьи:", reply_markup=markup)
         elif data == "blog_set_cover":
             state['step'] = 'WAIT_BLOG_COVER_PHOTO'
-            bot.send_message(chat_id, "🖼 Отправьте изображение для <b>главной обложки статьи</b>:")
+            bot.send_message(chat_id, "🖼 Отправьте изображение для <b>главной обложки статьи</b>:", reply_markup=markup)
         return
 
     elif data == "blog_preview":
@@ -817,7 +854,7 @@ def show_edit_post_menu(chat_id, filename):
         types.InlineKeyboardButton("📝 Изменить только заголовок", callback_data=f"edit_title:{filename}"),
         types.InlineKeyboardButton("🏷 Изменить только категорию", callback_data=f"edit_cat:{filename}"),
         types.InlineKeyboardButton("💬 Изменить только описание", callback_data=f"edit_excerpt:{filename}"),
-        types.InlineKeyboardButton("⬅️ Вернуться к списку постов", callback_data="btn_manage_posts")
+        types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel")
     )
     bot.send_message(chat_id, msg, reply_markup=markup)
 
@@ -867,6 +904,7 @@ def handle_photo(message):
             types.InlineKeyboardButton("🏙️ Уличные зарисовки (street)", callback_data="port_cat_street"),
             types.InlineKeyboardButton("🎨 Граффити на улицах (graffiti)", callback_data="port_cat_graffiti")
         )
+        markup.add(types.InlineKeyboardButton("❌ Отмена", callback_data="btn_cancel"))
         bot.send_message(chat_id, "📸 Фотография загружена! Выберите категорию для портфолио:", reply_markup=markup)
         return
 
@@ -912,25 +950,26 @@ def handle_text(message):
 
     if step == 'WAIT_ADVANCED_EDIT':
         raw_text = message.text.strip()
-        bot.send_message(chat_id, f"⏳ Разбор PRO-текста статьи `{filename}` и публикация на GitHub...")
-        
         title, category, excerpt, blocks = parse_advanced_post_text(raw_text)
+        
         success, git_log = edit_blog_post(
             filename,
             new_title=title,
             new_category=category,
             new_excerpt=excerpt,
-            new_blocks=blocks
+            new_blocks=blocks,
+            chat_id=chat_id
         )
         user_states.pop(chat_id, None)
         if success:
+            site_url = config.get("site_url", "")
             bot.send_message(
                 chat_id,
-                f"🎉 <b>Статья {filename} успешно полностью обновлена через PRO-редактор!</b>\n\n"
-                f"📌 <b>Заголовок:</b> {title if title else 'Не изменен'}\n"
+                f"🎉 <b>Статья {filename} успешно полностью обновлена и выгружена!</b>\n\n"
+                f"📌 <b>Заголовок:</b> {title if title else 'Без изменений'}\n"
                 f"🏷 <b>Категория:</b> {category}\n"
-                f"🧩 <b>Обновлено блоков:</b> {len(blocks)}\n\n"
-                f"✅ Git Commit & Push успешно выполнен.",
+                f"🧩 <b>Всего блоков:</b> {len(blocks)}\n"
+                f"🔗 <b>Прямая ссылка:</b> {site_url}/{filename}",
                 reply_markup=get_main_keyboard()
             )
         else:
@@ -939,22 +978,20 @@ def handle_text(message):
 
     elif step == 'WAIT_EDIT_TITLE':
         new_title = message.text.strip()
-        bot.send_message(chat_id, f"⏳ Обновление заголовка статьи `{filename}` и публикация в Git...")
-        success, git_log = edit_blog_post(filename, new_title=new_title)
+        success, git_log = edit_blog_post(filename, new_title=new_title, chat_id=chat_id)
         user_states.pop(chat_id, None)
         if success:
-            bot.send_message(chat_id, f"✅ Заголовок статьи <code>{filename}</code> успешно изменен на:\n<b>{new_title}</b>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Заголовок статьи <code>{filename}</code> успешно изменен на:</b>\n<b>{new_title}</b>", reply_markup=get_main_keyboard())
         else:
             bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
         return
 
     elif step == 'WAIT_EDIT_EXCERPT':
         new_excerpt = message.text.strip()
-        bot.send_message(chat_id, f"⏳ Обновление описания статьи `{filename}` и публикация в Git...")
-        success, git_log = edit_blog_post(filename, new_excerpt=new_excerpt)
+        success, git_log = edit_blog_post(filename, new_excerpt=new_excerpt, chat_id=chat_id)
         user_states.pop(chat_id, None)
         if success:
-            bot.send_message(chat_id, f"✅ Краткое описание статьи <code>{filename}</code> успешно изменено!", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Краткое описание статьи <code>{filename}</code> успешно изменено!</b>", reply_markup=get_main_keyboard())
         else:
             bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
         return
@@ -964,7 +1001,9 @@ def handle_text(message):
         state['title'] = title
         state['slug'] = slugify(title)
         state['step'] = 'WAIT_BLOG_EXCERPT'
-        bot.send_message(chat_id, "📝 <b>Шаг 2 из 3:</b> Введите краткое описание статьи (для карточки в блоге):")
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("❌ Отмена", callback_data="btn_cancel"))
+        bot.send_message(chat_id, "📝 <b>Шаг 2 из 3:</b> Введите краткое описание статьи (для карточки в блоге):", reply_markup=markup)
         return
 
     elif step == 'WAIT_BLOG_EXCERPT':
@@ -1001,8 +1040,6 @@ def handle_text(message):
 # --- PUBLISHING LOGIC ---
 
 def publish_portfolio_photo(chat_id, photo_path, category):
-    bot.send_message(chat_id, "🔄 Загрузка фото в портфолио и публикация в Git...")
-    
     portfolio_file = os.path.join(BASE_DIR, 'portfolio.html')
     with open(portfolio_file, 'r', encoding='utf-8') as f:
         content = f.read()
@@ -1015,7 +1052,7 @@ def publish_portfolio_photo(chat_id, photo_path, category):
         with open(portfolio_file, 'w', encoding='utf-8') as f:
             f.write(content)
 
-    success, git_log = run_git_commit_and_push(f"Add new portfolio photo to category {category}")
+    success, git_log = run_git_commit_and_push(f"Add new portfolio photo to category {category}", chat_id=chat_id)
     
     user_states.pop(chat_id, None)
     if success:
@@ -1046,8 +1083,6 @@ def publish_blog_post(chat_id):
     if not blocks:
         bot.send_message(chat_id, "⚠️ Добавьте хотя бы один блок текста перед публикацией!")
         return
-
-    bot.send_message(chat_id, "⏳ Создание файла статьи, обновление блога и отправка на GitHub...")
 
     total_words = sum(len(b.get('content', '').split()) for b in blocks if 'content' in b)
     read_time = max(1, round(total_words / 150))
@@ -1271,7 +1306,7 @@ def publish_blog_post(chat_id):
         with open(blog_index_file, 'w', encoding='utf-8') as f:
             f.write(blog_content)
 
-    success, git_log = run_git_commit_and_push(f"Publish blog post: {title}")
+    success, git_log = run_git_commit_and_push(f"Publish blog post: {title}", chat_id=chat_id)
 
     user_states.pop(chat_id, None)
     if success:
@@ -1281,8 +1316,7 @@ def publish_blog_post(chat_id):
             f"🎉 <b>Статья успешно опубликована!</b>\n\n"
             f"📌 <b>Заголовок:</b> {title}\n"
             f"🔗 <b>Прямая ссылка:</b> {site_url}/{post_filename}\n"
-            f"🌐 <b>Главная страница блога:</b> {site_url}/blog.html\n\n"
-            f"✅ Git Commit & Push успешно выполнен.",
+            f"🌐 <b>Главная страница блога:</b> {site_url}/blog.html",
             reply_markup=get_main_keyboard()
         )
     else:
