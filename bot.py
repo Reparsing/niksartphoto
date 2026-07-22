@@ -184,6 +184,28 @@ def cmd_start(message):
         reply_markup=get_main_keyboard()
     )
 
+@bot.message_handler(commands=['myid'])
+def cmd_myid(message):
+    bot.reply_to(message, f"🆔 ваш Telegram ID: <code>{message.from_user.id}</code>")
+
+@bot.message_handler(commands=['addadmin'])
+def cmd_addadmin(message):
+    if not is_admin(message.from_user.id):
+        bot.reply_to(message, "⛔ У вас нет прав для добавления администраторов.")
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) < 2 or not parts[1].isdigit():
+        bot.reply_to(message, "⚠️ Использование: <code>/addadmin USER_ID</code>\nПример: <code>/addadmin 123456789</code>")
+        return
+
+    new_id = int(parts[1])
+    ADMIN_IDS.add(new_id)
+    config['admin_ids'] = list(ADMIN_IDS)
+    save_config(config)
+
+    bot.reply_to(message, f"✅ Администратор <code>{new_id}</code> успешно добавлен!")
+
 @bot.message_handler(commands=['help'])
 def cmd_help(message):
     bot.send_message(
@@ -196,7 +218,10 @@ def cmd_help(message):
         "   • Фирменные красные предупреждения/акценты\n"
         "   • Изображения внутри текста с подписями\n\n"
         "2. <b>Портфолио</b>: Загрузка снимков в категории (Портреты / Улица / Граффити).\n\n"
-        "3. <b>Автоматический Git Commit & Push</b>: Каждая публикация сразу выгружается на GitHub Pages!"
+        "3. <b>Управление доступом</b>:\n"
+        "   • <code>/myid</code> — узнать свой Telegram ID\n"
+        "   • <code>/addadmin ID</code> — добавить нового администратора\n\n"
+        "4. <b>Автоматический Git Commit & Push</b>: Каждая публикация сразу выгружается на GitHub Pages!"
     )
 
 # --- CALLBACK QUERY HANDLER ---
