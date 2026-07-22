@@ -1,6 +1,6 @@
 /**
  * NIKS ARTPHOTO THEME & BALANCED INTERACTION ENGINE
- * Handles theme toggling, page transitions, scroll reveals, 3D tilts, full-screen lightbox slider, and navigation.
+ * Handles theme toggling, page transitions, scroll reveals, 3D tilts, full-screen lightbox slider, navigation, and help dropdown.
  */
 
 (function () {
@@ -46,6 +46,27 @@
             if (e.key?.toLowerCase() === 'd') {
                 const current = document.documentElement.getAttribute('data-mode') || 'dark';
                 setTheme(current === 'dark' ? 'light' : 'dark');
+            }
+        });
+
+        // --- KUMO DROPDOWN MENU ENGINE ---
+        document.querySelectorAll('.kumo-dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.kumo-dropdown-toggle');
+            if (toggle) {
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = dropdown.classList.contains('open');
+                    document.querySelectorAll('.kumo-dropdown').forEach(d => d.classList.remove('open'));
+                    if (!isOpen) {
+                        dropdown.classList.add('open');
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.kumo-dropdown')) {
+                document.querySelectorAll('.kumo-dropdown').forEach(d => d.classList.remove('open'));
             }
         });
 

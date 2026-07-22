@@ -379,7 +379,76 @@ html[data-mode="light"] .kumo-navbar {
 .kumo-nav-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+}
+
+/* --- KUMO DROPDOWN MENU --- */
+.kumo-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.kumo-dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--kumo-default);
+    background: var(--kumo-surface);
+    border: 1px solid var(--kumo-hairline);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kumo-dropdown-toggle:hover {
+    background: var(--kumo-control);
+    border-color: var(--kumo-line);
+    transform: translateY(-1px);
+}
+
+.kumo-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 270px;
+    background: var(--kumo-surface);
+    border: 1px solid var(--kumo-hairline-strong);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: var(--kumo-shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.96);
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s ease;
+    z-index: 2000;
+}
+
+.kumo-dropdown.open .kumo-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.kumo-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--kumo-subtle);
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.kumo-dropdown-item:hover {
+    background: var(--kumo-tint);
+    color: var(--kumo-default);
+    transform: translateX(2px);
 }
 
 /* --- MOBILE TOGGLE & SIDEBAR DRAWER --- */
@@ -483,6 +552,22 @@ html[data-mode="light"] .kumo-navbar {
     color: var(--kumo-default);
     background: var(--kumo-tint);
     transform: translateX(4px);
+}
+
+.kumo-sidebar-divider {
+    height: 1px;
+    background: var(--kumo-hairline);
+    margin: 12px 0;
+}
+
+.kumo-sidebar-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--kumo-muted);
+    padding: 0 18px;
+    margin-bottom: 4px;
 }
 
 /* --- KUMO BUTTONS --- */
