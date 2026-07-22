@@ -15,11 +15,20 @@ import logging
 import telebot
 from telebot import types
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Base directory setup
+# Configure logging to console and logs/bot.log file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOGS_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOGS_DIR, 'bot.log')
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_FILE, encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 PORTFOLIO_MEDIA_DIR = os.path.join(MEDIA_DIR, 'portfolio')
 CONFIG_FILE = os.path.join(BASE_DIR, 'bot_config.json')
