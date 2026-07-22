@@ -9,6 +9,7 @@ import os
 import sys
 import json
 import re
+import html
 import datetime
 import subprocess
 import logging
@@ -115,13 +116,13 @@ def run_git_commit_and_push(commit_message, chat_id=None):
         err_msg = e.stderr if hasattr(e, 'stderr') and e.stderr else str(e)
         logging.error(f"Git error: {err_msg}")
         if status_msg:
-            try: bot.edit_message_text(f"❌ <b>Ошибка при отправке на GitHub:</b>\n<code>{err_msg}</code>", chat_id, status_msg.message_id)
+            try: bot.edit_message_text(f"❌ <b>Ошибка при отправке на GitHub:</b>\n<code>{html.escape(err_msg)}</code>", chat_id, status_msg.message_id)
             except: pass
         return False, err_msg
     except Exception as e:
         logging.error(f"Unexpected git error: {e}")
         if status_msg:
-            try: bot.edit_message_text(f"❌ <b>Ошибка:</b> {e}", chat_id, status_msg.message_id)
+            try: bot.edit_message_text(f"❌ <b>Ошибка:</b> {html.escape(str(e))}", chat_id, status_msg.message_id)
             except: pass
         return False, str(e)
 
@@ -455,8 +456,8 @@ def get_blog_constructor_keyboard(chat_id):
     
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
-        types.InlineKeyboardButton("➕ Текст (<p>)", callback_data="blog_add_p"),
-        types.InlineKeyboardButton("➕ Заголовок (<h2>)", callback_data="blog_add_h2")
+        types.InlineKeyboardButton("➕ Текст (абзац)", callback_data="blog_add_p"),
+        types.InlineKeyboardButton("➕ Подзаголовок (H2)", callback_data="blog_add_h2")
     )
     markup.add(
         types.InlineKeyboardButton("🔵 Синяя цитата", callback_data="blog_add_qblue"),
@@ -571,7 +572,7 @@ def handle_callback(call):
         bot.answer_callback_query(call.id)
         res = subprocess.run(["git", "status", "-s"], cwd=BASE_DIR, capture_output=True, text=True)
         status_text = res.stdout if res.stdout else "Рабочая директория чиста."
-        bot.send_message(chat_id, f"📊 <b>Статус Git:</b>\n<code>{status_text}</code>", reply_markup=get_main_keyboard())
+        bot.send_message(chat_id, f"📊 <b>Статус Git:</b>\n<code>{html.escape(status_text)}</code>", reply_markup=get_main_keyboard())
         return
 
     elif data == "btn_help":
@@ -600,7 +601,7 @@ def handle_callback(call):
             types.InlineKeyboardButton("❌ Отмена", callback_data=f"view_post:{filename}")
         )
         bot.edit_message_text(
-            f"⚠️ <b>Подтверждение удаления:</b>\n\nВы уверены, что хотите полностью удалить пост <code>{filename}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
+            f"⚠️ <b>Подтверждение удаления:</b>\n\nВы уверены, что хотите полностью удалить пост <code>{html.escape(filename)}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
             chat_id,
             call.message.message_id,
             reply_markup=markup
@@ -613,9 +614,9 @@ def handle_callback(call):
         
         success, git_log = delete_blog_post_by_filename(filename, chat_id=chat_id)
         if success:
-            bot.send_message(chat_id, f"🎉 <b>Статья <code>{filename}</code> успешно удалена с сайта и GitHub Pages!</b>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Статья <code>{html.escape(filename)}</code> успешно удалена с сайта и GitHub Pages!</b>", reply_markup=get_main_keyboard())
         else:
-            bot.send_message(chat_id, f"⚠️ Файл удален локально, но произошла ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"⚠️ Файл удален локально, но произошла ошибка при Git Push:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
         return
 
     # --- EDIT POST FLOW ---
@@ -631,13 +632,13 @@ def handle_callback(call):
         
         pro_text = convert_post_to_advanced_text(filename)
         if not pro_text:
-            bot.send_message(chat_id, f"⚠️ Не удалось прочитать файл статьи <code>{filename}</code>.")
+            bot.send_message(chat_id, f"⚠️ Не удалось прочитать файл статьи <code>{html.escape(filename)}</code>.")
             return
 
         user_states[chat_id] = {'step': 'WAIT_ADVANCED_EDIT', 'filename': filename}
 
         instructions = (
-            f"⚡ <b>Продвинутый PRO-редактор статьи:</b> <code>{filename}</code>\n\n"
+            f"⚡ <b>Продвинутый PRO-редактор статьи:</b> <code>{html.escape(filename)}</code>\n\n"
             f"Скопируйте текст из сообщения ниже, внесите любые изменения и отправьте ответным сообщением!\n\n"
             f"💡 <b>Шпаргалка по форматированию:</b>\n"
             f"• <code>Заголовок: Новый заголовок</code>\n"
@@ -652,7 +653,7 @@ def handle_callback(call):
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
         bot.send_message(chat_id, instructions, reply_markup=markup)
-        bot.send_message(chat_id, f"<code>{pro_text}</code>")
+        bot.send_message(chat_id, f"<code>{html.escape(pro_text)}</code>")
         return
 
     elif data.startswith("edit_title:"):
@@ -661,7 +662,7 @@ def handle_callback(call):
         user_states[chat_id] = {'step': 'WAIT_EDIT_TITLE', 'filename': filename}
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
-        bot.send_message(chat_id, f"📝 Введите <b>новый заголовок</b> для статьи <code>{filename}</code>:", reply_markup=markup)
+        bot.send_message(chat_id, f"📝 Введите <b>новый заголовок</b> для статьи <code>{html.escape(filename)}</code>:", reply_markup=markup)
         return
 
     elif data.startswith("edit_excerpt:"):
@@ -670,7 +671,7 @@ def handle_callback(call):
         user_states[chat_id] = {'step': 'WAIT_EDIT_EXCERPT', 'filename': filename}
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
-        bot.send_message(chat_id, f"💬 Введите <b>новое краткое описание</b> для статьи <code>{filename}</code>:", reply_markup=markup)
+        bot.send_message(chat_id, f"💬 Введите <b>новое краткое описание</b> для статьи <code>{html.escape(filename)}</code>:", reply_markup=markup)
         return
 
     elif data.startswith("edit_cat:"):
@@ -683,7 +684,7 @@ def handle_callback(call):
             types.InlineKeyboardButton("🏙️ Стрит", callback_data=f"set_edit_cat:{filename}:стрит")
         )
         markup.add(types.InlineKeyboardButton("❌ Отменить редактирование", callback_data="btn_cancel"))
-        bot.edit_message_text(f"🏷 Выберите новую категорию для статьи <code>{filename}</code>:", chat_id, call.message.message_id, reply_markup=markup)
+        bot.edit_message_text(f"🏷 Выберите новую категорию для статьи <code>{html.escape(filename)}</code>:", chat_id, call.message.message_id, reply_markup=markup)
         return
 
     elif data.startswith("set_edit_cat:"):
@@ -692,9 +693,9 @@ def handle_callback(call):
         
         success, git_log = edit_blog_post(filename, new_category=new_cat, chat_id=chat_id)
         if success:
-            bot.send_message(chat_id, f"🎉 <b>Категория статьи <code>{filename}</code> успешно изменена на {new_cat}!</b>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Категория статьи <code>{html.escape(filename)}</code> успешно изменена на {new_cat}!</b>", reply_markup=get_main_keyboard())
         else:
-            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
         return
 
     # --- PORTFOLIO FLOW ---
@@ -756,10 +757,10 @@ def handle_callback(call):
 
         if data == "blog_add_p":
             state['step'] = 'WAIT_BLOG_BLOCK_P'
-            bot.send_message(chat_id, "💬 Отправьте текст нового абзаца (<p>):", reply_markup=markup)
+            bot.send_message(chat_id, "💬 Отправьте текст нового абзаца (&lt;p&gt;):", reply_markup=markup)
         elif data == "blog_add_h2":
             state['step'] = 'WAIT_BLOG_BLOCK_H2'
-            bot.send_message(chat_id, "📌 Отправьте текст подзаголовка (<h2>):", reply_markup=markup)
+            bot.send_message(chat_id, "📌 Отправьте текст подзаголовка (&lt;h2&gt;):", reply_markup=markup)
         elif data == "blog_add_qblue":
             state['step'] = 'WAIT_BLOG_BLOCK_QBLUE'
             bot.send_message(chat_id, "📷 Отправьте текст для <b>фирменной синей цитаты</b> (акцент):", reply_markup=markup)
@@ -782,7 +783,7 @@ def handle_callback(call):
         blocks = state.get('blocks', [])
         
         preview_msg = f"👁 <b>Предпросмотр статьи:</b>\n\n"
-        preview_msg += f"<b>Заголовок:</b> {title}\n"
+        preview_msg += f"<b>Заголовок:</b> {html.escape(title)}\n"
         preview_msg += f"<b>Категория:</b> {cat}\n"
         preview_msg += f"<b>Обложка:</b> {'Установлена' if state.get('cover_img') else 'По умолчанию'}\n"
         preview_msg += f"<b>Всего блоков:</b> {len(blocks)}\n\n"
@@ -792,10 +793,11 @@ def handle_callback(call):
             btype = b['type']
             content = b.get('content', '')
             if len(content) > 60: content = content[:60] + "..."
-            if btype == 'p': preview_msg += f"{idx}. [Текст] {content}\n"
-            elif btype == 'h2': preview_msg += f"{idx}. [Подзаголовок] {content}\n"
-            elif btype == 'quote_blue': preview_msg += f"{idx}. [Синяя цитата] {content}\n"
-            elif btype == 'quote_red': preview_msg += f"{idx}. [Красная цитата] {content}\n"
+            safe_cnt = html.escape(content)
+            if btype == 'p': preview_msg += f"{idx}. [Текст] {safe_cnt}\n"
+            elif btype == 'h2': preview_msg += f"{idx}. [Подзаголовок] {safe_cnt}\n"
+            elif btype == 'quote_blue': preview_msg += f"{idx}. [Синяя цитата] {safe_cnt}\n"
+            elif btype == 'quote_red': preview_msg += f"{idx}. [Красная цитата] {safe_cnt}\n"
             elif btype == 'image': preview_msg += f"{idx}. [Картинка] {b.get('src')}\n"
 
         bot.send_message(chat_id, preview_msg)
@@ -852,16 +854,16 @@ def show_single_post_view(chat_id, filename, message_id=None):
     site_url = config.get("site_url", "")
 
     if not post:
-        bot.send_message(chat_id, f"⚠️ Пост <code>{filename}</code> не найден.")
+        bot.send_message(chat_id, f"⚠️ Пост <code>{html.escape(filename)}</code> не найден.")
         return
 
     cat_icon = "✨" if post['category'] == 'личное' else ("📷" if post['category'] == 'техника' else "🏙️")
     msg = (
-        f"📌 <b>{post['title']}</b>\n\n"
+        f"📌 <b>{html.escape(post['title'])}</b>\n\n"
         f"📅 <b>Дата:</b> {post['date_ru']}\n"
         f"{cat_icon} <b>Категория:</b> {post['category']}\n"
-        f"📄 <b>Файл:</b> <code>{post['filename']}</code>\n"
-        f"💬 <i>{post['excerpt']}</i>"
+        f"📄 <b>Файл:</b> <code>{html.escape(post['filename'])}</code>\n"
+        f"💬 <i>{html.escape(post['excerpt'])}</i>"
     )
 
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -890,10 +892,10 @@ def show_edit_post_menu(chat_id, filename, message_id=None):
     excerpt = post['excerpt'] if post else ""
 
     msg = (
-        f"✏️ <b>Редактирование поста:</b> <code>{filename}</code>\n\n"
-        f"📌 <b>Заголовок:</b> {title}\n"
+        f"✏️ <b>Редактирование поста:</b> <code>{html.escape(filename)}</code>\n\n"
+        f"📌 <b>Заголовок:</b> {html.escape(title)}\n"
         f"🏷 <b>Категория:</b> {cat}\n"
-        f"💬 <b>Описание:</b> {excerpt}\n\n"
+        f"💬 <b>Описание:</b> {html.escape(excerpt)}\n\n"
         f"Выберите вариант редактирования:"
     )
 
@@ -922,7 +924,7 @@ def show_blog_constructor(chat_id):
 
     msg = (
         f"🛠 <b>Конструктор статьи</b>\n\n"
-        f"📌 <b>Заголовок:</b> {title}\n"
+        f"📌 <b>Заголовок:</b> {html.escape(title)}\n"
         f"🏷 <b>Категория:</b> {cat_name}\n"
         f"🧩 <b>Добавлено блоков:</b> {blocks_cnt}\n\n"
         f"Используйте кнопки ниже для добавления форматирования и блоков:"
@@ -1021,15 +1023,15 @@ def handle_text(message):
             site_url = config.get("site_url", "")
             bot.send_message(
                 chat_id,
-                f"🎉 <b>Статья {filename} успешно полностью обновлена и выгружена!</b>\n\n"
-                f"📌 <b>Заголовок:</b> {title if title else 'Без изменений'}\n"
+                f"🎉 <b>Статья {html.escape(filename)} успешно полностью обновлена и выгружена!</b>\n\n"
+                f"📌 <b>Заголовок:</b> {html.escape(title) if title else 'Без изменений'}\n"
                 f"🏷 <b>Категория:</b> {category}\n"
                 f"🧩 <b>Всего блоков:</b> {len(blocks)}\n"
                 f"🔗 <b>Прямая ссылка:</b> {site_url}/{filename}",
                 reply_markup=get_main_keyboard()
             )
         else:
-            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
         return
 
     elif step == 'WAIT_EDIT_TITLE':
@@ -1037,9 +1039,9 @@ def handle_text(message):
         success, git_log = edit_blog_post(filename, new_title=new_title, chat_id=chat_id)
         user_states.pop(chat_id, None)
         if success:
-            bot.send_message(chat_id, f"🎉 <b>Заголовок статьи <code>{filename}</code> успешно изменен на:</b>\n<b>{new_title}</b>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Заголовок статьи <code>{html.escape(filename)}</code> успешно изменен на:</b>\n<b>{html.escape(new_title)}</b>", reply_markup=get_main_keyboard())
         else:
-            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
         return
 
     elif step == 'WAIT_EDIT_EXCERPT':
@@ -1047,9 +1049,9 @@ def handle_text(message):
         success, git_log = edit_blog_post(filename, new_excerpt=new_excerpt, chat_id=chat_id)
         user_states.pop(chat_id, None)
         if success:
-            bot.send_message(chat_id, f"🎉 <b>Краткое описание статьи <code>{filename}</code> успешно изменено!</b>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"🎉 <b>Краткое описание статьи <code>{html.escape(filename)}</code> успешно изменено!</b>", reply_markup=get_main_keyboard())
         else:
-            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
         return
 
     elif step == 'WAIT_BLOG_TITLE':
@@ -1122,7 +1124,7 @@ def publish_portfolio_photo(chat_id, photo_path, category):
             reply_markup=get_main_keyboard()
         )
     else:
-        bot.send_message(chat_id, f"⚠️ Фото добавлено в локальные файлы, но при Git push произошла ошибка:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+        bot.send_message(chat_id, f"⚠️ Фото добавлено в локальные файлы, но при Git push произошла ошибка:\n<code>{html.escape(git_log)}</code>", reply_markup=get_main_keyboard())
 
 def publish_blog_post(chat_id):
     state = user_states.get(chat_id, {})
@@ -1370,7 +1372,7 @@ def publish_blog_post(chat_id):
         bot.send_message(
             chat_id,
             f"🎉 <b>Статья успешно опубликована!</b>\n\n"
-            f"📌 <b>Заголовок:</b> {title}\n"
+            f"📌 <b>Заголовок:</b> {html.escape(title)}\n"
             f"🔗 <b>Прямая ссылка:</b> {site_url}/{post_filename}\n"
             f"🌐 <b>Главная страница блога:</b> {site_url}/blog.html",
             reply_markup=get_main_keyboard()
@@ -1378,7 +1380,7 @@ def publish_blog_post(chat_id):
     else:
         bot.send_message(
             chat_id,
-            f"⚠️ Статья создана локально, но при отправке в Git произошла ошибка:\n<code>{git_log}</code>",
+            f"⚠️ Статья создана локально, но при отправке в Git произошла ошибка:\n<code>{html.escape(git_log)}</code>",
             reply_markup=get_main_keyboard()
         )
 
