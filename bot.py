@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 NIKS ARTPHOTO — Telegram Management Bot
-Enables the site owner to publish blog articles with full rich formatting, edit/delete existing posts, and post portfolio images.
+Enables the site owner to publish blog articles with full rich formatting, edit/delete existing posts (both step-by-step and PRO all-in-one editor), and post portfolio images.
 Automatically commits and pushes every update to GitHub Pages.
 """
 
@@ -191,8 +191,8 @@ def delete_blog_post_by_filename(filename):
     success, git_log = run_git_commit_and_push(f"Delete blog post: {filename}")
     return success, git_log
 
-def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None):
-    """Edits title, category, or excerpt of a published post."""
+def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None, new_blocks=None):
+    """Edits title, category, excerpt, or blocks of a published post."""
     blog_file = os.path.join(BASE_DIR, 'blog.html')
     post_file = os.path.join(BASE_DIR, filename)
 
@@ -241,6 +241,38 @@ def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None
         if new_excerpt:
             pcontent = re.sub(r'<meta name="description" content="[^"]*"', f'<meta name="description" content="{new_excerpt}"', pcontent, count=1)
 
+        if new_blocks is not None:
+            # Rebuild body HTML
+            article_html_body = ""
+            for b in new_blocks:
+                btype = b['type']
+                cnt = b.get('content', '')
+                if btype == 'p':
+                    article_html_body += f'                <p style="margin-bottom: 20px;">\n                    {cnt}\n                </p>\n'
+                elif btype == 'h2':
+                    article_html_body += f'                <h2 style="font-size: 1.5rem; font-weight: 600; margin: 32px 0 12px;">{cnt}</h2>\n'
+                elif btype == 'quote_blue':
+                    article_html_body += (
+                        '                <div class="kumo-card" style="border-left: 3px solid var(--kumo-brand); background: var(--kumo-brand-subtle); margin: 28px 0;">\n'
+                        f'                    <p style="margin: 0; font-size: 1rem; color: var(--kumo-default);">\n                        {cnt}\n                    </p>\n'
+                        '                </div>\n'
+                    )
+                elif btype == 'quote_red':
+                    article_html_body += (
+                        '                <div class="kumo-card" style="border-left: 3px solid #ef4444; background: rgba(239, 68, 68, 0.08); margin: 28px 0;">\n'
+                        f'                    <p style="margin: 0; font-size: 1rem; color: var(--kumo-default);">\n                        {cnt}\n                    </p>\n'
+                        '                </div>\n'
+                    )
+                elif btype == 'image':
+                    src = b.get('src')
+                    alt = b.get('alt', '')
+                    article_html_body += (
+                        '                <div class="kumo-card" style="margin: 28px 0; padding: 0; overflow: hidden;">\n'
+                        f'                    <img src="{src}" alt="{alt}" style="width: 100%; height: auto; object-fit: cover;">\n'
+                        '                </div>\n'
+                    )
+            pcontent = re.sub(r'<article[^>]*>[\s\S]*?</article>', f'<article style="font-size: 1.05rem; line-height: 1.8; color: var(--kumo-default);">\n{article_html_body}            </article>', pcontent, count=1)
+
         with open(post_file, 'w', encoding='utf-8') as f:
             f.write(pcontent)
 
@@ -249,9 +281,133 @@ def edit_blog_post(filename, new_title=None, new_category=None, new_excerpt=None
     if new_title: action_desc.append(f"title='{new_title}'")
     if new_category: action_desc.append(f"category='{new_category}'")
     if new_excerpt: action_desc.append("excerpt")
+    if new_blocks: action_desc.append("full body blocks")
 
     success, git_log = run_git_commit_and_push(f"Edit blog post {filename}: {', '.join(action_desc)}")
     return success, git_log
+
+# --- ADVANCED ALL-IN-ONE PRO EDITOR UTILS ---
+
+def convert_post_to_advanced_text(filename):
+    """Converts a post HTML file to easy-to-edit copyable PRO markup with prompts."""
+    posts = parse_blog_posts()
+    post = next((p for p in posts if p['filename'] == filename), None)
+    
+    title = post['title'] if post else "Без заголовка"
+    category = post['category'] if post else "личное"
+    excerpt = post['excerpt'] if post else ""
+
+    post_file = os.path.join(BASE_DIR, filename)
+    article_body = ""
+    if os.path.exists(post_file):
+        with open(post_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        article_match = re.search(r'<article[^>]*>([\s\S]*?)</article>', content)
+        if article_match:
+            article_body = article_match.group(1)
+
+    output = f"Заголовок: {title}\n"
+    output += f"Категория: {category}\n"
+    output += f"Описание: {excerpt}\n\n"
+    output += "--- ТЕКСТ СТАТЬИ ---\n"
+
+    tag_pattern = r'(<h2[^>]*>[\s\S]*?</h2>|<p[^>]*>[\s\S]*?</p>|<div class="kumo-card"[\s\S]*?</div>)'
+    chunks = re.findall(tag_pattern, article_body)
+
+    if not chunks:
+        output += "\nВпишите сюда текст вашей статьи...\n"
+
+    for chunk in chunks:
+        if '<h2' in chunk:
+            h_text = re.sub(r'<[^>]+>', '', chunk).strip()
+            output += f"\n[H2] {h_text}\n"
+        elif 'border-left: 3px solid var(--kumo-brand)' in chunk or 'border-left: 3px solid #3b82f6' in chunk:
+            q_text = re.sub(r'<[^>]+>', '', chunk).strip()
+            output += f"\n[BLUE] {q_text}\n"
+        elif 'border-left: 3px solid #ef4444' in chunk:
+            q_text = re.sub(r'<[^>]+>', '', chunk).strip()
+            output += f"\n[RED] {q_text}\n"
+        elif 'img src=' in chunk:
+            img_src = re.search(r'src="([^"]*)"', chunk)
+            img_alt = re.search(r'alt="([^"]*)"', chunk)
+            src = img_src.group(1) if img_src else ""
+            alt = img_alt.group(1) if img_alt else ""
+            output += f"\n[IMG: {src}] {alt}\n"
+        elif '<p' in chunk:
+            p_text = re.sub(r'<[^>]+>', '', chunk).strip()
+            output += f"\n{p_text}\n"
+
+    return output
+
+def parse_advanced_post_text(text):
+    """Parses full-text PRO markup back into title, category, excerpt, and structured blocks."""
+    title = None
+    category = 'личное'
+    excerpt = None
+    blocks = []
+
+    lines = text.strip().split('\n')
+    body_started = False
+    current_p_lines = []
+
+    def flush_p():
+        nonlocal current_p_lines
+        if current_p_lines:
+            p_text = ' '.join(current_p_lines).strip()
+            if p_text:
+                blocks.append({'type': 'p', 'content': p_text})
+            current_p_lines = []
+
+    for line in lines:
+        line_s = line.strip()
+        if not line_s:
+            flush_p()
+            continue
+
+        if not body_started:
+            if line_s.lower().startswith('заголовок:'):
+                title = line_s.split(':', 1)[1].strip()
+                continue
+            elif line_s.lower().startswith('категория:'):
+                cat_val = line_s.split(':', 1)[1].strip().lower()
+                if 'техник' in cat_val: category = 'техника'
+                elif 'стрит' in cat_val or 'улиц' in cat_val: category = 'стрит'
+                else: category = 'личное'
+                continue
+            elif line_s.lower().startswith('описание:'):
+                excerpt = line_s.split(':', 1)[1].strip()
+                continue
+            elif '---' in line_s or 'текст статьи' in line_s.lower():
+                body_started = True
+                continue
+
+        # Parsing body blocks
+        if line_s.startswith('[H2]') or line_s.startswith('## '):
+            flush_p()
+            h_text = line_s.replace('[H2]', '').replace('## ', '').strip()
+            blocks.append({'type': 'h2', 'content': h_text})
+        elif line_s.startswith('[BLUE]'):
+            flush_p()
+            q_text = line_s.replace('[BLUE]', '').strip()
+            blocks.append({'type': 'quote_blue', 'content': q_text})
+        elif line_s.startswith('[RED]'):
+            flush_p()
+            q_text = line_s.replace('[RED]', '').strip()
+            blocks.append({'type': 'quote_red', 'content': q_text})
+        elif line_s.startswith('[IMG:'):
+            flush_p()
+            img_match = re.match(r'\[IMG:\s*([^\]]+)\]\s*(.*)', line_s)
+            if img_match:
+                blocks.append({
+                    'type': 'image',
+                    'src': img_match.group(1).strip(),
+                    'alt': img_match.group(2).strip()
+                })
+        else:
+            current_p_lines.append(line_s)
+
+    flush_p()
+    return title, category, excerpt, blocks
 
 # --- BOT MAIN KEYBOARDS ---
 
@@ -304,7 +460,6 @@ def get_blog_constructor_keyboard(chat_id):
 @bot.message_handler(commands=['start', 'menu'])
 def cmd_start(message):
     if not is_admin(message.from_user.id):
-        # Store admin if none registered
         if not ADMIN_IDS:
             ADMIN_IDS.add(message.from_user.id)
             config['admin_ids'] = list(ADMIN_IDS)
@@ -350,12 +505,18 @@ def cmd_help(message):
         "📖 <b>Справка по возможностям бота:</b>\n\n"
         "1. <b>Блог</b>:\n"
         "   • Создание статей со всеми видами форматирования\n"
-        "   • <b>Просмотр, редактирование и удаление</b> существующих статей\n\n"
+        "   • <b>Просмотр, удаление и 2 режима редактирования</b>:\n"
+        "     1) <b>Пошаговый режим</b> (изменить только заголовок, категорию или описание)\n"
+        "     2) <b>⚡ PRO Редактор (Всё в одном)</b> — полное редактирование текста всей статьи со спецтегами:\n"
+        "        <code>[H2] Заголовок</code>\n"
+        "        <code>[BLUE] Синяя цитата</code>\n"
+        "        <code>[RED] Красное предупреждение</code>\n"
+        "        <code>[IMG: media/photo.jpg] Подпись</code>\n\n"
         "2. <b>Портфолио</b>: Загрузка снимков в категории (Портреты / Улица / Граффити).\n\n"
         "3. <b>Управление доступом</b>:\n"
         "   • <code>/myid</code> — узнать свой Telegram ID\n"
         "   • <code>/addadmin ID</code> — добавить нового администратора\n\n"
-        "4. <b>Автоматический Git Commit & Push</b>: Каждая публикация или правка сразу отправляется на GitHub Pages!"
+        "4. <b>Автоматический Git Commit & Push</b>: Каждая публикация сразу выгружается на GitHub Pages!"
     )
 
 # --- CALLBACK QUERY HANDLER ---
@@ -390,7 +551,6 @@ def handle_callback(call):
         cmd_help(call.message)
         return
 
-    # --- MANAGE POSTS LIST ---
     elif data == "btn_manage_posts":
         bot.answer_callback_query(call.id)
         show_posts_list(chat_id)
@@ -407,7 +567,7 @@ def handle_callback(call):
         )
         bot.send_message(
             chat_id,
-            f"⚠️ <b>Подтверждение удаления:</b>\n\n Вы уверены, что хотите полностью удалить пост <code>{filename}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
+            f"⚠️ <b>Подтверждение удаления:</b>\n\nВы уверены, что хотите полностью удалить пост <code>{filename}</code>?\nФайл будет удален, а изменения закоммичены в Git.",
             reply_markup=markup
         )
         return
@@ -431,18 +591,47 @@ def handle_callback(call):
         show_edit_post_menu(chat_id, filename)
         return
 
+    elif data.startswith("edit_pro:"):
+        filename = data.split("edit_pro:")[1]
+        bot.answer_callback_query(call.id)
+        
+        pro_text = convert_post_to_advanced_text(filename)
+        if not pro_text:
+            bot.send_message(chat_id, f"⚠️ Не удалось прочитать файл статьи <code>{filename}</code>.")
+            return
+
+        user_states[chat_id] = {'step': 'WAIT_ADVANCED_EDIT', 'filename': filename}
+
+        instructions = (
+            f"⚡ <b>Продвинутый PRO-редактор статьи:</b> <code>{filename}</code>\n\n"
+            f"Скопируйте текст из сообщения ниже, внесите любые изменения и отправьте ответным сообщением!\n\n"
+            f"💡 <b>Шпаргалка по форматированию:</b>\n"
+            f"• <code>Заголовок: Новый заголовок</code>\n"
+            f"• <code>Категория: личное / техника / стрит</code>\n"
+            f"• <code>Описание: Краткий анонс для блога</code>\n"
+            f"• <code>[H2] Текст</code> — подзаголовок раздела\n"
+            f"• <code>[BLUE] Текст</code> — синяя цитата (акцент)\n"
+            f"• <code>[RED] Текст</code> — красное предупреждение\n"
+            f"• <code>[IMG: media/photo.jpg] Подпись</code> — картинка в тексте\n"
+            f"• Обычные абзацы пишите стандартным текстом.\n\n"
+            f"👇 <b>Скопируйте готовый шаблон статьи:</b>"
+        )
+        bot.send_message(chat_id, instructions)
+        bot.send_message(chat_id, f"<code>{pro_text}</code>")
+        return
+
     elif data.startswith("edit_title:"):
         filename = data.split("edit_title:")[1]
         bot.answer_callback_query(call.id)
         user_states[chat_id] = {'step': 'WAIT_EDIT_TITLE', 'filename': filename}
-        bot.send_message(chat_id, f"📝 Введите **новый заголовок** для статьи <code>{filename}</code>:")
+        bot.send_message(chat_id, f"📝 Введите <b>новый заголовок</b> для статьи <code>{filename}</code>:")
         return
 
     elif data.startswith("edit_excerpt:"):
         filename = data.split("edit_excerpt:")[1]
         bot.answer_callback_query(call.id)
         user_states[chat_id] = {'step': 'WAIT_EDIT_EXCERPT', 'filename': filename}
-        bot.send_message(chat_id, f"💬 Введите **новое краткое описание** для статьи <code>{filename}</code>:")
+        bot.send_message(chat_id, f"💬 Введите <b>новое краткое описание</b> для статьи <code>{filename}</code>:")
         return
 
     elif data.startswith("edit_cat:"):
@@ -619,14 +808,15 @@ def show_edit_post_menu(chat_id, filename):
         f"📌 <b>Заголовок:</b> {title}\n"
         f"🏷 <b>Категория:</b> {cat}\n"
         f"💬 <b>Описание:</b> {excerpt}\n\n"
-        f"Выберите, что вы хотите изменить:"
+        f"Выберите способ редактирования:"
     )
 
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
-        types.InlineKeyboardButton("📝 Изменить заголовок", callback_data=f"edit_title:{filename}"),
-        types.InlineKeyboardButton("🏷 Изменить категорию", callback_data=f"edit_cat:{filename}"),
-        types.InlineKeyboardButton("💬 Изменить краткое описание", callback_data=f"edit_excerpt:{filename}"),
+        types.InlineKeyboardButton("⚡ Продвинутое редактирование (Всё в одном)", callback_data=f"edit_pro:{filename}"),
+        types.InlineKeyboardButton("📝 Изменить только заголовок", callback_data=f"edit_title:{filename}"),
+        types.InlineKeyboardButton("🏷 Изменить только категорию", callback_data=f"edit_cat:{filename}"),
+        types.InlineKeyboardButton("💬 Изменить только описание", callback_data=f"edit_excerpt:{filename}"),
         types.InlineKeyboardButton("⬅️ Вернуться к списку постов", callback_data="btn_manage_posts")
     )
     bot.send_message(chat_id, msg, reply_markup=markup)
@@ -720,7 +910,34 @@ def handle_text(message):
     step = state.get('step')
     filename = state.get('filename')
 
-    if step == 'WAIT_EDIT_TITLE':
+    if step == 'WAIT_ADVANCED_EDIT':
+        raw_text = message.text.strip()
+        bot.send_message(chat_id, f"⏳ Разбор PRO-текста статьи `{filename}` и публикация на GitHub...")
+        
+        title, category, excerpt, blocks = parse_advanced_post_text(raw_text)
+        success, git_log = edit_blog_post(
+            filename,
+            new_title=title,
+            new_category=category,
+            new_excerpt=excerpt,
+            new_blocks=blocks
+        )
+        user_states.pop(chat_id, None)
+        if success:
+            bot.send_message(
+                chat_id,
+                f"🎉 <b>Статья {filename} успешно полностью обновлена через PRO-редактор!</b>\n\n"
+                f"📌 <b>Заголовок:</b> {title if title else 'Не изменен'}\n"
+                f"🏷 <b>Категория:</b> {category}\n"
+                f"🧩 <b>Обновлено блоков:</b> {len(blocks)}\n\n"
+                f"✅ Git Commit & Push успешно выполнен.",
+                reply_markup=get_main_keyboard()
+            )
+        else:
+            bot.send_message(chat_id, f"⚠️ Ошибка при Git Push:\n<code>{git_log}</code>", reply_markup=get_main_keyboard())
+        return
+
+    elif step == 'WAIT_EDIT_TITLE':
         new_title = message.text.strip()
         bot.send_message(chat_id, f"⏳ Обновление заголовка статьи `{filename}` и публикация в Git...")
         success, git_log = edit_blog_post(filename, new_title=new_title)
