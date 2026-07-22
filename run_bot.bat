@@ -1,15 +1,14 @@
 @echo off
-chcp 65001 > nul
 title NIKS ARTPHOTO — Telegram Bot Server
 
 echo ========================================================
 echo   NIKS ARTPHOTO - TELEGRAM MANAGEMENT BOT
 echo ========================================================
 echo.
-echo Запуск Telegram-бота управления сайтом...
-echo Логи выводятся на экран и сохраняются в файл: logs\bot.log
+echo Starting Telegram Bot...
+echo Logs are output here and saved to: logs\bot.log
 echo.
-echo Чтобы остановить бота, нажмите Ctrl+C или закройте это окно.
+echo Press Ctrl+C or close this window to stop the bot.
 echo ========================================================
 echo.
 
@@ -20,8 +19,8 @@ python bot.py
 if %errorlevel% neq 0 (
     echo.
     echo --------------------------------------------------------
-    echo [ОШИБКА] Бот завершил работу с кодом %errorlevel%.
-    echo Проверьте лог-файл: logs\bot.log
+    echo [ERROR] Bot exited with error code %errorlevel%.
+    echo Check log file: logs\bot.log
     echo --------------------------------------------------------
     pause
 )
