@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ===== СТИЛИ (те же, что были) ===== */
+        /* ===== СТИЛИ (те же, что и раньше) ===== */
         :root {
             --kumo-brand: #fbbf24;
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
@@ -697,10 +697,10 @@
         });
     </script>
 
-    <!-- 3. ЛОГИКА ЗАПИСИ С КНОПКАМИ (ОБНОВЛЁННАЯ) -->
+    <!-- 3. ЛОГИКА ЗАПИСИ (УПРОЩЁННАЯ, РАБОЧАЯ) -->
     <script>
         (function() {
-            // === ГЕНЕРАЦИЯ ДАТ НА 2 МЕСЯЦА ===
+            // === ДАТЫ ===
             const dateGrid = document.getElementById('dateGrid');
             const selectedDateInput = document.getElementById('selectedDate');
             const today = new Date();
@@ -745,7 +745,7 @@
                 dateGrid.appendChild(btn);
             }
 
-            // === ОТПРАВКА ФОРМЫ ===
+            // === ОТПРАВКА ===
             const form = document.getElementById('bookingForm');
             const successMessage = document.getElementById('successMessage');
 
@@ -765,7 +765,10 @@
                 const botToken = '8987479768:AAE6ZmRVA3AWo0nzL2O5eUrnefCnaZ33vVo';
                 const chatId = '7709067838';
 
-                // Текст сообщения для бота
+                // === URL ДЛЯ КНОПОК (твой сайт) ===
+                const siteUrl = 'https://reparsing.github.io/niksartphoto';
+
+                // Текст сообщения
                 const message = `
     📸 НОВАЯ ЗАЯВКА НА СЪЁМКУ!
 
@@ -778,23 +781,23 @@
     👇 Нажми кнопку, чтобы ответить:
                 `;
 
-                // === КНОПКИ С CALLBACK ===
+                // === РАБОЧИЕ КНОПКИ (ССЫЛКИ) ===
                 const keyboard = {
                     inline_keyboard: [
                         [
                             {
                                 text: '✅ Принять',
-                                callback_data: `accept_${telegram}_${selectedDate}_${time}`
+                                url: `${siteUrl}/callback.html?status=accepted&telegram=${telegram}&date=${selectedDate}&time=${time}`
                             },
                             {
                                 text: '❌ Отклонить',
-                                callback_data: `decline_${telegram}_${selectedDate}_${time}`
+                                url: `${siteUrl}/callback.html?status=rejected&telegram=${telegram}&date=${selectedDate}&time=${time}`
                             }
                         ],
                         [
                             {
                                 text: '⏰ Напомнить позже',
-                                callback_data: `remind_${telegram}_${selectedDate}_${time}`
+                                url: `${siteUrl}/callback.html?status=remind&telegram=${telegram}&date=${selectedDate}&time=${time}`
                             }
                         ]
                     ]
@@ -819,7 +822,6 @@
                         form.querySelector('.submit-btn').style.display = 'none';
                         form.querySelectorAll('.form-group').forEach(el => el.style.display = 'none');
 
-                        // Отправляем уведомление на сайт
                         if (window.orderSubmitted) {
                             window.orderSubmitted();
                         }
