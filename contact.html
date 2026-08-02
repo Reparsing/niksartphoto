@@ -8,141 +8,607 @@
     <meta name="description" content="Свяжитесь со мной для заказа фотосессии в Калининграде.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
+        :root {
+            --kumo-brand: #fbbf24;
+            --kumo-brand-glow: rgba(251, 191, 36, 0.3);
+            --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
+            --kumo-canvas: #0a0a0c;
+            --kumo-canvas-subtle: rgba(255, 255, 255, 0.02);
+            --kumo-hairline: rgba(255, 255, 255, 0.08);
+            --kumo-subtle: #a1a1aa;
+            --kumo-muted: #71717a;
+            --kumo-default: #f4f4f5;
+            --kumo-card-bg: rgba(18, 18, 22, 0.6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--kumo-canvas);
+            color: var(--kumo-default);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
+        ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
+
+        /* ===== НАВИГАЦИЯ ===== */
+        .kumo-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 12, 0.6);
+            border-bottom: 1px solid var(--kumo-hairline);
+            padding: 12px 0;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .kumo-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        .kumo-brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--kumo-brand-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--kumo-brand);
+            font-size: 1.2rem;
+        }
+        .kumo-nav-menu {
+            display: none;
+            list-style: none;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .kumo-nav-menu { display: flex; }
+        }
+        .kumo-nav-link {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            padding: 4px 0;
+        }
+        .kumo-nav-link:hover { color: #fff; }
+        .kumo-nav-link.active {
+            color: var(--kumo-brand);
+            font-weight: 600;
+        }
+        .kumo-nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--kumo-brand);
+            border-radius: 2px;
+            box-shadow: 0 0 20px var(--kumo-brand-glow);
+        }
+        .kumo-mobile-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        @media (min-width: 768px) {
+            .kumo-mobile-toggle { display: none; }
+        }
+
+        /* ===== ФОН С ЧАСТИЦАМИ ===== */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== ПАРЯЩИЕ ГЕОМЕТРИЧЕСКИЕ ФИГУРЫ ===== */
+        .floating-shapes {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.06;
+            will-change: transform;
+            animation: floatShape 25s infinite alternate ease-in-out;
+        }
+        .shape:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #fbbf24, transparent 70%);
+            top: -15%;
+            left: -10%;
+            animation-duration: 30s;
+        }
+        .shape:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #f59e0b, transparent 70%);
+            bottom: -10%;
+            right: -10%;
+            animation-duration: 35s;
+            animation-delay: -8s;
+        }
+        .shape:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #fcd34d, transparent 70%);
+            top: 50%;
+            left: 50%;
+            animation-duration: 28s;
+            animation-delay: -15s;
+        }
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(60px, -40px) scale(1.15) rotate(25deg); }
+            66% { transform: translate(-30px, 50px) scale(0.85) rotate(-20deg); }
+            100% { transform: translate(40px, -30px) scale(1.05) rotate(15deg); }
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            padding: 120px 0 80px;
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
+        .contact-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .contact-header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 768px) {
+            .contact-header h1 { font-size: 2.5rem; }
+        }
+        .contact-header p {
+            color: var(--kumo-subtle);
+            font-size: 1.2rem;
+            max-width: 500px;
+            margin: 0 auto 24px;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            font-size: 0.85rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: blink 1.4s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.2); }
+            50% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+        }
+
+        /* ===== КАРТОЧКИ КОНТАКТОВ ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        @media (min-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .contact-card {
+            background: var(--kumo-card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 24px;
+            padding: 32px 28px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardAppear 0.8s forwards;
+        }
+        .contact-card:nth-child(1) { animation-delay: 0.1s; }
+        .contact-card:nth-child(2) { animation-delay: 0.2s; }
+        .contact-card:nth-child(3) { animation-delay: 0.3s; }
+        .contact-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes cardAppear {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.03), transparent 60%);
+            pointer-events: none;
+        }
+        .contact-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: var(--kumo-brand);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 40px rgba(251, 191, 36, 0.05);
+        }
+        .contact-card .icon {
+            font-size: 2.4rem;
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--kumo-brand-subtle);
+            border-radius: 14px;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contact-card:hover .icon {
+            transform: rotate(-8deg) scale(1.1);
+        }
+        .contact-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .contact-card .desc {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .contact-card .link {
+            color: var(--kumo-brand);
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        .contact-card .link:hover {
+            gap: 12px;
+            text-shadow: 0 0 30px var(--kumo-brand-glow);
+        }
+
+        /* ===== БОЛЬШАЯ КАРТОЧКА CTA ===== */
+        .cta-card {
+            background: linear-gradient(145deg, rgba(18, 18, 22, 0.8), rgba(18, 18, 22, 0.4));
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 32px;
+            padding: 56px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: ctaAppear 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+        }
+        @keyframes ctaAppear {
+            to { opacity: 1; transform: scale(1); }
+        }
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 32px;
+            padding: 2px;
+            background: conic-gradient(from 0deg, transparent, var(--kumo-brand), transparent, var(--kumo-brand), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: rotateBorder 8s linear infinite;
+        }
+        @keyframes rotateBorder {
+            to { transform: rotate(360deg); }
+        }
+        .cta-card h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .cta-card p {
+            color: var(--kumo-subtle);
+            font-size: 1.1rem;
+            max-width: 520px;
+            margin: 0 auto 32px;
+            position: relative;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* ===== КНОПКИ ===== */
+        .kumo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .kumo-btn-primary {
+            background: var(--kumo-brand);
+            color: #0a0a0c;
+        }
+        .kumo-btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px var(--kumo-brand-glow);
+        }
+        .kumo-btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border: 1px solid var(--kumo-hairline);
+        }
+        .kumo-btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+            transform: scale(1.05);
+        }
+        .kumo-btn-lg { padding: 18px 40px; font-size: 1.1rem; }
+
+        /* ===== ФУТЕР ===== */
+        .kumo-footer {
+            position: relative;
+            z-index: 1;
+            padding: 48px 0 24px;
+            border-top: 1px solid var(--kumo-hairline);
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(12px);
+            margin-top: 40px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+        }
+        .footer-heading { color: #fff; font-weight: 600; margin-bottom: 12px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 6px; }
+        .footer-links a { color: var(--kumo-subtle); transition: color 0.3s; }
+        .footer-links a:hover { color: var(--kumo-brand); }
+        .footer-bottom {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--kumo-hairline);
+            text-align: center;
+            color: var(--kumo-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+            background: rgba(10,10,12,0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--kumo-hairline);
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            color: var(--kumo-subtle);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 6px 0;
+            transition: color 0.3s;
+        }
+        .mobile-menu a:hover { color: #fff; }
+        .mobile-menu a.active { color: var(--kumo-brand); }
+
+        @media (min-width: 768px) {
+            .mobile-menu { display: none !important; }
+        }
+    </style>
 </head>
 <body>
-    <!-- KUMO NAVBAR -->
+
+    <!-- ===== ЧАСТИЦЫ ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== ПАРЯЩИЕ ФИГУРЫ ===== -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- ===== НАВИГАЦИЯ ===== -->
     <nav class="kumo-navbar">
         <div class="container nav-container">
             <a href="index.html" class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
+                <div class="kumo-brand-icon">✦</div>
                 <span>НИКС</span>
             </a>
             <ul class="kumo-nav-menu">
-                <li><a href="index.html" class="kumo-nav-link">🏠 Главная</a></li>
-                <li><a href="portfolio.html" class="kumo-nav-link">📸 Портфолио</a></li>
-                <li><a href="about.html" class="kumo-nav-link">👤 Обо мне</a></li>
-                <li><a href="index.html#schedule" class="kumo-nav-link">⏰ Режим работы</a></li>
-                <li><a href="index.html#faq" class="kumo-nav-link">❓ Частые вопросы</a></li>
-                <li><a href="blog.html" class="kumo-nav-link">📝 Блог</a></li>
-                <li><a href="contact.html" class="kumo-nav-link active">📞 Контакты</a></li>
+                <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
+                <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
+                <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
+                <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
+                <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
+                <li><a href="contact.html" class="kumo-nav-link active">Контакты</a></li>
             </ul>
-            <div class="kumo-nav-actions">
-                <div class="kumo-dropdown">
-                    <button class="kumo-dropdown-toggle" aria-label="Помощь">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span>Помощь</span>
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div class="kumo-dropdown-menu">
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Сообщить о проблеме на сайте</span>
-                        </a>
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span>Задать вопрос</span>
-                        </a>
-                    </div>
-                </div>
-                <button class="kumo-theme-toggle" aria-label="Toggle theme"></button>
-                <button class="kumo-mobile-toggle" aria-label="Open menu">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-            </div>
+            <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
         </div>
     </nav>
-    <div class="kumo-sidebar-overlay"></div>
-    <aside class="kumo-sidebar">
-        <div class="kumo-sidebar-header">
-            <div class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span>НИКС</span>
-            </div>
-        </div>
-        <ul class="kumo-sidebar-nav">
-            <li><a href="index.html">🏠 Главная</a></li>
-            <li><a href="portfolio.html">📸 Портфолио</a></li>
-            <li><a href="about.html">👤 Обо мне</a></li>
-            <li><a href="index.html#schedule">⏰ Режим работы</a></li>
-            <li><a href="index.html#faq">❓ Частые вопросы</a></li>
-            <li><a href="blog.html">📝 Блог</a></li>
-            <li><a href="contact.html" class="active">📞 Контакты</a></li>
-            <li class="kumo-sidebar-divider"></li>
-            <li class="kumo-sidebar-heading">Помощь</li>
-            <li><a href="https://t.me/tylenevv" target="_blank">⚠️ Сообщить о проблеме</a></li>
-            <li><a href="https://t.me/tylenevv" target="_blank">💬 Задать вопрос</a></li>
-        </ul>
-    </aside>
 
-    <!-- CONTACT CONTENT -->
-    <main style="padding-top: 110px; padding-bottom: 80px;">
-        <div class="container" style="max-width: 960px;">
-            <div style="text-align: center; margin-bottom: 40px;">
-                <h1 style="font-size: 2.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px;">Свяжитесь со мной</h1>
-                <p style="color: var(--kumo-subtle); font-size: 1.1rem; margin-bottom: 16px;">Готов к новым проектам и знакомствам — пишите!</p>
-                <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 9999px; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.3); color: #22c55e; font-size: 0.85rem; font-weight: 600;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+    <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="container" style="display:flex; flex-direction:column; gap:12px;">
+            <a href="index.html">Главная</a>
+            <a href="about.html">Обо мне</a>
+            <a href="index.html#schedule">Режим работы</a>
+            <a href="index.html#faq">FAQ</a>
+            <a href="blog.html">Блог</a>
+            <a href="contact.html" class="active">Контакты</a>
+        </div>
+    </div>
+
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <main class="main-content">
+        <div class="container">
+
+            <!-- ЗАГОЛОВОК -->
+            <div class="contact-header">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
                     Открыт для заказов
                 </div>
+                <h1>Давайте создадим<br>что-то красивое</h1>
+                <p>Готов к новым проектам и знакомствам — пишите!</p>
             </div>
 
-            <div class="kumo-grid-2" style="margin-bottom: 36px;">
-                <div class="kumo-card" style="display: flex; gap: 20px; align-items: flex-start;">
-                    <div style="font-size: 2rem;">✈️</div>
+            <!-- КАРТОЧКИ КОНТАКТОВ -->
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="icon">✈️</div>
                     <div>
-                        <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 4px;">Telegram</h3>
-                        <p style="font-size: 0.88rem; color: var(--kumo-subtle); margin-bottom: 8px;">Самый быстрый способ связи — отвечаю в течение часа</p>
-                        <a href="https://t.me/objektivniksa" target="_blank" style="color: var(--kumo-brand); font-weight: 600;">@objektivniksa</a>
+                        <h3>Telegram</h3>
+                        <p class="desc">Самый быстрый способ связи — отвечаю в течение часа</p>
+                        <a href="https://t.me/objektivniksa" target="_blank" class="link">
+                            @objektivniksa →
+                        </a>
                     </div>
                 </div>
 
-                <div class="kumo-card" style="display: flex; gap: 20px; align-items: flex-start;">
-                    <div style="font-size: 2rem;">📧</div>
+                <div class="contact-card">
+                    <div class="icon">📧</div>
                     <div>
-                        <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 4px;">Email</h3>
-                        <p style="font-size: 0.88rem; color: var(--kumo-subtle); margin-bottom: 8px;">Для деловых предложений и сотрудничества</p>
-                        <a href="mailto:niksfotograf@gmail.com" style="color: var(--kumo-brand); font-weight: 600;">niksfotograf@gmail.com</a>
+                        <h3>Email</h3>
+                        <p class="desc">Для деловых предложений и сотрудничества</p>
+                        <a href="mailto:niksfotograf@gmail.com" class="link">
+                            niksfotograf@gmail.com →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-card">
+                    <div class="icon">📱</div>
+                    <div>
+                        <h3>Instagram</h3>
+                        <p class="desc">Свежие работы и закулисье съёмок</p>
+                        <a href="#" class="link">
+                            @niks_photo →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-card">
+                    <div class="icon">📍</div>
+                    <div>
+                        <h3>Локация</h3>
+                        <p class="desc">Калининград — снимаю по всему городу</p>
+                        <span style="color: var(--kumo-subtle); font-size: 0.9rem;">✧ Центр, парки, набережная</span>
                     </div>
                 </div>
             </div>
 
-            <div class="kumo-card" style="padding: 40px; text-align: center;">
-                <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 12px;">Хотите фотосессию?</h2>
-                <p style="color: var(--kumo-subtle); font-size: 1.05rem; max-width: 520px; margin: 0 auto 28px;">
-                    Снимаю портреты, уличные сцены и репортажи в Калининграде. Напишите — обсудим идею, место и время.
-                </p>
-                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://t.me/objektivniksa" target="_blank" class="kumo-btn kumo-btn-primary kumo-btn-lg">✈️ Написать в Telegram</a>
-                    <a href="portfolio.html" class="kumo-btn kumo-btn-secondary kumo-btn-lg">📸 Посмотреть работы</a>
+            <!-- CTA -->
+            <div class="cta-card">
+                <h2>Хотите фотосессию?</h2>
+                <p>Снимаю портреты, уличные сцены и репортажи в Калининграде. Напишите — обсудим идею, место и время.</p>
+                <div class="cta-buttons">
+                    <a href="https://t.me/objektivniksa" target="_blank" class="kumo-btn kumo-btn-primary kumo-btn-lg">
+                        ✈️ Написать в Telegram
+                    </a>
+                    <a href="index.html" class="kumo-btn kumo-btn-secondary kumo-btn-lg">
+                        ✦ На главную
+                    </a>
                 </div>
             </div>
+
         </div>
     </main>
 
-    <!-- KUMO FOOTER -->
+    <!-- ===== ФУТЕР ===== -->
     <footer class="kumo-footer">
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-brand">
+                <div>
                     <a href="index.html" class="kumo-brand-logo">
-                        <div class="kumo-brand-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        </div>
+                        <div class="kumo-brand-icon">✦</div>
                         <span>НИКС</span>
                     </a>
-                    <p>Фотограф</p>
+                    <p style="color: var(--kumo-subtle); margin-top: 4px;">Фотограф</p>
                 </div>
                 <div>
                     <h4 class="footer-heading">Навигация</h4>
                     <ul class="footer-links">
                         <li><a href="index.html">Главная</a></li>
-                        <li><a href="portfolio.html">Портфолио</a></li>
                         <li><a href="about.html">Обо мне</a></li>
                         <li><a href="blog.html">Блог</a></li>
                         <li><a href="contact.html">Контакты</a></li>
@@ -151,18 +617,133 @@
                 <div>
                     <h4 class="footer-heading">Контакты</h4>
                     <ul class="footer-links">
-                        <li><a href="mailto:niksfotograf@gmail.com">Email: niksfotograf@gmail.com</a></li>
-                        <li><a href="https://t.me/objektivniksa" target="_blank">Telegram: @objektivniksa</a></li>
+                        <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
+                        <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 НИКС. Все права защищены.</p>
-
             </div>
         </div>
     </footer>
 
-    <script src="theme.js"></script>
+    <!-- ===== СКРИПТЫ ===== -->
+
+    <!-- 1. ЧАСТИЦЫ -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            const particles = [];
+            const COUNT = 100;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 2.5 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.6;
+                    this.speedY = (Math.random() - 0.5) * 0.6;
+                    this.opacity = Math.random() * 0.4 + 0.15;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > w) this.speedX *= -1;
+                    if (this.y < 0 || this.y > h) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+            let mouseX = null, mouseY = null;
+            canvas.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            canvas.addEventListener('mouseleave', () => { mouseX = null; mouseY = null; });
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    if (mouseX !== null && mouseY !== null) {
+                        const dx = p.x - mouseX;
+                        const dy = p.y - mouseY;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 180) {
+                            const force = (180 - dist) / 180 * 0.03;
+                            p.x += dx * force;
+                            p.y += dy * force;
+                        }
+                    }
+                    p.update();
+                    p.draw();
+                });
+
+                // Линии
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(251, 191, 36, ${0.06 * (1 - dist/130)})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+    </script>
+
+    <!-- 2. МОБИЛЬНОЕ МЕНЮ -->
+    <script>
+        document.getElementById('mobileToggle')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        });
+    </script>
+
+    <!-- 3. ПЛАВНОЕ ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ -->
+    <script>
+        (function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.contact-card, .cta-card').forEach(el => {
+                observer.observe(el);
+            });
+        })();
+    </script>
+
 </body>
 </html>
