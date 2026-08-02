@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="view-transition" content="same-origin">
-    <title>Никс — Фотограф | Искусство видеть</title>
-    <meta name="description" content="Профессиональный фотограф Никс. Портретная и уличная съёмка в Калининграде. Каждая работа — это история, рассказанная через свет и эмоции.">
-    <meta name="keywords" content="фотограф калининград, портретная съёмка, уличная фотография, фотосессия, профессиональный фотограф">
+    <title>Никс — Фотограф | Искусство в каждом кадре</title>
+    <meta name="description" content="Фотограф Никс. Портретная съёмка и уличные зарисовки с акцентом на контрасты и эмоции. Каждый кадр — шаг к совершенству.">
+    <meta name="keywords" content="фотограф, портретная съёмка, уличная фотография, фотосессия, профессиональная съёмка">
     <meta name="author" content="Никс">
-    <meta property="og:title" content="Никс — Фотограф | Искусство видеть">
-    <meta property="og:description" content="Профессиональный фотограф Никс. Портретная и уличная съёмка в Калининграде.">
+    <meta property="og:title" content="Никс — Фотограф | Искусство в каждом кадре">
+    <meta property="og:description" content="Фотограф Никс. Портретная съёмка и уличные зарисовки.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="images/niks.png">
     <link rel="canonical" href="https://niks-artphoto.ru/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
     <style>
         /* ============================================
                    ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И БАЗА
@@ -60,11 +61,11 @@
         .kumo-navbar {
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 50;
             backdrop-filter: blur(20px);
             background: rgba(10, 10, 12, 0.7);
             border-bottom: 1px solid var(--kumo-hairline);
-            padding: 14px 0;
+            padding: 12px 0;
         }
         .nav-container {
             display: flex;
@@ -159,28 +160,28 @@
             animation: floatShape 30s infinite alternate ease-in-out;
         }
         .shape:nth-child(1) {
-            width: 500px;
-            height: 500px;
+            width: 400px;
+            height: 400px;
             background: radial-gradient(circle, #fbbf24, transparent 70%);
             top: -20%;
-            left: -10%;
+            left: -15%;
             animation-duration: 35s;
         }
         .shape:nth-child(2) {
-            width: 350px;
-            height: 350px;
+            width: 300px;
+            height: 300px;
             background: radial-gradient(circle, #f59e0b, transparent 70%);
             bottom: -15%;
-            right: -10%;
+            right: -15%;
             animation-duration: 40s;
             animation-delay: -10s;
         }
         .shape:nth-child(3) {
-            width: 250px;
-            height: 250px;
+            width: 200px;
+            height: 200px;
             background: radial-gradient(circle, #fcd34d, transparent 70%);
-            top: 50%;
-            left: 50%;
+            top: 40%;
+            left: 60%;
             animation-duration: 32s;
             animation-delay: -18s;
         }
@@ -780,6 +781,7 @@
                     <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
                     <li><a href="#schedule" class="kumo-nav-link">Режим работы</a></li>
                     <li><a href="#faq" class="kumo-nav-link">FAQ</a></li>
+                    <li><a href="places.html" class="kumo-nav-link">🗺️ Маршруты любимых мест</a></li>
                     <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
                     <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
                 </ul>
@@ -794,6 +796,7 @@
                 <a href="about.html">Обо мне</a>
                 <a href="#schedule">Режим работы</a>
                 <a href="#faq">FAQ</a>
+                <a href="places.html">🗺️ Маршруты любимых мест</a>
                 <a href="blog.html">Блог</a>
                 <a href="contact.html">Контакты</a>
             </div>
@@ -1005,6 +1008,7 @@
                             <li><a href="about.html">Обо мне</a></li>
                             <li><a href="#schedule">Режим работы</a></li>
                             <li><a href="#faq">Частые вопросы</a></li>
+                            <li><a href="places.html">🗺️ Маршруты любимых мест</a></li>
                             <li><a href="blog.html">Блог</a></li>
                             <li><a href="contact.html">Контакты</a></li>
                         </ul>
@@ -1024,7 +1028,6 @@
         </footer>
 
     </div> <!-- /main-content -->
-
 
     <!-- ============================================
     СКРИПТЫ
@@ -1088,7 +1091,6 @@
                     this.y += this.speedY;
                     if (this.x < 0 || this.x > w) this.speedX *= -1;
                     if (this.y < 0 || this.y > h) this.speedY *= -1;
-                    // Плавное изменение размера
                     this.size += (this.targetSize - this.size) * 0.005;
                 }
                 draw() {
@@ -1115,7 +1117,6 @@
             function animate() {
                 ctx.clearRect(0, 0, w, h);
 
-                // Обновляем и рисуем частицы
                 particles.forEach(p => {
                     if (mouseX !== null && mouseY !== null) {
                         const dx = p.x - mouseX;
@@ -1131,7 +1132,6 @@
                     p.draw();
                 });
 
-                // Рисуем линии между близкими частицами
                 for (let i = 0; i < particles.length; i++) {
                     for (let j = i + 1; j < particles.length; j++) {
                         const dx = particles[i].x - particles[j].x;
