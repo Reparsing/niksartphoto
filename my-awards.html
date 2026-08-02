@@ -296,6 +296,7 @@
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             background: #0a0a0c;
+            cursor: pointer;
         }
         .award-card .award-image:hover {
             transform: scale(1.02);
@@ -378,6 +379,97 @@
         }
 
         /* ============================================
+                   ЛАЙТБОКС (увеличение фото)
+                   ============================================ */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 40px;
+            flex-direction: column;
+        }
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 80vh;
+            transform: scale(0.92);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .lightbox.open .lightbox-content {
+            transform: scale(1);
+        }
+
+        .lightbox .lightbox-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            display: block;
+        }
+
+        .lightbox .lightbox-close {
+            position: absolute;
+            top: -16px;
+            right: -16px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(24, 24, 27, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(8px);
+        }
+        .lightbox .lightbox-close:hover {
+            background: var(--kumo-brand);
+            color: #0a0a0c;
+            transform: scale(1.1);
+        }
+
+        /* ===== ДАТА СВЕРХУ (анимация) ===== */
+        .lightbox-date {
+            color: var(--kumo-brand);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            text-shadow: 0 0 40px rgba(251, 191, 36, 0.15);
+        }
+        .lightbox.open .lightbox-date {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .lightbox-date span {
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 40px;
+            background: var(--kumo-brand-subtle);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        /* ============================================
                    ФУТЕР
                    ============================================ */
         .kumo-footer {
@@ -454,11 +546,14 @@
             .award-card .award-title { font-size: 1.3rem; }
             .award-card .award-quote { font-size: 0.95rem; padding: 12px 16px; }
             .awards-header h1 { font-size: 2rem; }
+            .lightbox-date { font-size: 1.2rem; }
+            .lightbox .lightbox-close { width: 36px; height: 36px; font-size: 1.1rem; top: -10px; right: -10px; }
         }
         @media (max-width: 480px) {
             .award-card .award-title { font-size: 1.1rem; }
             .btn-group { flex-direction: column; align-items: center; }
             .kumo-btn { width: 100%; justify-content: center; }
+            .lightbox-date { font-size: 1rem; }
         }
     </style>
 </head>
@@ -530,8 +625,8 @@
                     Диплом призёра
                 </div>
 
-                <!-- ФОТО ДИПЛОМА -->
-                <div class="award-image">
+                <!-- ФОТО ДИПЛОМА (кликабельное) -->
+                <div class="award-image" id="diplomImage">
                     <img src="images/IMG_20260802_200231_820.png" alt="Диплом Абилимпикс 2026 — 3 место" loading="lazy">
                 </div>
 
@@ -565,6 +660,19 @@
 
         </div>
     </main>
+
+    <!-- ============================================
+    ЛАЙТБОКС (увеличение фото)
+    ============================================ -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-date">
+            <span>📅 1–2 апреля 2026 года</span>
+        </div>
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose">✕</button>
+            <img src="images/IMG_20260802_200231_820.png" alt="Диплом Абилимпикс 2026 — увеличенный вид" id="lightboxImg">
+        </div>
+    </div>
 
     <!-- ============================================
     ФУТЕР
@@ -704,6 +812,44 @@
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('open');
         });
+    </script>
+
+    <!-- 3. ЛАЙТБОКС ЛОГИКА -->
+    <script>
+        (function() {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const closeBtn = document.getElementById('lightboxClose');
+            const imageContainer = document.getElementById('diplomImage');
+
+            // Открыть лайтбокс по клику на фото
+            imageContainer.addEventListener('click', function() {
+                lightbox.classList.add('open');
+                document.body.style.overflow = 'hidden'; // блокируем скролл
+            });
+
+            // Закрыть по клику на крестик
+            closeBtn.addEventListener('click', function() {
+                lightbox.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+
+            // Закрыть по клику на фон (вне картинки)
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Закрыть по ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+                    lightbox.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            });
+        })();
     </script>
 
 </body>
