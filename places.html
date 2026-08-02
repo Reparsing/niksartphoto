@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Скоро — Никс</title>
+    <title>Маршруты любимых мест — Никс</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
+        /* ============================================
+                   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+                   ============================================ */
         :root {
             --kumo-brand: #fbbf24;
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
@@ -18,69 +20,54 @@
             --kumo-subtle: #a1a1aa;
             --kumo-muted: #71717a;
             --kumo-default: #f4f4f5;
+            --kumo-card-bg: rgba(18, 18, 22, 0.6);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--kumo-canvas);
             color: var(--kumo-default);
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
+            overflow-x: hidden;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        a { text-decoration: none; color: inherit; transition: all 0.3s; }
+        img { max-width: 100%; display: block; }
+
+        /* ============================================
+                   ПРЕВЬЮ-БАННЕР
+                   ============================================ */
+        .preview-banner {
+            background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.05));
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 32px;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+        }
+        .preview-banner p {
+            color: var(--kumo-subtle);
+            font-size: 0.85rem;
+        }
+        .preview-banner strong {
+            color: var(--kumo-brand);
         }
 
-        /* ===== ФОН С ПАРЯЩИМИ ФИГУРАМИ ===== */
-        .bg-shapes {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .shape {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.05;
-            will-change: transform;
-            animation: floatShape 30s infinite alternate ease-in-out;
-        }
-        .shape:nth-child(1) {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #fbbf24, transparent 70%);
-            top: -20%;
-            left: -15%;
-            animation-duration: 35s;
-        }
-        .shape:nth-child(2) {
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, #f59e0b, transparent 70%);
-            bottom: -15%;
-            right: -15%;
-            animation-duration: 40s;
-            animation-delay: -10s;
-        }
-        .shape:nth-child(3) {
-            width: 250px;
-            height: 250px;
-            background: radial-gradient(circle, #fcd34d, transparent 70%);
-            top: 50%;
-            left: 50%;
-            animation-duration: 32s;
-            animation-delay: -18s;
-        }
-        @keyframes floatShape {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            33% { transform: translate(80px, -50px) scale(1.2) rotate(30deg); }
-            66% { transform: translate(-40px, 60px) scale(0.8) rotate(-25deg); }
-            100% { transform: translate(50px, -40px) scale(1.1) rotate(20deg); }
-        }
-
-        /* ===== ЧАСТИЦЫ (canvas) ===== */
+        /* ============================================
+                   ФОН: ЧАСТИЦЫ
+                   ============================================ */
         #particles-canvas {
             position: fixed;
             inset: 0;
@@ -88,50 +75,41 @@
             z-index: 0;
         }
 
-        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
-        .content {
+        /* ============================================
+                   ОСНОВНОЙ КОНТЕНТ
+                   ============================================ */
+        .main-content {
             position: relative;
             z-index: 1;
+            width: 100%;
+        }
+
+        /* ============================================
+                   ЗАГОЛОВОК
+                   ============================================ */
+        .page-header {
             text-align: center;
-            max-width: 600px;
-            padding: 40px 24px;
-            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            margin-bottom: 50px;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(40px) scale(0.96); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
-
-        /* ===== ИКОНКА ===== */
-        .icon-wrapper {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+        .page-header .badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
             background: var(--kumo-brand-subtle);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            margin-bottom: 32px;
-            animation: pulseIcon 2.5s ease-in-out infinite;
-            box-shadow: 0 0 60px rgba(251, 191, 36, 0.05);
+            color: var(--kumo-brand);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
         }
-        .icon-wrapper .icon {
-            font-size: 3.6rem;
-            animation: iconFloat 3s ease-in-out infinite;
-        }
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0) rotate(-4deg); }
-            50% { transform: translateY(-12px) rotate(4deg); }
-        }
-        @keyframes pulseIcon {
-            0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.05); }
-            50% { box-shadow: 0 0 60px rgba(251, 191, 36, 0.15); }
-        }
-
-        /* ===== ЗАГОЛОВОК ===== */
-        .title {
-            font-size: 3.2rem;
+        .page-header h1 {
+            font-size: 3rem;
             font-weight: 900;
             letter-spacing: -0.03em;
             background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
@@ -140,53 +118,193 @@
             background-clip: text;
             margin-bottom: 8px;
         }
-        @media (max-width: 768px) {
-            .title { font-size: 2.4rem; }
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
+        .page-header p {
             color: var(--kumo-subtle);
-            margin-bottom: 24px;
-            font-weight: 400;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        /* ===== СТРОКА "СКОРО" ===== */
-        .soon-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 24px;
-            border-radius: 60px;
-            background: var(--kumo-brand-subtle);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--kumo-brand);
-            margin-bottom: 28px;
+        /* ============================================
+                   КАРТА-КОНТЕЙНЕР С МАРШРУТОМ
+                   ============================================ */
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            aspect-ratio: 16 / 9;
+            background: radial-gradient(ellipse at 50% 60%, #14141a 0%, #08080a 80%);
+            border-radius: 24px;
+            border: 1px solid var(--kumo-hairline);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
-        .soon-badge .dot {
-            width: 8px;
-            height: 8px;
+
+        /* Стилизованные улицы */
+        .streets {
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .street {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        .street.h { height: 2px; width: 100%; }
+        .street.v { width: 2px; height: 100%; }
+        .street.d { height: 2px; width: 60%; }
+        .street.c {
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
+        }
+
+        /* ===== ТОЧКИ НА КАРТЕ ===== */
+        .point {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .point:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .point .dot {
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: var(--kumo-brand);
-            animation: blinkDot 1.2s infinite;
+            box-shadow: 0 0 30px var(--kumo-brand-glow);
+            border: 2px solid rgba(255,255,255,0.3);
+            animation: pulseDot 2s infinite;
         }
-        @keyframes blinkDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.2; transform: scale(0.8); }
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+        .point .label {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--kumo-hairline);
+            color: #fff;
+            white-space: nowrap;
+        }
+        .point .sub {
+            font-size: 0.55rem;
+            color: var(--kumo-subtle);
+            margin-top: 2px;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 10px;
+            border-radius: 12px;
         }
 
-        /* ===== ТЕКСТ ===== */
-        .description {
-            color: var(--kumo-muted);
+        /* ===== МАРШРУТ (линия) ===== */
+        .route-svg {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+        }
+        .route-svg path {
+            fill: none;
+            stroke: url(#routeGrad);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawRoute 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.3));
+        }
+        @keyframes drawRoute {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* ===== КАМЕРА (анимированная) ===== */
+        .camera-marker {
+            position: absolute;
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            will-change: transform, left, top;
+            transition: none;
+        }
+        .camera-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.6));
+            animation: cameraFloat 2s ease-in-out infinite;
+            display: block;
+        }
+        @keyframes cameraFloat {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50% { transform: translateY(-8px) rotate(4deg); }
+        }
+
+        /* ============================================
+                   КАРТОЧКИ МЕСТ (под картой)
+                   ============================================ */
+        .places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+        .place-card {
+            background: var(--kumo-card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardFade 0.6s forwards;
+        }
+        .place-card:nth-child(1) { animation-delay: 0.1s; }
+        .place-card:nth-child(2) { animation-delay: 0.25s; }
+        .place-card:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes cardFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .place-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--kumo-brand);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .place-card .icon {
+            font-size: 2.2rem;
+            margin-bottom: 6px;
+        }
+        .place-card h3 {
             font-size: 1rem;
-            line-height: 1.8;
-            max-width: 440px;
-            margin: 0 auto 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .place-card p {
+            color: var(--kumo-subtle);
+            font-size: 0.8rem;
+            margin-top: 4px;
         }
 
-        /* ===== КНОПКА НАЗАД ===== */
+        /* ============================================
+                   КНОПКА НАЗАД
+                   ============================================ */
         .btn-back {
             display: inline-flex;
             align-items: center;
@@ -202,6 +320,7 @@
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-decoration: none;
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
+            margin: 0 auto 20px;
         }
         .btn-back:hover {
             transform: scale(1.06);
@@ -211,62 +330,223 @@
             transform: scale(0.94);
         }
 
-        /* ===== АДАПТИВ ===== */
+        /* ============================================
+                   АДАПТИВ
+                   ============================================ */
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2.2rem; }
+            .map-container { aspect-ratio: 4 / 3; }
+            .point .label { font-size: 0.6rem; padding: 2px 8px; }
+            .point .sub { font-size: 0.5rem; }
+            .camera-icon { width: 36px; height: 36px; }
+            .places-grid { grid-template-columns: 1fr; max-width: 400px; }
+        }
         @media (max-width: 480px) {
-            .title { font-size: 2rem; }
-            .subtitle { font-size: 1rem; }
-            .icon-wrapper { width: 80px; height: 80px; }
-            .icon-wrapper .icon { font-size: 2.8rem; }
-            .description { font-size: 0.9rem; }
-            .btn-back { padding: 12px 24px; font-size: 0.85rem; }
-            .soon-badge { font-size: 0.75rem; padding: 6px 16px; }
+            .page-header h1 { font-size: 1.8rem; }
+            .map-container { aspect-ratio: 1 / 1; }
+            .camera-icon { width: 28px; height: 28px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== ФОН: ПАРЯЩИЕ ФИГУРЫ ===== -->
-    <div class="bg-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+    <!-- ===== ПРЕВЬЮ-БАННЕР ===== -->
+    <div class="preview-banner">
+        <p>📸 Это <strong>предварительный просмотр</strong> страницы «Маршруты любимых мест».<br>Никто, кроме тебя, его не видит. Нравится? — скажи, и я помогу загрузить на сайт!</p>
     </div>
 
     <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
     <canvas id="particles-canvas"></canvas>
 
     <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
-    <div class="content">
+    <div class="main-content">
+        <div class="container">
 
-        <div class="icon-wrapper">
-            <span class="icon">🗺️</span>
+            <!-- ЗАГОЛОВОК -->
+            <header class="page-header">
+                <span class="badge">🗺️ Маршруты</span>
+                <h1>Калининград<br>глазами Никса</h1>
+                <p>Мои любимые места в центре города</p>
+            </header>
+
+            <!-- КАРТА С МАРШРУТОМ -->
+            <div class="map-container" id="mapContainer">
+
+                <!-- Стилизованные улицы -->
+                <div class="streets">
+                    <div class="street h" style="top:30%;"></div>
+                    <div class="street h" style="top:55%;"></div>
+                    <div class="street h" style="top:75%;"></div>
+                    <div class="street v" style="left:25%;"></div>
+                    <div class="street v" style="left:50%;"></div>
+                    <div class="street v" style="left:75%;"></div>
+                    <div class="street d" style="top:15%; left:10%; transform:rotate(25deg);"></div>
+                    <div class="street d" style="top:55%; left:35%; transform:rotate(-20deg);"></div>
+                    <div class="street c" style="width:140px; height:140px; top:35%; left:55%;"></div>
+                    <div class="street c" style="width:100px; height:100px; top:25%; left:20%;"></div>
+                </div>
+
+                <!-- ТОЧКА 1: ТЦ Европа -->
+                <div class="point" id="point1" style="top:32%; left:28%;">
+                    <div class="dot"></div>
+                    <div class="label">🛍️ ТЦ Европа</div>
+                    <div class="sub">ул. Театральная</div>
+                </div>
+
+                <!-- ТОЧКА 2: Додо Пицца -->
+                <div class="point" id="point2" style="top:55%; left:55%;">
+                    <div class="dot"></div>
+                    <div class="label">🍕 Додо Пицца</div>
+                    <div class="sub">пр. Мира</div>
+                </div>
+
+                <!-- ТОЧКА 3: ТЦ Акрополь -->
+                <div class="point" id="point3" style="top:42%; left:78%;">
+                    <div class="dot"></div>
+                    <div class="label">🏛️ ТЦ Акрополь</div>
+                    <div class="sub">ул. Фрунзе</div>
+                </div>
+
+                <!-- МАРШРУТ (SVG-линия) -->
+                <svg class="route-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fbbf24" stop-opacity="1" />
+                            <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#fcd34d" stop-opacity="1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M 28 32 C 40 25, 45 45, 55 55 C 60 60, 70 50, 78 42" />
+                </svg>
+
+                <!-- КАМЕРА (анимированная) -->
+                <div class="camera-marker" id="cameraMarker">
+                    <img src="images/camera.png" alt="Камера" class="camera-icon" id="cameraImg">
+                </div>
+
+            </div>
+
+            <!-- КАРТОЧКИ МЕСТ -->
+            <div class="places-grid">
+                <div class="place-card">
+                    <div class="icon">🛍️</div>
+                    <h3>ТЦ Европа</h3>
+                    <p>ул. Театральная</p>
+                </div>
+                <div class="place-card">
+                    <div class="icon">🍕</div>
+                    <h3>Додо Пицца</h3>
+                    <p>пр. Мира</p>
+                </div>
+                <div class="place-card">
+                    <div class="icon">🏛️</div>
+                    <h3>ТЦ Акрополь</h3>
+                    <p>ул. Фрунзе</p>
+                </div>
+            </div>
+
+            <!-- КНОПКА НАЗАД -->
+            <div style="text-align: center;">
+                <a href="index.html" class="btn-back">
+                    ← Вернуться на главную
+                </a>
+            </div>
+
         </div>
-
-        <div class="soon-badge">
-            <span class="dot"></span>
-            Скоро будет доступно
-        </div>
-
-        <h1 class="title">Маршруты<br>любимых мест</h1>
-        <p class="subtitle">Карта с анимированным фотоаппаратом</p>
-
-        <p class="description">
-            Я работаю над интерактивной картой Калининграда,<br>
-            где ты сможешь увидеть мои любимые места<br>
-            и маршруты в реальном времени.
-        </p>
-
-        <a href="index.html" class="btn-back">
-            ← Вернуться на главную
-        </a>
-
     </div>
 
     <!-- ============================================
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. ЧАСТИЦЫ -->
+    <!-- 1. АНИМАЦИЯ КАМЕРЫ ПО МАРШРУТУ -->
+    <script>
+        (function() {
+            const camera = document.getElementById('cameraMarker');
+            const container = document.getElementById('mapContainer');
+            if (!camera || !container) return;
+
+            // Точки маршрута в процентах
+            const points = [
+                { x: 28, y: 32 },  // ТЦ Европа
+                { x: 55, y: 55 },  // Додо Пицца
+                { x: 78, y: 42 }   // ТЦ Акрополь
+            ];
+
+            let currentSegment = 0;
+            let progress = 0;
+            const speed = 0.004;
+
+            function getPosition(t) {
+                const totalSegments = points.length - 1;
+                const segLength = 1 / totalSegments;
+                const segIndex = Math.min(Math.floor(t / segLength), totalSegments - 1);
+                const localT = (t - segIndex * segLength) / segLength;
+
+                const p0 = points[segIndex];
+                const p1 = points[segIndex + 1];
+                const cp1 = {
+                    x: p0.x + (p1.x - p0.x) * 0.3 + (segIndex === 0 ? 5 : -5),
+                    y: p0.y + (p1.y - p0.y) * 0.3 - (segIndex === 0 ? 8 : 5)
+                };
+                const cp2 = {
+                    x: p1.x - (p1.x - p0.x) * 0.3 + (segIndex === totalSegments - 1 ? -5 : 5),
+                    y: p1.y - (p1.y - p0.y) * 0.3 + (segIndex === totalSegments - 1 ? 8 : 5)
+                };
+
+                const mt = 1 - localT;
+                const x = mt*mt*mt * p0.x + 3*mt*mt*localT * cp1.x + 3*mt*localT*localT * cp2.x + localT*localT*localT * p1.x;
+                const y = mt*mt*mt * p0.y + 3*mt*mt*localT * cp1.y + 3*mt*localT*localT * cp2.y + localT*localT*localT * p1.y;
+                return { x, y };
+            }
+
+            function updateCamera() {
+                progress += speed;
+                if (progress >= 1) {
+                    progress = 0;
+                    currentSegment++;
+                    if (currentSegment >= points.length - 1) {
+                        currentSegment = 0;
+                    }
+                }
+
+                const totalSegments = points.length - 1;
+                const globalT = (currentSegment + progress) / totalSegments;
+                const clampedT = Math.min(Math.max(globalT, 0), 1);
+                const pos = getPosition(clampedT);
+
+                const rect = container.getBoundingClientRect();
+                const xPx = (pos.x / 100) * rect.width;
+                const yPx = (pos.y / 100) * rect.height;
+
+                camera.style.left = xPx + 'px';
+                camera.style.top = yPx + 'px';
+
+                requestAnimationFrame(updateCamera);
+            }
+
+            // Запускаем анимацию после загрузки
+            setTimeout(() => {
+                const rect = container.getBoundingClientRect();
+                const startPos = getPosition(0);
+                camera.style.left = (startPos.x / 100 * rect.width) + 'px';
+                camera.style.top = (startPos.y / 100 * rect.height) + 'px';
+                requestAnimationFrame(updateCamera);
+            }, 500);
+
+            // Пересчёт при ресайзе
+            window.addEventListener('resize', () => {
+                const rect = container.getBoundingClientRect();
+                const totalSegments = points.length - 1;
+                const globalT = (currentSegment + progress) / totalSegments;
+                const pos = getPosition(Math.min(Math.max(globalT, 0), 1));
+                camera.style.left = (pos.x / 100 * rect.width) + 'px';
+                camera.style.top = (pos.y / 100 * rect.height) + 'px';
+            });
+        })();
+    </script>
+
+    <!-- 2. ЧАСТИЦЫ -->
     <script>
         (function() {
             const canvas = document.getElementById('particles-canvas');
@@ -309,8 +589,7 @@
 
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            let mouseX = null,
-                mouseY = null;
+            let mouseX = null, mouseY = null;
             canvas.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
