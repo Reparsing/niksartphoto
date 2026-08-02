@@ -3,208 +3,683 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canon EOS 600D: полный обзор — Никс Фотограф</title>
-    <meta name="description" content="Canon EOS 600D: полный обзор — стоит ли брать в 2025?">
+    <title>Canon EOS 600D: полный обзор — Артурик</title>
+    <meta name="description" content="Canon EOS 600D: стоит ли брать в 2026? Полный обзор от фотографа Артурика.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
+        :root {
+            --brand: #fbbf24;
+            --brand-glow: rgba(251, 191, 36, 0.3);
+            --brand-subtle: rgba(251, 191, 36, 0.12);
+            --canvas: #0a0a0c;
+            --hairline: rgba(255, 255, 255, 0.08);
+            --subtle: #a1a1aa;
+            --muted: #71717a;
+            --default: #f4f4f5;
+            --card-bg: rgba(18, 18, 22, 0.6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--canvas);
+            color: var(--default);
+            overflow-x: hidden;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        a { text-decoration: none; color: inherit; transition: all 0.3s; }
+        img { display: block; max-width: 100%; }
+
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--canvas); }
+        ::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 10px; }
+
+        /* ============================================
+                   ФОН: ЧАСТИЦЫ
+                   ============================================ */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ============================================
+                   НАВИГАЦИЯ
+                   ============================================ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 12, 0.7);
+            border-bottom: 1px solid var(--hairline);
+            padding: 12px 0;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .navbar.scrolled {
+            background: rgba(10, 10, 12, 0.92);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            border-bottom-color: rgba(251, 191, 36, 0.15);
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        .logo .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--brand-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand);
+            font-size: 1.2rem;
+        }
+        .logo .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+        .logo .brand-text .sub { font-size: 0.65rem; color: var(--brand); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .nav-menu {
+            display: none;
+            list-style: none;
+            gap: 32px;
+        }
+        @media (min-width: 768px) { .nav-menu { display: flex; } }
+        .nav-link {
+            color: var(--subtle);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 4px 0;
+            position: relative;
+        }
+        .nav-link:hover { color: #fff; }
+        .nav-link.active { color: var(--brand); font-weight: 600; }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand);
+            border-radius: 2px;
+            box-shadow: 0 0 20px var(--brand-glow);
+        }
+        .mobile-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        @media (min-width: 768px) { .mobile-toggle { display: none; } }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+            background: rgba(10,10,12,0.96);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--hairline);
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a { color: var(--subtle); font-size: 1rem; font-weight: 500; padding: 6px 0; }
+        .mobile-menu a:hover { color: #fff; }
+        .mobile-menu a.active { color: var(--brand); }
+        @media (min-width: 768px) { .mobile-menu { display: none !important; } }
+
+        /* ============================================
+                   ОСНОВНОЙ КОНТЕНТ
+                   ============================================ */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            padding: 40px 0 80px;
+        }
+
+        /* ===== АНИМАЦИИ ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes borderPulse {
+            0%, 100% { border-color: rgba(251, 191, 36, 0.1); box-shadow: 0 0 20px rgba(251, 191, 36, 0.02); }
+            50% { border-color: rgba(251, 191, 36, 0.4); box-shadow: 0 0 40px rgba(251, 191, 36, 0.08); }
+        }
+
+        .animate-fadeUp { opacity: 0; animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-fadeScale { opacity: 0; animation: fadeScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-slideLeft { opacity: 0; animation: slideInLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-slideRight { opacity: 0; animation: slideInRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        /* ============================================
+                   ЗАГОЛОВОК
+                   ============================================ */
+        .article-header { margin-bottom: 40px; text-align: center; }
+        .article-header .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--subtle);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .article-header .back-link:hover { color: var(--brand); gap: 14px; }
+        .article-header .badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            background: var(--brand-subtle);
+            color: var(--brand);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        .article-header h1 {
+            font-size: 2.6rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, var(--brand) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        @media (max-width: 768px) { .article-header h1 { font-size: 1.8rem; } }
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            color: var(--subtle);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+                   КАРТОЧКА СТАТЬИ
+                   ============================================ */
+        .article-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--hairline);
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 32px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: borderPulse 3s ease-in-out infinite;
+        }
+        .article-card:hover {
+            transform: scale(1.01);
+            border-color: var(--brand);
+        }
+        .article-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .article-card:hover img { transform: scale(1.05); }
+        @media (max-width: 768px) { .article-card img { height: 250px; } }
+
+        .article-body { padding: 40px; }
+        @media (max-width: 768px) { .article-body { padding: 24px 20px; } }
+
+        .article-body h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 32px 0 16px;
+            color: #fff;
+            position: relative;
+            display: inline-block;
+        }
+        .article-body h2::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--brand);
+            border-radius: 2px;
+            box-shadow: 0 0 20px var(--brand-glow);
+        }
+        .article-body p {
+            color: var(--subtle);
+            font-size: 1.05rem;
+            line-height: 1.9;
+            margin-bottom: 20px;
+        }
+
+        /* ===== СПЕЦБЛОКИ ===== */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0 28px;
+        }
+        .spec-item {
+            background: rgba(255,255,255,0.03);
+            padding: 16px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--hairline);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .spec-item:hover {
+            border-color: var(--brand);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .spec-item strong { display: block; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .spec-item .value { font-size: 1.1rem; font-weight: 700; color: #fff; margin-top: 4px; }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0 28px;
+        }
+        @media (max-width: 600px) { .pros-cons { grid-template-columns: 1fr; } }
+        .pros-cons .box {
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--hairline);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pros-cons .box:hover { transform: translateY(-4px); }
+        .pros-cons .box.pros { border-left: 3px solid #22c55e; }
+        .pros-cons .box.cons { border-left: 3px solid #ef4444; }
+        .pros-cons .box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+        .pros-cons .box.pros h3 { color: #22c55e; }
+        .pros-cons .box.cons h3 { color: #ef4444; }
+        .pros-cons .box ul { padding-left: 20px; color: var(--subtle); font-size: 0.95rem; line-height: 1.8; }
+
+        .quote-box {
+            padding: 24px 28px;
+            border-radius: 16px;
+            border-left: 4px solid var(--brand);
+            background: var(--brand-subtle);
+            margin: 28px 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .quote-box:hover { transform: translateX(6px); }
+        .quote-box p { margin: 0; font-size: 1.05rem; color: var(--default); font-style: italic; }
+
+        /* ============================================
+                   КНОПКИ НАВИГАЦИИ
+                   ============================================ */
+        .article-nav {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--hairline);
+            margin-top: 40px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border: 1px solid var(--hairline);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+            transform: scale(1.05);
+        }
+        .btn-primary {
+            background: var(--brand);
+            color: #0a0a0c;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px var(--brand-glow);
+        }
+
+        /* ============================================
+                   ФУТЕР
+                   ============================================ */
+        .footer {
+            position: relative;
+            z-index: 1;
+            padding: 48px 0 24px;
+            border-top: 1px solid var(--hairline);
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(12px);
+            margin-top: 60px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr 1fr; } }
+        .footer .heading { color: #fff; font-weight: 700; margin-bottom: 12px; font-size: 1rem; }
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 6px; }
+        .footer ul a { color: var(--subtle); font-size: 0.9rem; transition: color 0.3s; }
+        .footer ul a:hover { color: var(--brand); }
+        .footer .bottom { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--hairline); text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+        @media (max-width: 768px) { .article-body h2 { font-size: 1.3rem; } }
+        @media (max-width: 480px) { .article-header h1 { font-size: 1.5rem; } }
+    </style>
 </head>
 <body>
-    <!-- KUMO NAVBAR -->
-    <nav class="kumo-navbar">
+
+    <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== НАВИГАЦИЯ ===== -->
+    <nav class="navbar" id="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <a href="index.html" class="logo">
+                <div class="icon">✦</div>
+                <div class="brand-text">
+                    <span style="font-size:1.3rem;font-weight:900;color:#fff;">Артурик</span>
+                    <span class="sub">Кадр решает</span>
                 </div>
-                <span>НИКС</span>
             </a>
-            <ul class="kumo-nav-menu">
-                <li><a href="index.html" class="kumo-nav-link">🏠 Главная</a></li>
-                <li><a href="portfolio.html" class="kumo-nav-link">📸 Портфолио</a></li>
-                <li><a href="about.html" class="kumo-nav-link">👤 Обо мне</a></li>
-                <li><a href="index.html#faq" class="kumo-nav-link">❓ Частые вопросы</a></li>
-                <li><a href="blog.html" class="kumo-nav-link active">📝 Блог</a></li>
-                <li><a href="contact.html" class="kumo-nav-link">📞 Контакты</a></li>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Главная</a></li>
+                <li><a href="about.html" class="nav-link">Обо мне</a></li>
+                <li><a href="blog.html" class="nav-link active">Блог</a></li>
+                <li><a href="contact.html" class="nav-link">Контакты</a></li>
+                <li><a href="booking.html" class="nav-link">📅 Запись</a></li>
             </ul>
-            <div class="kumo-nav-actions">
-                <div class="kumo-dropdown">
-                    <button class="kumo-dropdown-toggle" aria-label="Помощь">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span>Помощь</span>
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div class="kumo-dropdown-menu">
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Сообщить о проблеме на сайте</span>
-                        </a>
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span>Задать вопрос</span>
-                        </a>
-                    </div>
-                </div>
-                <button class="kumo-theme-toggle" aria-label="Toggle theme"></button>
-                <button class="kumo-mobile-toggle" aria-label="Open menu">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-            </div>
+            <button class="mobile-toggle" id="mobileToggle">☰</button>
         </div>
     </nav>
-    <div class="kumo-sidebar-overlay"></div>
-    <aside class="kumo-sidebar">
-        <div class="kumo-sidebar-header">
-            <div class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span>НИКС</span>
-            </div>
+
+    <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="container" style="display:flex;flex-direction:column;gap:12px;">
+            <a href="index.html">Главная</a>
+            <a href="about.html">Обо мне</a>
+            <a href="blog.html" class="active">Блог</a>
+            <a href="contact.html">Контакты</a>
+            <a href="booking.html">📅 Запись</a>
         </div>
-        <ul class="kumo-sidebar-nav">
-            <li><a href="index.html">🏠 Главная</a></li>
-            <li><a href="portfolio.html">📸 Портфолио</a></li>
-            <li><a href="about.html">👤 Обо мне</a></li>
-            <li><a href="index.html#faq">❓ Частые вопросы</a></li>
-            <li><a href="blog.html" class="active">📝 Блог</a></li>
-            <li><a href="contact.html">📞 Контакты</a></li>
-            <li class="kumo-sidebar-divider"></li>
-            <li class="kumo-sidebar-heading">Помощь</li>
-            <li><a href="https://t.me/tylenevv" target="_blank">⚠️ Сообщить о проблеме</a></li>
-            <li><a href="https://t.me/tylenevv" target="_blank">💬 Задать вопрос</a></li>
-        </ul>
-    </aside>
+    </div>
 
-    <main style="padding-top: 110px; padding-bottom: 80px;">
-        <div class="container" style="max-width: 860px;">
-            <div style="margin-bottom: 24px;">
-                <a href="blog.html" class="kumo-btn kumo-btn-sm kumo-btn-ghost">&larr; Вернуться в блог</a>
-            </div>
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <main class="main-content">
+        <div class="container">
 
-            <span class="kumo-badge kumo-badge-brand" style="margin-bottom: 12px;">Техника</span>
-            <h1 style="font-size: 2.25rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.25;">
-                Canon EOS 600D: полный обзор — стоит ли брать в 2025?
-            </h1>
-
-            <div style="display: flex; gap: 16px; align-items: center; color: var(--kumo-subtle); font-size: 0.875rem; margin-bottom: 32px; border-bottom: 1px solid var(--kumo-hairline); padding-bottom: 16px;">
-                <span>📅 7 декабря 2025</span>
-                <span>⏱ 6 мин чтения</span>
-                <span>👤 Автор: Никс</span>
-            </div>
-
-            <div class="kumo-card" style="margin-bottom: 32px; padding: 0; overflow: hidden;">
-                <img src="media/4039a59b-94f0-4fd1-9a76-047e72c2f801.webp" alt="Canon EOS 600D" style="width: 100%; height: 380px; object-fit: cover;" onerror="this.src='media/portfolio/photo_2025-12-27_15-28-48.jpg'">
-            </div>
-
-            <article style="font-size: 1.05rem; line-height: 1.8; color: var(--kumo-default);">
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin: 24px 0 12px;">Общие сведения</h2>
-                <p style="margin-bottom: 20px;">
-                    Canon EOS 600D был представлен в 2011 году как фотоаппарат начального (любительского) уровня. На сегодняшний день он является устаревшей моделью, но всё ещё популярен на вторичном рынке как первый выбор для многих начинающих фотографов.
-                </p>
-
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin: 32px 0 12px;">Ключевые характеристики</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                    <div class="kumo-card" style="padding: 16px;">
-                        <strong>Матрица:</strong> APS-C, 18.0 Мп
-                    </div>
-                    <div class="kumo-card" style="padding: 16px;">
-                        <strong>Процессор:</strong> DIGIC 4
-                    </div>
-                    <div class="kumo-card" style="padding: 16px;">
-                        <strong>Экран:</strong> 3.0" поворотный
-                    </div>
-                    <div class="kumo-card" style="padding: 16px;">
-                        <strong>ISO:</strong> 100 – 6400 (расш. до 12800)
-                    </div>
+            <!-- ЗАГОЛОВОК -->
+            <header class="article-header animate-fadeUp">
+                <a href="blog.html" class="back-link">← Вернуться в блог</a>
+                <span class="badge">📷 Техника</span>
+                <h1>Canon EOS 600D: полный обзор — стоит ли брать в 2025?</h1>
+                <div class="article-meta">
+                    <span>📅 7 декабря 2025</span>
+                    <span>⏱ 6 мин чтения</span>
+                    <span>👤 Автор: Артурик</span>
                 </div>
+            </header>
 
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin: 32px 0 12px;">Плюсы и минусы</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
-                    <div class="kumo-card" style="border-left: 3px solid #22c55e;">
-                        <h3 style="font-size: 1.1rem; font-weight: 600; color: #22c55e; margin-bottom: 8px;">✅ Сильные стороны</h3>
-                        <ul style="padding-left: 20px; font-size: 0.95rem; color: var(--kumo-subtle);">
-                            <li>Удобный поворотный дисплей</li>
-                            <li>Доступная цена на б/у рынке</li>
-                            <li>Большой выбор оптики EF / EF-S</li>
-                            <li>Понятное меню для обучения</li>
-                        </ul>
-                    </div>
-                    <div class="kumo-card" style="border-left: 3px solid #ef4444;">
-                        <h3 style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 8px;">❌ Слабые стороны</h3>
-                        <ul style="padding-left: 20px; font-size: 0.95rem; color: var(--kumo-subtle);">
-                            <li>Шумы на высоком ISO</li>
-                            <li>Медленный автофокус в режиме Live View</li>
-                            <li>Отсутствие Wi-Fi и современных функций</li>
-                        </ul>
-                    </div>
-                </div>
+            <!-- КАРТОЧКА СТАТЬИ -->
+            <div class="article-card animate-fadeScale delay-1">
+                <img src="media/4039a59b-94f0-4fd1-9a76-047e72c2f801.webp" alt="Canon EOS 600D" onerror="this.src='media/portfolio/photo_2025-12-27_15-28-48.jpg'">
+                <div class="article-body">
 
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin: 32px 0 12px;">Вывод</h2>
-                <p style="margin-bottom: 20px;">
-                    Canon EOS 600D — это камера с историей. Да, по меркам 2025 года она устарела: нет Wi-Fi, автофокус слабоват, шумы на высоких ISO заметны. Но для человека, который хочет впервые взять в руки зеркалку и научиться снимать в ручном режиме — это до сих пор один из лучших вариантов за свои деньги.
-                </p>
-
-                <div class="kumo-card" style="border-left: 3px solid var(--kumo-brand); background: var(--kumo-brand-subtle); margin: 28px 0;">
-                    <p style="margin: 0; font-size: 1rem; color: var(--kumo-default);">
-                        💡 Именно с Canon EOS 600D я начал свой путь в фотографии. Эта камера научила меня понимать свет, выдержку и диафрагму — и я ни разу не пожалел о выборе.
+                    <p class="animate-slideLeft delay-2">
+                        <strong>Canon EOS 600D</strong> был представлен в 2011 году как фотоаппарат начального уровня. На сегодняшний день он является устаревшей моделью, но всё ещё популярен на вторичном рынке как первый выбор для многих начинающих фотографов.
                     </p>
+
+                    <!-- ХАРАКТЕРИСТИКИ -->
+                    <h2 class="animate-slideRight delay-3">Ключевые характеристики</h2>
+                    <div class="spec-grid animate-fadeScale delay-4">
+                        <div class="spec-item"><strong>Матрица</strong><span class="value">APS-C, 18.0 Мп</span></div>
+                        <div class="spec-item"><strong>Процессор</strong><span class="value">DIGIC 4</span></div>
+                        <div class="spec-item"><strong>Экран</strong><span class="value">3.0" поворотный</span></div>
+                        <div class="spec-item"><strong>ISO</strong><span class="value">100 – 6400 (12800)</span></div>
+                    </div>
+
+                    <!-- ПЛЮСЫ И МИНУСЫ -->
+                    <h2 class="animate-slideLeft delay-4">Плюсы и минусы</h2>
+                    <div class="pros-cons animate-fadeScale delay-5">
+                        <div class="box pros">
+                            <h3>✅ Сильные стороны</h3>
+                            <ul>
+                                <li>Удобный поворотный дисплей</li>
+                                <li>Доступная цена на б/у рынке</li>
+                                <li>Большой выбор оптики EF / EF-S</li>
+                                <li>Понятное меню для обучения</li>
+                            </ul>
+                        </div>
+                        <div class="box cons">
+                            <h3>❌ Слабые стороны</h3>
+                            <ul>
+                                <li>Шумы на высоком ISO</li>
+                                <li>Медленный автофокус в Live View</li>
+                                <li>Отсутствие Wi-Fi и современных функций</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- ВЫВОД -->
+                    <h2 class="animate-slideRight delay-5">Вывод</h2>
+                    <p class="animate-slideLeft delay-5">
+                        Canon EOS 600D — это камера с историей. Да, по меркам 2025 года она устарела: нет Wi-Fi, автофокус слабоват, шумы на высоких ISO заметны. Но для человека, который хочет впервые взять в руки зеркалку и научиться снимать в ручном режиме — это до сих пор один из лучших вариантов за свои деньги.
+                    </p>
+
+                    <!-- ЦИТАТА -->
+                    <div class="quote-box animate-slideRight delay-5">
+                        <p>💡 Именно с Canon EOS 600D я начал свой путь в фотографии. Эта камера научила меня понимать свет, выдержку и диафрагму — и я ни разу не пожалел о выборе.</p>
+                    </div>
+
+                    <p class="animate-slideLeft delay-5">
+                        Если бюджет ограничен и цель — научиться фотографировать, а не снимать спорт или работать в темноте — 600D справится на отлично. Главное преимущество — огромная экосистема объективов Canon, которая позволяет расти вместе с навыками.
+                    </p>
+                    <p class="animate-slideRight delay-5">
+                        Есть вопросы по выбору камеры? Пиши в Telegram!
+                    </p>
+
+                    <!-- НАВИГАЦИЯ ПО СТАТЬЯМ -->
+                    <div class="article-nav">
+                        <a href="blog-abilimpics.html" class="btn btn-secondary">← Предыдущая</a>
+                        <a href="blog-camera.html" class="btn btn-primary">Следующая →</a>
+                        <a href="blog.html" class="btn btn-secondary">Все статьи →</a>
+                    </div>
+
                 </div>
-
-                <p style="margin-bottom: 20px;">
-                    Если бюджет ограничен и цель — научиться фотографировать, а не снимать спорт или работать в темноте — 600D справится на отлично. Главное преимущество — огромная экосистема объективов Canon, которая позволяет расти вместе с навыками.
-                </p>
-                <p style="margin-bottom: 20px;">
-                    Есть вопросы по выбору камеры? Пиши в Telegram!
-                </p>
-            </article>
-
-            <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--kumo-hairline); display: flex; justify-content: space-between;">
-                <a href="blog-abilimpics.html" class="kumo-btn kumo-btn-secondary">&larr; Предыдущая статья</a>
-                <a href="blog-camera.html" class="kumo-btn kumo-btn-primary">Следующая статья &rarr;</a>
             </div>
+
         </div>
     </main>
 
-    <!-- KUMO FOOTER -->
-    <footer class="kumo-footer">
+    <!-- ===== ФУТЕР ===== -->
+    <footer class="footer">
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="index.html" class="kumo-brand-logo">
-                        <div class="kumo-brand-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <div>
+                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;">
+                        <div class="icon" style="width:32px;height:32px;font-size:1rem;">✦</div>
+                        <div>
+                            <span style="font-weight:800;color:#fff;">Артурик</span>
+                            <span style="display:block;font-size:0.6rem;color:var(--brand);">Кадр решает</span>
                         </div>
-                        <span>НИКС</span>
                     </a>
-                    <p>Фотограф</p>
+                    <p style="color:var(--subtle);margin-top:4px;">Фотограф</p>
                 </div>
                 <div>
-                    <h4 class="footer-heading">Навигация</h4>
-                    <ul class="footer-links">
+                    <h4 class="heading">Навигация</h4>
+                    <ul>
                         <li><a href="index.html">Главная</a></li>
-                        <li><a href="portfolio.html">Портфолио</a></li>
                         <li><a href="about.html">Обо мне</a></li>
                         <li><a href="blog.html">Блог</a></li>
                         <li><a href="contact.html">Контакты</a></li>
+                        <li><a href="booking.html">📅 Запись</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="footer-heading">Контакты</h4>
-                    <ul class="footer-links">
-                        <li><a href="mailto:niksfotograf@gmail.com">Email: niksfotograf@gmail.com</a></li>
-                        <li><a href="https://t.me/objektivniksa" target="_blank">Telegram: @objektivniksa</a></li>
+                    <h4 class="heading">Контакты</h4>
+                    <ul>
+                        <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
+                        <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 НИКС. Все права защищены.</p>
-
-            </div>
+            <div class="bottom"><p>&copy; 2026 Артурик. Все права защищены.</p></div>
         </div>
     </footer>
 
-    <script src="theme.js"></script>
+    <!-- ============================================
+    СКРИПТЫ
+    ============================================ -->
+
+    <!-- 1. ЧАСТИЦЫ -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h, particles = [],
+                COUNT = 100;
+
+            function resize() { w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() { this.reset(); }
+                reset() { this.x = Math.random() * w, this.y = Math.random() * h, this.size = Math.random() * 2.5 + .5, this.speedX = (Math
+                        .random() - .5) * .4, this.speedY = (Math.random() - .5) * .4, this.opacity = Math.random() * .4 + .15; }
+                update() { this.x += this.speedX, this.y += this.speedY, (this.x < 0 || this.x > w) && (this.speedX *= -1), (this
+                        .y < 0 || this.y > h) && (this.speedY *= -1); }
+                draw() { ctx.beginPath(), ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2), ctx.fillStyle =
+                        `rgba(251, 191, 36, ${this.opacity})`, ctx.fill(); }
+            }
+            for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+            let mouseX = null,
+                mouseY = null;
+            canvas.addEventListener('mousemove', e => { mouseX = e.clientX, mouseY = e.clientY; });
+            canvas.addEventListener('mouseleave', () => { mouseX = null, mouseY = null; });
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    if (mouseX !== null && mouseY !== null) {
+                        const dx = p.x - mouseX,
+                            dy = p.y - mouseY,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 180) { const force = (180 - dist) / 180 * .03;
+                            p.x += dx * force, p.y += dy * force; }
+                    }
+                    p.update(), p.draw();
+                });
+                for (let i = 0; i < particles.length; i++)
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x,
+                            dy = particles[i].y - particles[j].y,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) ctx.beginPath(), ctx.moveTo(particles[i].x, particles[i].y), ctx.lineTo(particles[j].x,
+                            particles[j].y), ctx.strokeStyle = `rgba(251, 191, 36, ${.06 * (1 - dist / 130)})`, ctx
+                            .lineWidth = .8, ctx.stroke();
+                    }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+    </script>
+
+    <!-- 2. МОБИЛЬНОЕ МЕНЮ -->
+    <script>
+        document.getElementById('mobileToggle')?.addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        });
+    </script>
+
+    <!-- 3. АНИМАЦИЯ ПРИ СКРОЛЛЕ (появление элементов) -->
+    <script>
+        (function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            document.querySelectorAll('.animate-fadeUp, .animate-fadeScale, .animate-slideLeft, .animate-slideRight').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                observer.observe(el);
+            });
+        })();
+    </script>
+
+    <!-- 4. НАВИГАЦИЯ ПРИ СКРОЛЛЕ -->
+    <script>
+        (function() {
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>
