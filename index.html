@@ -26,6 +26,7 @@
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
             --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
             --kumo-canvas: #0a0a0c;
+            --kumo-canvas-subtle: rgba(255, 255, 255, 0.02);
             --kumo-hairline: rgba(255, 255, 255, 0.08);
             --kumo-subtle: #a1a1aa;
             --kumo-muted: #71717a;
@@ -200,14 +201,11 @@
         }
 
         /* ============================================
-                   ГЕРО-СЕКЦИЯ (НОВЫЙ СЛАЙДЕР)
+                   ГЕРО-СЕКЦИЯ
                    ============================================ */
         .hero-section {
             padding: 80px 0 60px;
             position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
         }
         .hero-grid {
             display: grid;
@@ -243,59 +241,55 @@
             border: 1px solid var(--kumo-hairline);
         }
 
-        /* ===== НОВЫЙ СЛАЙДЕР: СЛОВА ПОЯВЛЯЮТСЯ СЛЕВА ===== */
-        .hero-title-wrapper {
+        .hero-content h1 {
             font-size: 3rem;
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 16px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
         }
-        .hero-title-wrapper .static-text {
-            display: block;
-            font-size: 2.8rem;
+        @media (min-width: 768px) {
+            .hero-content h1 { font-size: 4rem; }
         }
-        .hero-title-wrapper .slider-container {
-            display: block;
-            position: relative;
-            height: 4.2rem;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-        .hero-title-wrapper .slider-track {
-            position: relative;
-            height: 100%;
-            width: 100%;
-        }
-        .hero-title-wrapper .slider-word {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            font-size: 3.2rem;
-            font-weight: 900;
+        .hero-content h1 .highlight {
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            transform: translateX(-100%);
-            opacity: 0;
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
         }
-        .hero-title-wrapper .slider-word.active {
-            transform: translateX(0);
+        .hero-word-wrapper {
+            display: inline-block;
+            position: relative;
+            height: 1.2em;
+            overflow: hidden;
+            vertical-align: bottom;
+            min-width: 180px;
+        }
+        .hero-changing-word {
+            display: block;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            transform: translateY(0);
             opacity: 1;
+            font-weight: 900;
         }
-        .hero-title-wrapper .slider-word.exit {
-            transform: translateX(100%);
+        .hero-changing-word.swap-out {
+            transform: translateY(-50px) scale(0.9);
             opacity: 0;
+            filter: blur(4px);
         }
-        .hero-title-wrapper .slider-word.enter {
-            transform: translateX(0);
+        .hero-changing-word.swap-in {
+            transform: translateY(50px) scale(0.9);
+            opacity: 0;
+            filter: blur(4px);
+        }
+        .hero-changing-word.active {
+            transform: translateY(0) scale(1);
             opacity: 1;
+            filter: blur(0);
         }
 
         .hero-description {
@@ -380,7 +374,7 @@
         .kumo-btn-lg { padding: 16px 40px; font-size: 1rem; }
 
         /* ============================================
-                   ОСТАЛЬНЫЕ СЕКЦИИ
+                   НАПРАВЛЕНИЯ (3D-карточки)
                    ============================================ */
         .directions-section {
             padding: 80px 0;
@@ -472,6 +466,9 @@
             line-height: 1.6;
         }
 
+        /* ============================================
+                   ОБО МНЕ
+                   ============================================ */
         .about-section {
             padding: 80px 0;
         }
@@ -488,7 +485,6 @@
             display: flex;
             gap: 16px;
             margin: 24px 0 32px;
-            flex-wrap: wrap;
         }
         .stat-card {
             background: rgba(255,255,255,0.04);
@@ -497,8 +493,6 @@
             text-align: center;
             border: 1px solid var(--kumo-hairline);
             transition: all 0.3s;
-            flex: 1;
-            min-width: 80px;
         }
         .stat-card:hover {
             border-color: var(--kumo-brand);
@@ -531,6 +525,9 @@
             object-fit: cover;
         }
 
+        /* ============================================
+                   ДОСТИЖЕНИЯ
+                   ============================================ */
         .awards-section {
             padding: 80px 0;
             background: radial-gradient(circle at 30% 40%, rgba(251,191,36,0.03) 0%, transparent 60%);
@@ -627,6 +624,9 @@
             color: var(--kumo-brand);
         }
 
+        /* ============================================
+                   РАСПИСАНИЕ
+                   ============================================ */
         .schedule-section {
             padding: 80px 0;
             background: radial-gradient(circle at 30% 40%, rgba(251,191,36,0.04) 0%, transparent 60%);
@@ -672,6 +672,9 @@
             letter-spacing: 0.02em;
         }
 
+        /* ============================================
+                   FAQ
+                   ============================================ */
         .faq-section {
             padding: 80px 0;
             background: var(--kumo-canvas-subtle);
@@ -756,12 +759,18 @@
         }
         .faq-btn:hover { transform: scale(1.04); }
 
+        /* ============================================
+                   CTA
+                   ============================================ */
         .cta-section {
             padding: 80px 0;
             text-align: center;
             background: radial-gradient(circle at 70% 30%, rgba(251,191,36,0.04), transparent 60%);
         }
 
+        /* ============================================
+                   ФУТЕР
+                   ============================================ */
         .kumo-footer {
             padding: 48px 0 24px;
             border-top: 1px solid var(--kumo-hairline);
@@ -799,6 +808,9 @@
             font-size: 0.85rem;
         }
 
+        /* ============================================
+                   МОБИЛЬНОЕ МЕНЮ
+                   ============================================ */
         .mobile-menu {
             display: none;
             flex-direction: column;
@@ -822,11 +834,12 @@
             .mobile-menu { display: none !important; }
         }
 
+        /* ============================================
+                   АДАПТИВ
+                   ============================================ */
         @media (max-width: 768px) {
-            .hero-title-wrapper { font-size: 2.2rem; }
-            .hero-title-wrapper .static-text { font-size: 2rem; }
-            .hero-title-wrapper .slider-container { height: 3.2rem; }
-            .hero-title-wrapper .slider-word { font-size: 2.4rem; }
+            .hero-content h1 { font-size: 2.4rem; }
+            .hero-word-wrapper { min-width: 120px; }
             .section-title { font-size: 2rem; }
             .schedule-time { font-size: 1.5rem; }
             .schedule-card { padding: 32px 16px; }
@@ -834,10 +847,8 @@
             .hero-image-card img { height: 300px; }
         }
         @media (max-width: 480px) {
-            .hero-title-wrapper { font-size: 1.8rem; }
-            .hero-title-wrapper .static-text { font-size: 1.6rem; }
-            .hero-title-wrapper .slider-container { height: 2.6rem; }
-            .hero-title-wrapper .slider-word { font-size: 2rem; }
+            .hero-content h1 { font-size: 2rem; }
+            .hero-word-wrapper { min-width: 100px; }
             .kumo-btn-lg { padding: 12px 24px; font-size: 0.9rem; }
         }
     </style>
@@ -873,6 +884,7 @@
                     <li><a href="my-awards.html" class="kumo-nav-link">🏆 Мои награды</a></li>
                     <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
                     <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
+                    <li><a href="booking.html" class="kumo-nav-link">📅 Запись</a></li>
                 </ul>
                 <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
             </div>
@@ -889,6 +901,7 @@
                 <a href="my-awards.html">🏆 Мои награды</a>
                 <a href="blog.html">Блог</a>
                 <a href="contact.html">Контакты</a>
+                <a href="booking.html">📅 Запись</a>
             </div>
         </div>
 
@@ -901,27 +914,20 @@
                             <span class="kumo-badge kumo-badge-brand">Никс — Фотограф</span>
                             <span class="kumo-badge kumo-badge-ghost">Искусство видеть</span>
                         </div>
-
-                        <!-- НОВЫЙ СЛАЙДЕР: СЛЕВА НАПРАВО -->
-                        <div class="hero-title-wrapper">
-                            <span class="static-text">Фотография — это</span>
-                            <div class="slider-container" id="wordSlider">
-                                <div class="slider-track">
-                                    <div class="slider-word active" data-index="0">Искусство</div>
-                                    <div class="slider-word" data-index="1">Свет</div>
-                                    <div class="slider-word" data-index="2">Эмоция</div>
-                                    <div class="slider-word" data-index="3">История</div>
-                                    <div class="slider-word" data-index="4">Вдохновение</div>
-                                </div>
+                        <h1>
+                            Фотография — это<br>
+                            <span class="highlight">искусство</span>
+                            <div class="hero-word-wrapper">
+                                <span class="hero-changing-word active" id="changing-word">Видеть</span>
                             </div>
-                        </div>
-
+                        </h1>
                         <p class="hero-description">
                             Профессиональная портретная и уличная фотография.<br>
                             Каждый кадр — это история, рассказанная через свет, композицию и эмоции.
                         </p>
                         <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-                            <a href="contact.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Обсудить проект →</a>
+                            <a href="booking.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">📅 Записаться →</a>
+                            <a href="#about" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Портфолио</a>
                         </div>
                     </div>
                     <div class="hero-image-card">
@@ -974,7 +980,7 @@
                             <span class="accent-line"></span>
                         </h2>
                         <p style="color: var(--kumo-subtle); font-size: 1rem; line-height: 1.8;">
-                            Меня зовут Артур, я живу и работаю в Калининграде. Мне 16 лет, и я профессионально занимаюсь фотографией, создавая образы, которые остаются в памяти. Фотография для меня — это не просто снимки, а способ рассказать историю, передать настроение и подчеркнуть красоту момента.
+                            Меня зовут Артур, я живу и работаю в Калининграде. Мне 17 лет, и я профессионально занимаюсь фотографией, создавая образы, которые остаются в памяти. Фотография для меня — это не просто снимки, а способ рассказать историю, передать настроение и подчеркнуть красоту момента.
                         </p>
                         <div class="about-stats">
                             <div class="stat-card">
@@ -1113,7 +1119,7 @@
                     Свяжитесь со мной, и мы создадим кадры, которые останутся с вами навсегда.
                 </p>
                 <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-                    <a href="contact.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Связаться сейчас →</a>
+                    <a href="booking.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">📅 Записаться →</a>
                     <a href="#about" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Обо мне</a>
                 </div>
             </div>
@@ -1141,6 +1147,7 @@
                             <li><a href="my-awards.html">🏆 Мои награды</a></li>
                             <li><a href="blog.html">Блог</a></li>
                             <li><a href="contact.html">Контакты</a></li>
+                            <li><a href="booking.html">📅 Запись</a></li>
                         </ul>
                     </div>
                     <div>
@@ -1163,72 +1170,26 @@
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. СЛАЙДЕР СЛОВ (СЛЕВА НАПРАВО) -->
+    <!-- 1. АНИМАЦИЯ СМЕНЫ СЛОВ В ЗАГОЛОВКЕ -->
     <script>
         (function() {
-            const words = document.querySelectorAll('.slider-word');
-            if (!words.length) return;
-            
-            let currentIndex = 0;
-            const totalWords = words.length;
-
-            // Инициализация: первое слово видно, остальные слева
-            words.forEach((w, i) => {
-                if (i === 0) {
-                    w.classList.add('active');
-                    w.style.transform = 'translateX(0)';
-                    w.style.opacity = '1';
-                } else {
-                    w.style.transform = 'translateX(-100%)';
-                    w.style.opacity = '0';
-                }
-            });
-
-            function slideNext() {
-                // Текущее слово уезжает вправо
-                const current = words[currentIndex];
-                current.classList.remove('active');
-                current.classList.add('exit');
-                current.style.transform = 'translateX(100%)';
-                current.style.opacity = '0';
-
-                // Следующее слово
-                const nextIndex = (currentIndex + 1) % totalWords;
-                const next = words[nextIndex];
-                
-                // Ставим следующее слово слева (за пределами)
-                next.classList.remove('exit', 'enter');
-                next.style.transform = 'translateX(-100%)';
-                next.style.opacity = '0';
-                
-                // Принудительный reflow для анимации
-                void next.offsetWidth;
-                
-                // Заезжает в центр
-                next.classList.add('enter');
-                next.style.transform = 'translateX(0)';
-                next.style.opacity = '1';
-
-                // Убираем старые классы у предыдущего
+            const words = ['Видеть', 'Чувствовать', 'Создавать', 'Вдохновлять', 'Запечатлевать'];
+            let index = 0;
+            const el = document.getElementById('changing-word');
+            if (!el) return;
+            setInterval(() => {
+                index = (index + 1) % words.length;
+                el.className = 'hero-changing-word swap-out';
                 setTimeout(() => {
-                    current.classList.remove('exit');
-                    current.style.transform = '';
-                    current.style.opacity = '';
-                }, 800);
-
-                // Переключаем активный класс
-                setTimeout(() => {
-                    next.classList.remove('enter');
-                    next.classList.add('active');
-                    next.style.transform = '';
-                    next.style.opacity = '';
-                }, 50);
-
-                currentIndex = nextIndex;
-            }
-
-            // Запускаем слайдер каждые 3 секунды
-            setInterval(slideNext, 3000);
+                    el.textContent = words[index];
+                    el.className = 'hero-changing-word swap-in';
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            el.className = 'hero-changing-word active';
+                        }, 40);
+                    });
+                }, 350);
+            }, 2800);
         })();
     </script>
 
@@ -1279,7 +1240,8 @@
 
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            let mouseX = null, mouseY = null;
+            let mouseX = null,
+                mouseY = null;
             canvas.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
