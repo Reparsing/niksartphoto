@@ -158,7 +158,6 @@
             padding: 120px 0 80px;
         }
 
-        /* ===== АНИМАЦИИ ===== */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(40px) scale(.96); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -174,6 +173,7 @@
         .delay-3 { animation-delay: .3s; }
         .delay-4 { animation-delay: .4s; }
         .delay-5 { animation-delay: .5s; }
+        .delay-6 { animation-delay: .6s; }
 
         /* ===== ЗАГОЛОВОК ===== */
         .blog-header {
@@ -210,7 +210,9 @@
             margin: 0 auto;
         }
 
-        /* ===== СЕТКА БЛОГА ===== */
+        /* ============================================
+                   СЕТКА БЛОГА
+                   ============================================ */
         .blog-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -221,7 +223,9 @@
         @media(min-width:768px) { .blog-grid { grid-template-columns: 1fr 1fr; } }
         @media(min-width:1024px) { .blog-grid { grid-template-columns: 1fr 1fr 1fr; } }
 
-        /* ===== КАРТОЧКА СТАТЬИ ===== */
+        /* ============================================
+                   КАРТОЧКА СТАТЬИ
+                   ============================================ */
         .blog-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -478,6 +482,16 @@
                         <h2 class="title"><a href="blog-street.html">Эстетика городских улиц: Взгляд фотографа</a></h2>
                         <p class="excerpt">Атмосфера улиц Калининграда, игра света и тени, история одной прогулки с объективом.</p>
                         <div class="footer"><span>10 ноября 2024</span><a href="blog-street.html" class="read-more">Читать →</a></div>
+                    </div>
+                </article>
+
+                <!-- СТАТЬЯ 6: АНИМАЦИЯ -->
+                <article class="blog-card" data-delay="500">
+                    <div class="card-body">
+                        <div class="badge-wrap"><span class="badge">Анимация</span></div>
+                        <h2 class="title"><a href="blog-animation.html">Создаю анимации персонажей в LightMotion</a></h2>
+                        <p class="excerpt">Моя первая работа в LightMotion — анимация персонажа. Показываю процесс и результат.</p>
+                        <div class="footer"><span>3 августа 2026</span><a href="blog-animation.html" class="read-more">Читать →</a></div>
                     </div>
                 </article>
 
