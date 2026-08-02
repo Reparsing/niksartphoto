@@ -1,42 +1,49 @@
 /* ==========================================================================
-   DESIGN SYSTEM FOR NIKS-ARTPHOTO.RU
+   NIKS-ARTPHOTO.RU — РАСШИРЕННАЯ ДИЗАЙН-СИСТЕМА
+   Версия 2.0 — с улучшенными анимациями и эффектами
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* --- COLOR PALETTE & DESIGN TOKENS --- */
+/* --- ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ --- */
 :root,
 html[data-mode="dark"] {
+    /* Шрифты */
     --kumo-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --kumo-font-mono: 'JetBrains Mono', monospace;
-    
+
+    /* Цвета фона */
     --kumo-canvas: #09090b;
     --kumo-canvas-subtle: #121215;
     --kumo-surface: #18181b;
     --kumo-surface-hover: #202024;
     --kumo-control: #27272a;
     --kumo-control-hover: #3f3f46;
-    
+
+    /* Границы и разделители */
     --kumo-hairline: rgba(255, 255, 255, 0.08);
     --kumo-line: rgba(255, 255, 255, 0.14);
     --kumo-hairline-strong: rgba(255, 255, 255, 0.22);
-    
-    --kumo-brand: #f6821f;
-    --kumo-brand-hover: #fa8c16;
-    --kumo-brand-subtle: rgba(246, 130, 31, 0.12);
-    --kumo-brand-glow: rgba(246, 130, 31, 0.35);
-    
+
+    /* Брендовые цвета (золотой) */
+    --kumo-brand: #fbbf24;
+    --kumo-brand-hover: #fcd34d;
+    --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
+    --kumo-brand-glow: rgba(251, 191, 36, 0.35);
+
+    /* Текст */
     --kumo-default: #f4f4f5;
     --kumo-subtle: #a1a1aa;
     --kumo-muted: #71717a;
     --kumo-tint: rgba(255, 255, 255, 0.05);
-    
+
+    /* Тени */
     --kumo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --kumo-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
     --kumo-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
-    --kumo-shadow-glow: 0 0 24px rgba(246, 130, 31, 0.25);
+    --kumo-shadow-glow: 0 0 40px rgba(251, 191, 36, 0.2);
 
-    /* Legacy CSS Variable Compatibility */
+    /* Legacy-совместимость */
     --primary-color: var(--kumo-default);
     --secondary-color: var(--kumo-brand);
     --accent-color: var(--kumo-brand-hover);
@@ -45,11 +52,11 @@ html[data-mode="dark"] {
     --bg-light: var(--kumo-canvas);
     --bg-dark: var(--kumo-canvas-subtle);
     --bg-card: var(--kumo-surface);
-    --gradient-primary: linear-gradient(135deg, #f6821f 0%, #ff4d4f 100%);
-    --gradient-secondary: linear-gradient(135deg, #f6821f 0%, #faad14 100%);
-    --gradient-tertiary: linear-gradient(135deg, #ff7875 0%, #ffc069 100%);
+    --gradient-primary: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    --gradient-secondary: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+    --gradient-tertiary: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
     --gradient-dark: linear-gradient(135deg, #18181b 0%, #09090b 100%);
-    --gradient-animated: linear-gradient(-45deg, #f6821f, #fa8c16, #d48806, #f6821f);
+    --gradient-animated: linear-gradient(-45deg, #fbbf24, #fcd34d, #f59e0b, #fbbf24);
     --shadow-light: var(--kumo-shadow-sm);
     --shadow-medium: var(--kumo-shadow-md);
     --shadow-heavy: var(--kumo-shadow-lg);
@@ -63,27 +70,27 @@ html[data-mode="light"] {
     --kumo-surface-hover: #f4f4f5;
     --kumo-control: #f4f4f5;
     --kumo-control-hover: #e4e4e7;
-    
+
     --kumo-hairline: rgba(0, 0, 0, 0.08);
     --kumo-line: rgba(0, 0, 0, 0.12);
     --kumo-hairline-strong: rgba(0, 0, 0, 0.2);
-    
-    --kumo-brand: #f6821f;
-    --kumo-brand-hover: #e06c11;
-    --kumo-brand-subtle: rgba(246, 130, 31, 0.08);
-    --kumo-brand-glow: rgba(246, 130, 31, 0.2);
-    
+
+    --kumo-brand: #f59e0b;
+    --kumo-brand-hover: #d97706;
+    --kumo-brand-subtle: rgba(245, 158, 11, 0.08);
+    --kumo-brand-glow: rgba(245, 158, 11, 0.2);
+
     --kumo-default: #18181b;
     --kumo-subtle: #52525b;
     --kumo-muted: #71717a;
     --kumo-tint: rgba(0, 0, 0, 0.04);
-    
+
     --kumo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --kumo-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --kumo-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-    --kumo-shadow-glow: 0 0 24px rgba(246, 130, 31, 0.2);
+    --kumo-shadow-glow: 0 0 40px rgba(245, 158, 11, 0.15);
 
-    /* Legacy CSS Variable Compatibility for Light Mode */
+    /* Legacy-совместимость для светлой темы */
     --primary-color: var(--kumo-default);
     --secondary-color: var(--kumo-brand);
     --accent-color: var(--kumo-brand-hover);
@@ -94,76 +101,317 @@ html[data-mode="light"] {
     --bg-card: var(--kumo-surface);
 }
 
-/* --- VIEW TRANSITIONS (Native & Fallback) --- */
+/* --- УЛУЧШЕННЫЕ АНИМАЦИИ ПЕРЕХОДОВ СТРАНИЦ --- */
 @keyframes kumoPageFadeIn {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(12px) scale(0.98);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 @keyframes kumoPageFadeOut {
     from {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1);
     }
     to {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: scale(0.96);
     }
 }
 
 ::view-transition-old(root) {
-    animation: 200ms cubic-bezier(0.16, 1, 0.3, 1) both kumoPageFadeOut;
+    animation: 250ms cubic-bezier(0.16, 1, 0.3, 1) both kumoPageFadeOut;
 }
 
 ::view-transition-new(root) {
-    animation: 280ms cubic-bezier(0.16, 1, 0.3, 1) both kumoPageFadeIn;
+    animation: 350ms cubic-bezier(0.16, 1, 0.3, 1) both kumoPageFadeIn;
 }
 
-/* --- HERO ROTATING WORD 3D MORPH ANIMATION --- */
+/* --- НОВАЯ АНИМАЦИЯ ДЛЯ ГЕРО-СЛОВА (3D + БЛЁСК) --- */
 .hero-word-wrapper {
     display: inline-flex;
     align-items: center;
     position: relative;
     overflow: hidden;
     vertical-align: bottom;
-    height: 1.25em;
-    padding-right: 4px;
+    height: 1.3em;
+    padding: 0 6px;
 }
 
 .hero-changing-word {
     display: inline-block;
-    color: var(--kumo-brand);
-    font-weight: 700;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
     will-change: transform, opacity, filter;
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease, filter 0.35s ease;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.5s ease,
+                filter 0.5s ease;
     transform-origin: 50% 100%;
+    text-shadow: 0 0 40px rgba(251, 191, 36, 0.2);
 }
 
 .hero-changing-word.swap-out {
     opacity: 0;
-    transform: translateY(-36px) rotateX(45deg);
+    transform: translateY(-45px) rotateX(50deg) scale(0.8);
     filter: blur(8px);
 }
 
 .hero-changing-word.swap-in {
     opacity: 0;
-    transform: translateY(36px) rotateX(-45deg);
+    transform: translateY(45px) rotateX(-50deg) scale(0.8);
     filter: blur(8px);
 }
 
 .hero-changing-word.active {
     opacity: 1;
-    transform: translateY(0) rotateX(0deg);
+    transform: translateY(0) rotateX(0deg) scale(1);
     filter: blur(0px);
 }
 
-/* --- RESET & BASE STYLES --- */
+/* --- НОВАЯ АНИМАЦИЯ ДЛЯ КАРТОЧЕК --- */
+@keyframes kumoCardReveal {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.94) rotateX(4deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotateX(0deg);
+    }
+}
+
+.kumo-card-reveal {
+    opacity: 0;
+    transform: translateY(40px) scale(0.94);
+    will-change: opacity, transform;
+    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kumo-card-reveal.in-view {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Stagger-задержки для сетки */
+.kumo-grid-stagger .kumo-card-reveal:nth-child(1) { transition-delay: 0.05s; }
+.kumo-grid-stagger .kumo-card-reveal:nth-child(2) { transition-delay: 0.10s; }
+.kumo-grid-stagger .kumo-card-reveal:nth-child(3) { transition-delay: 0.15s; }
+.kumo-grid-stagger .kumo-card-reveal:nth-child(4) { transition-delay: 0.20s; }
+.kumo-grid-stagger .kumo-card-reveal:nth-child(5) { transition-delay: 0.25s; }
+.kumo-grid-stagger .kumo-card-reveal:nth-child(6) { transition-delay: 0.30s; }
+
+/* --- ПЛАВНАЯ АНИМАЦИЯ ДЛЯ ИКОНОК --- */
+.kumo-icon-hover {
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                color 0.3s ease,
+                filter 0.3s ease;
+}
+
+.kumo-icon-hover:hover {
+    transform: rotate(-6deg) scale(1.15);
+    color: var(--kumo-brand);
+    filter: drop-shadow(0 0 12px var(--kumo-brand-glow));
+}
+
+/* --- НОВАЯ АНИМАЦИЯ ДЛЯ КНОПОК (ПУЛЬСАЦИЯ) --- */
+.kumo-btn-pulse {
+    animation: kumoBtnPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes kumoBtnPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 12px rgba(251, 191, 36, 0);
+    }
+}
+
+/* --- УЛУЧШЕННЫЙ ЭФФЕКТ ДЛЯ ГАЛЕРЕИ (ПАРАЛЛАКС) --- */
+.kumo-gallery-item {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kumo-gallery-item img {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.5s ease;
+}
+
+.kumo-gallery-item:hover img {
+    transform: scale(1.08);
+    filter: brightness(0.9);
+}
+
+.kumo-gallery-item .kumo-gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(9, 9, 11, 0.92) 0%, rgba(9, 9, 11, 0.1) 50%, transparent 100%);
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(12px);
+}
+
+.kumo-gallery-item:hover .kumo-gallery-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- АНИМАЦИЯ ДЛЯ FAQ-ВОЛН (УЛУЧШЕННАЯ) --- */
+.faq-wavy-path {
+    stroke: url(#goldWaveGrad);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 140;
+    stroke-dashoffset: 140;
+    animation: drawWavyLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes drawWavyLine {
+    0% {
+        stroke-dashoffset: 140;
+        opacity: 0;
+        transform: scaleX(0.8);
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+/* --- НОВАЯ АНИМАЦИЯ ДЛЯ СТАТУСА "ОНЛАЙН" --- */
+.kumo-status-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border-radius: 9999px;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.kumo-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: kumoDotPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes kumoDotPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(0.8);
+        box-shadow: 0 0 0 12px rgba(34, 197, 94, 0);
+    }
+}
+
+/* --- ПЛАВНАЯ АНИМАЦИЯ ДЛЯ ТАБОВ (ФИЛЬТРОВ) --- */
+.kumo-tab-btn {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.kumo-tab-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--kumo-brand);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 7px;
+}
+
+.kumo-tab-btn.active::after {
+    opacity: 0.08;
+}
+
+.kumo-tab-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* --- НОВАЯ АНИМАЦИЯ ДЛЯ КАРТОЧЕК БЛОГА --- */
+.blog-card {
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
+}
+
+.blog-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--kumo-brand);
+}
+
+.blog-card-image img {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.blog-card:hover .blog-card-image img {
+    transform: scale(1.1);
+}
+
+/* --- ВСПОМОГАТЕЛЬНЫЕ УТИЛИТЫ ДЛЯ АНИМАЦИЙ --- */
+.kumo-transition-all {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kumo-transition-transform {
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.kumo-transition-opacity {
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kumo-delay-1 { transition-delay: 0.06s; }
+.kumo-delay-2 { transition-delay: 0.12s; }
+.kumo-delay-3 { transition-delay: 0.18s; }
+.kumo-delay-4 { transition-delay: 0.24s; }
+.kumo-delay-5 { transition-delay: 0.30s; }
+
+/* --- ГРАДИЕНТНЫЙ ТЕКСТ С АНИМАЦИЕЙ --- */
+.kumo-gradient-text {
+    background: var(--gradient-animated);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: kumoGradientMove 6s ease-in-out infinite;
+}
+
+@keyframes kumoGradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- СБРОС И БАЗОВЫЕ СТИЛИ --- */
 * {
     margin: 0;
     padding: 0;
@@ -183,18 +431,21 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    animation: kumoPageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: kumoPageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.page-leaving {
-    animation: kumoPageFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    animation: kumoPageFadeOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 a {
     color: inherit;
     text-decoration: none;
-    transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+    transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.3s ease,
+                transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 img {
@@ -203,63 +454,7 @@ img {
     display: block;
 }
 
-/* --- BALANCED ANIMATIONS & INTERACTION SYSTEM --- */
-@keyframes kumoFadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(24px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes kumoFadeScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes kumoPulseGlow {
-    0%, 100% {
-        box-shadow: 0 0 12px var(--kumo-brand-subtle);
-    }
-    50% {
-        box-shadow: 0 0 24px var(--kumo-brand-glow);
-    }
-}
-
-/* Scroll reveal classes */
-.kumo-reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    will-change: opacity, transform;
-    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.kumo-reveal.kumo-scale {
-    transform: scale(0.94);
-}
-
-.kumo-reveal.in-view {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
-/* Stagger delay utilities */
-.delay-1 { transition-delay: 0.06s; }
-.delay-2 { transition-delay: 0.12s; }
-.delay-3 { transition-delay: 0.18s; }
-.delay-4 { transition-delay: 0.24s; }
-.delay-5 { transition-delay: 0.30s; }
-
-/* --- CONTAINER --- */
+/* --- КОНТЕЙНЕР --- */
 .container {
     width: 100%;
     max-width: 1240px;
@@ -267,7 +462,7 @@ img {
     padding: 0 24px;
 }
 
-/* --- REUSABLE RESPONSIVE GRID CLASSES --- */
+/* --- СЕТКИ --- */
 .kumo-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -282,7 +477,7 @@ img {
     margin-bottom: 28px;
 }
 
-/* --- KUMO NAVBAR --- */
+/* --- НАВИГАЦИЯ --- */
 .kumo-navbar {
     position: fixed;
     top: 0;
@@ -296,7 +491,9 @@ img {
     z-index: 1000;
     display: flex;
     align-items: center;
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
 }
 
 .kumo-navbar.scrolled {
@@ -319,15 +516,15 @@ html[data-mode="light"] .kumo-navbar {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.125rem;
     letter-spacing: -0.01em;
     color: var(--kumo-default);
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .kumo-brand-logo:hover {
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.02);
 }
 
 .kumo-brand-icon {
@@ -339,12 +536,14 @@ html[data-mode="light"] .kumo-navbar {
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    box-shadow: 0 0 12px var(--kumo-brand-glow);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 16px var(--kumo-brand-glow);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s ease;
 }
 
 .kumo-brand-logo:hover .kumo-brand-icon {
-    transform: rotate(6deg) scale(1.06);
+    transform: rotate(8deg) scale(1.1);
+    box-shadow: 0 0 30px var(--kumo-brand-glow);
 }
 
 .kumo-nav-menu {
@@ -360,13 +559,13 @@ html[data-mode="light"] .kumo-navbar {
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--kumo-subtle);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kumo-nav-link:hover {
     color: var(--kumo-default);
     background: var(--kumo-tint);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .kumo-nav-link.active {
@@ -382,7 +581,7 @@ html[data-mode="light"] .kumo-navbar {
     gap: 10px;
 }
 
-/* --- KUMO DROPDOWN MENU --- */
+/* --- ВЫПАДАЮЩЕЕ МЕНЮ --- */
 .kumo-dropdown {
     position: relative;
     display: inline-block;
@@ -400,13 +599,13 @@ html[data-mode="light"] .kumo-navbar {
     background: var(--kumo-surface);
     border: 1px solid var(--kumo-hairline);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kumo-dropdown-toggle:hover {
     background: var(--kumo-control);
     border-color: var(--kumo-line);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .kumo-dropdown-menu {
@@ -421,8 +620,10 @@ html[data-mode="light"] .kumo-navbar {
     box-shadow: var(--kumo-shadow-lg);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-8px) scale(0.96);
-    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s ease;
+    transform: translateY(-8px) scale(0.94);
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0.25s ease;
     z-index: 2000;
 }
 
@@ -441,17 +642,17 @@ html[data-mode="light"] .kumo-navbar {
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--kumo-subtle);
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     text-decoration: none;
 }
 
 .kumo-dropdown-item:hover {
     background: var(--kumo-tint);
     color: var(--kumo-default);
-    transform: translateX(2px);
+    transform: translateX(4px);
 }
 
-/* --- MOBILE TOGGLE & SIDEBAR DRAWER --- */
+/* --- МОБИЛЬНОЕ МЕНЮ И САЙДБАР --- */
 .kumo-mobile-toggle {
     display: none;
     background: transparent;
@@ -463,12 +664,12 @@ html[data-mode="light"] .kumo-navbar {
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     touch-action: manipulation;
 }
 
 .kumo-mobile-toggle:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
 }
 
 .kumo-sidebar-overlay {
@@ -480,7 +681,7 @@ html[data-mode="light"] .kumo-navbar {
     z-index: 10000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kumo-sidebar-overlay.open {
@@ -501,7 +702,7 @@ html[data-mode="light"] .kumo-navbar {
     border-left: 1px solid var(--kumo-hairline);
     z-index: 10001;
     transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     padding: 24px 20px 50px;
     display: flex;
     flex-direction: column;
@@ -537,7 +738,7 @@ html[data-mode="light"] .kumo-navbar {
     font-weight: 500;
     color: var(--kumo-subtle);
     display: block;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
@@ -551,7 +752,7 @@ html[data-mode="light"] .kumo-navbar {
 .kumo-sidebar-nav a.active {
     color: var(--kumo-default);
     background: var(--kumo-tint);
-    transform: translateX(4px);
+    transform: translateX(6px);
 }
 
 .kumo-sidebar-divider {
@@ -570,7 +771,7 @@ html[data-mode="light"] .kumo-navbar {
     margin-bottom: 4px;
 }
 
-/* --- KUMO BUTTONS --- */
+/* --- КНОПКИ --- */
 .kumo-btn,
 .btn {
     display: inline-flex;
@@ -579,11 +780,11 @@ html[data-mode="light"] .kumo-navbar {
     gap: 8px;
     padding: 10px 20px;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-decoration: none;
     user-select: none;
     will-change: transform, box-shadow;
@@ -591,23 +792,23 @@ html[data-mode="light"] .kumo-navbar {
 
 .kumo-btn:active,
 .btn:active {
-    transform: scale(0.97) !important;
+    transform: scale(0.94) !important;
 }
 
 .kumo-btn-primary,
 .btn-primary {
     background: var(--kumo-brand);
-    color: #ffffff !important;
+    color: #0a0a0c !important;
     border-color: var(--kumo-brand);
-    box-shadow: 0 2px 8px var(--kumo-brand-subtle);
+    box-shadow: 0 2px 12px var(--kumo-brand-subtle);
 }
 
 .kumo-btn-primary:hover,
 .btn-primary:hover {
     background: var(--kumo-brand-hover);
     border-color: var(--kumo-brand-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--kumo-brand-glow);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px var(--kumo-brand-glow);
 }
 
 .kumo-btn-secondary,
@@ -624,7 +825,7 @@ html[data-mode="light"] .kumo-navbar {
     background: var(--kumo-control);
     border-color: var(--kumo-hairline-strong);
     color: var(--kumo-default);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow: var(--kumo-shadow-sm);
 }
 
@@ -636,7 +837,7 @@ html[data-mode="light"] .kumo-navbar {
 .kumo-btn-ghost:hover {
     background: var(--kumo-tint);
     color: var(--kumo-default);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .kumo-btn-sm {
@@ -650,7 +851,7 @@ html[data-mode="light"] .kumo-navbar {
     border-radius: 10px;
 }
 
-/* --- KUMO BADGES & TAGS --- */
+/* --- БЭЙДЖИ --- */
 .kumo-badge,
 .badge {
     display: inline-flex;
@@ -664,7 +865,7 @@ html[data-mode="light"] .kumo-navbar {
     background: var(--kumo-tint);
     border: 1px solid var(--kumo-hairline);
     color: var(--kumo-subtle);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .kumo-badge:hover {
@@ -674,18 +875,18 @@ html[data-mode="light"] .kumo-navbar {
 
 .kumo-badge-brand {
     background: var(--kumo-brand-subtle);
-    border-color: rgba(246, 130, 31, 0.3);
+    border-color: rgba(251, 191, 36, 0.3);
     color: var(--kumo-brand);
 }
 
-/* --- KUMO CARDS & LAYER CARDS --- */
+/* --- КАРТОЧКИ --- */
 .kumo-card,
 .card {
     background: var(--kumo-surface);
     border: 1px solid var(--kumo-hairline);
     border-radius: 12px;
     padding: 24px;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     overflow: hidden;
     will-change: transform, box-shadow;
@@ -694,11 +895,11 @@ html[data-mode="light"] .kumo-navbar {
 .kumo-card:hover,
 .card:hover {
     border-color: var(--kumo-hairline-strong);
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     box-shadow: var(--kumo-shadow-md);
 }
 
-/* --- KUMO TABS & SEGMENTED CONTROLS --- */
+/* --- ТАБЫ --- */
 .kumo-tabs,
 .filters {
     display: inline-flex;
@@ -722,13 +923,14 @@ html[data-mode="light"] .kumo-navbar {
     background: transparent;
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .kumo-tab-btn:hover,
 .filter-btn:hover {
     color: var(--kumo-default);
     background: var(--kumo-tint);
+    transform: translateY(-2px);
 }
 
 .kumo-tab-btn.active,
@@ -740,7 +942,7 @@ html[data-mode="light"] .kumo-navbar {
     font-weight: 600;
 }
 
-/* --- KUMO FORMS & INPUTS --- */
+/* --- ФОРМЫ --- */
 .kumo-form-group {
     margin-bottom: 20px;
     display: flex;
@@ -769,7 +971,9 @@ textarea {
     font-family: var(--kumo-font);
     color: var(--kumo-default);
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                transform 0.2s ease;
 }
 
 .kumo-input:focus,
@@ -777,10 +981,11 @@ textarea {
 input:focus,
 textarea:focus {
     border-color: var(--kumo-brand);
-    box-shadow: 0 0 0 3px var(--kumo-brand-subtle);
+    box-shadow: 0 0 0 4px var(--kumo-brand-subtle);
+    transform: scale(1.01);
 }
 
-/* --- KUMO THEME TOGGLE BUTTON --- */
+/* --- ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ --- */
 .kumo-theme-toggle {
     background: var(--kumo-surface);
     border: 1px solid var(--kumo-hairline);
@@ -792,20 +997,20 @@ textarea:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .kumo-theme-toggle:hover {
     background: var(--kumo-control);
     border-color: var(--kumo-line);
-    transform: rotate(15deg) scale(1.05);
+    transform: rotate(25deg) scale(1.08);
 }
 
 .kumo-theme-toggle:active {
-    transform: scale(0.92);
+    transform: scale(0.88);
 }
 
-/* --- HERO SECTION --- */
+/* --- ГЕРО-СЕКЦИЯ --- */
 .hero-section {
     padding: 140px 0 80px;
     position: relative;
@@ -821,7 +1026,7 @@ textarea:focus {
 
 .hero-content h1 {
     font-size: 3.25rem;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.03em;
     margin: 16px 0 20px;
@@ -834,10 +1039,6 @@ textarea:focus {
     max-width: 520px;
 }
 
-.hero-media {
-    position: relative;
-}
-
 .hero-image-card {
     border-radius: 16px;
     overflow: hidden;
@@ -845,21 +1046,27 @@ textarea:focus {
     box-shadow: var(--kumo-shadow-lg);
     background: var(--kumo-surface);
     position: relative;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.5s ease;
+}
+
+.hero-image-card:hover {
+    transform: scale(1.02) rotateY(2deg);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
 }
 
 .hero-image-card img {
     width: 100%;
     height: 480px;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-image-card:hover img {
-    transform: scale(1.04);
+    transform: scale(1.05);
 }
 
-/* --- GALLERY MASONRY / GRID --- */
+/* --- ГАЛЕРЕЯ --- */
 .kumo-gallery-grid,
 .gallery {
     display: grid;
@@ -876,13 +1083,13 @@ textarea:focus {
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .kumo-gallery-item:hover,
 .gallery-item:hover {
     border-color: var(--kumo-hairline-strong);
-    transform: translateY(-5px);
+    transform: translateY(-6px);
     box-shadow: var(--kumo-shadow-md);
 }
 
@@ -891,12 +1098,12 @@ textarea:focus {
     width: 100%;
     height: 280px;
     object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kumo-gallery-item:hover img,
 .gallery-item:hover img {
-    transform: scale(1.06);
+    transform: scale(1.07);
 }
 
 .kumo-gallery-overlay {
@@ -908,12 +1115,15 @@ textarea:focus {
     flex-direction: column;
     justify-content: flex-end;
     padding: 20px;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(12px);
 }
 
 .kumo-gallery-item:hover .kumo-gallery-overlay,
 .gallery-item:hover .kumo-gallery-overlay {
     opacity: 1;
+    transform: translateY(0);
 }
 
 .kumo-gallery-title {
@@ -928,7 +1138,7 @@ textarea:focus {
     font-weight: 500;
 }
 
-/* --- FULLSCREEN LIGHTBOX MODAL & GALLERY SLIDER --- */
+/* --- ЛАЙТБОКС --- */
 .kumo-lightbox {
     position: fixed;
     top: 0;
@@ -936,15 +1146,15 @@ textarea:focus {
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     padding: 40px;
 }
 
@@ -975,8 +1185,8 @@ textarea:focus {
     object-fit: contain !important;
     border-radius: 8px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.9);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    transform: scale(0.96);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: scale(0.92);
     opacity: 1 !important;
     pointer-events: auto;
 }
@@ -999,7 +1209,7 @@ textarea:focus {
     justify-content: center;
     z-index: 1000000;
     backdrop-filter: blur(10px);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .kumo-lightbox-close {
@@ -1028,19 +1238,19 @@ textarea:focus {
 .kumo-lightbox-close:hover {
     background: var(--kumo-brand);
     border-color: var(--kumo-brand);
-    transform: scale(1.1);
+    transform: scale(1.12) rotate(90deg);
 }
 
 .kumo-lightbox-prev:hover {
     background: var(--kumo-brand);
     border-color: var(--kumo-brand);
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.12) translateX(-4px);
 }
 
 .kumo-lightbox-next:hover {
     background: var(--kumo-brand);
     border-color: var(--kumo-brand);
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.12) translateX(4px);
 }
 
 .kumo-lightbox-counter {
@@ -1059,7 +1269,7 @@ textarea:focus {
     backdrop-filter: blur(8px);
 }
 
-/* --- BLOG GRID --- */
+/* --- БЛОГ --- */
 .blog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -1074,12 +1284,12 @@ textarea:focus {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .blog-card:hover {
     border-color: var(--kumo-line);
-    transform: translateY(-5px);
+    transform: translateY(-6px);
     box-shadow: var(--kumo-shadow-md);
 }
 
@@ -1092,11 +1302,11 @@ textarea:focus {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .blog-card:hover .blog-card-image img {
-    transform: scale(1.06);
+    transform: scale(1.08);
 }
 
 .blog-card-body {
@@ -1108,7 +1318,7 @@ textarea:focus {
 
 .blog-card-title {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 700;
     margin: 12px 0;
     line-height: 1.35;
     letter-spacing: -0.01em;
@@ -1131,7 +1341,7 @@ textarea:focus {
     color: var(--kumo-muted);
 }
 
-/* --- FOOTER --- */
+/* --- ФУТЕР --- */
 .kumo-footer {
     background: var(--kumo-canvas-subtle);
     border-top: 1px solid var(--kumo-hairline);
@@ -1172,10 +1382,12 @@ textarea:focus {
 .footer-links a {
     color: var(--kumo-subtle);
     font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
 
 .footer-links a:hover {
     color: var(--kumo-brand);
+    transform: translateX(4px);
 }
 
 .footer-bottom {
@@ -1188,7 +1400,231 @@ textarea:focus {
     color: var(--kumo-muted);
 }
 
-/* --- RESPONSIVE BREAKPOINTS & MOBILE FIXES --- */
+/* --- FAQ-СЕКЦИЯ (УЛУЧШЕННАЯ) --- */
+.faq-section {
+    padding: 90px 0;
+    border-bottom: 1px solid var(--kumo-hairline);
+    background: var(--kumo-canvas-subtle);
+    position: relative;
+    overflow: hidden;
+}
+
+.faq-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.faq-badge {
+    background: var(--kumo-brand-subtle);
+    color: var(--kumo-brand);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+.faq-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--kumo-default);
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+@media (max-width: 868px) {
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+.faq-card {
+    background: rgba(24, 24, 27, 0.75);
+    border: 1px solid rgba(251, 191, 36, 0.18);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+    transform: translateY(25px);
+    animation: faqCascade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger-задержки для FAQ */
+.faq-card:nth-child(1) { animation-delay: 0.1s; }
+.faq-card:nth-child(2) { animation-delay: 0.25s; }
+.faq-card:nth-child(3) { animation-delay: 0.4s; }
+.faq-card:nth-child(4) { animation-delay: 0.55s; }
+
+@keyframes faqCascade {
+    from {
+        opacity: 0;
+        transform: translateY(35px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.faq-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(251, 191, 36, 0.5);
+    box-shadow: 0 16px 40px -10px rgba(251, 191, 36, 0.2),
+                0 0 30px rgba(251, 191, 36, 0.06);
+    background: rgba(30, 30, 38, 0.9);
+}
+
+.faq-question {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.faq-question-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--kumo-brand-subtle);
+    color: var(--kumo-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.faq-card:hover .faq-question-icon {
+    transform: rotate(15deg) scale(1.12);
+    background: var(--kumo-brand);
+    color: #0a0a0c;
+}
+
+.faq-question-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.35;
+    transition: color 0.3s ease;
+}
+
+.faq-card:hover .faq-question-text {
+    color: var(--kumo-brand);
+}
+
+.faq-wavy-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 6px 0 6px 8px;
+    margin-left: 10px;
+}
+
+.faq-wavy-svg {
+    width: 24px;
+    height: 65px;
+    overflow: visible;
+}
+
+.faq-wavy-path {
+    stroke: url(#goldWaveGrad);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 140;
+    stroke-dashoffset: 140;
+    animation: drawWavyLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.faq-card:nth-child(1) .faq-wavy-path { animation-delay: 0.35s; }
+.faq-card:nth-child(2) .faq-wavy-path { animation-delay: 0.5s; }
+.faq-card:nth-child(3) .faq-wavy-path { animation-delay: 0.65s; }
+.faq-card:nth-child(4) .faq-wavy-path { animation-delay: 0.8s; }
+
+@keyframes drawWavyLine {
+    0% {
+        stroke-dashoffset: 140;
+        opacity: 0;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+.faq-answer {
+    color: var(--kumo-subtle);
+    font-size: 0.975rem;
+    line-height: 1.65;
+    margin-top: 4px;
+    padding-left: 2px;
+}
+
+.faq-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.faq-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 0.925rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.faq-btn-bot {
+    background: var(--gradient-primary);
+    color: #0a0a0c;
+    box-shadow: 0 4px 14px rgba(251, 191, 36, 0.3);
+}
+
+.faq-btn-bot:hover {
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 8px 28px rgba(251, 191, 36, 0.5);
+}
+
+.faq-btn-author {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.faq-btn-author:hover {
+    transform: translateY(-4px) scale(1.06);
+    background: var(--kumo-brand-subtle);
+    border-color: var(--kumo-brand);
+    color: var(--kumo-brand);
+    box-shadow: 0 6px 24px rgba(251, 191, 36, 0.2);
+}
+
+/* --- АДАПТИВНОСТЬ --- */
 @media (max-width: 1024px) {
     .hero-grid {
         grid-template-columns: 1fr;
@@ -1224,7 +1660,6 @@ textarea:focus {
         height: 320px !important;
     }
 
-    /* Intercept inline 2-column grids on mobile */
     .kumo-grid-2,
     div[style*="grid-template-columns: 1fr 1fr"],
     div[style*="grid-template-columns:1fr 1fr"],
@@ -1302,234 +1737,3 @@ textarea:focus {
         width: 100% !important;
     }
 }
-
-/* ==========================================
-   FAQ SECTION STYLES & ANIMATIONS
-   ========================================== */
-.faq-section {
-    padding: 90px 0;
-    border-bottom: 1px solid var(--kumo-hairline);
-    background: var(--kumo-canvas-subtle);
-    position: relative;
-    overflow: hidden;
-}
-
-.faq-header {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.faq-badge {
-    background: rgba(212, 175, 55, 0.12);
-    color: #ffd700;
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    padding: 6px 16px;
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 12px;
-}
-
-.faq-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--kumo-default);
-}
-
-.faq-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-@media (max-width: 868px) {
-    .faq-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-}
-
-.faq-card {
-    background: rgba(24, 24, 27, 0.75);
-    border: 1px solid rgba(212, 175, 55, 0.18);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: 0;
-    transform: translateY(25px);
-    animation: faqCascade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Staggered Load Animation */
-.faq-card:nth-child(1) { animation-delay: 0.1s; }
-.faq-card:nth-child(2) { animation-delay: 0.25s; }
-.faq-card:nth-child(3) { animation-delay: 0.4s; }
-.faq-card:nth-child(4) { animation-delay: 0.55s; }
-
-@keyframes faqCascade {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.97);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Hover on Question Card */
-.faq-card:hover {
-    transform: translateY(-6px) scale(1.015);
-    border-color: rgba(212, 175, 55, 0.5);
-    box-shadow: 0 16px 40px -10px rgba(212, 175, 55, 0.2), 0 0 25px rgba(212, 175, 55, 0.08);
-    background: rgba(30, 30, 38, 0.9);
-}
-
-.faq-question {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-}
-
-.faq-question-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: rgba(212, 175, 55, 0.15);
-    color: #ffd700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.15rem;
-    flex-shrink: 0;
-    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
-    border: 1px solid rgba(212, 175, 55, 0.25);
-}
-
-.faq-card:hover .faq-question-icon {
-    transform: rotate(12deg) scale(1.1);
-    background: rgba(212, 175, 55, 0.3);
-    color: #fff;
-}
-
-.faq-question-text {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #ffffff;
-    line-height: 1.35;
-    transition: color 0.3s ease;
-}
-
-.faq-card:hover .faq-question-text {
-    color: #ffd700;
-}
-
-/* Decorative Vertical S-Shaped Wavy Line */
-.faq-wavy-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 6px 0 6px 8px;
-    margin-left: 10px;
-}
-
-.faq-wavy-svg {
-    width: 24px;
-    height: 65px;
-    overflow: visible;
-}
-
-.faq-wavy-path {
-    stroke: url(#goldWaveGrad);
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-dasharray: 140;
-    stroke-dashoffset: 140;
-    animation: drawWavyLine 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.faq-card:nth-child(1) .faq-wavy-path { animation-delay: 0.35s; }
-.faq-card:nth-child(2) .faq-wavy-path { animation-delay: 0.5s; }
-.faq-card:nth-child(3) .faq-wavy-path { animation-delay: 0.65s; }
-.faq-card:nth-child(4) .faq-wavy-path { animation-delay: 0.8s; }
-
-@keyframes drawWavyLine {
-    0% {
-        stroke-dashoffset: 140;
-        opacity: 0;
-    }
-    20% {
-        opacity: 1;
-    }
-    100% {
-        stroke-dashoffset: 0;
-        opacity: 1;
-    }
-}
-
-.faq-answer {
-    color: var(--kumo-subtle);
-    font-size: 0.975rem;
-    line-height: 1.65;
-    margin-top: 4px;
-    padding-left: 2px;
-}
-
-.faq-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-/* Buttons Styling and Hover Animations */
-.faq-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border-radius: 12px;
-    font-size: 0.925rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.faq-btn-bot {
-    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
-    color: #09090b;
-    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
-}
-
-.faq-btn-bot:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.5);
-    background: linear-gradient(135deg, #ffd700 0%, #fff099 100%);
-    color: #000;
-}
-
-.faq-btn-author {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    border: 1px solid rgba(212, 175, 55, 0.35);
-}
-
-.faq-btn-author:hover {
-    transform: translateY(-3px) scale(1.05);
-    background: rgba(212, 175, 55, 0.15);
-    border-color: #ffd700;
-    color: #ffd700;
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
-}
-
