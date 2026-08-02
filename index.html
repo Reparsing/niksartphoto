@@ -18,469 +18,834 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="theme.css">
     <style>
-        /* SCHEDULE SECTION STYLES */
+        /* ===== БАЗОВЫЕ СТИЛИ И ПЕРЕМЕННЫЕ ===== */
+        :root {
+            --kumo-brand: #fbbf24;
+            --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
+            --kumo-canvas: #0a0a0c;
+            --kumo-canvas-subtle: rgba(255, 255, 255, 0.02);
+            --kumo-hairline: rgba(255, 255, 255, 0.08);
+            --kumo-subtle: #a1a1aa;
+            --kumo-muted: #71717a;
+            --kumo-default: #f4f4f5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--kumo-canvas);
+            color: var(--kumo-default);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* ===== КАСТОМНЫЙ СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
+        ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
+
+        /* ===== НАВИГАЦИЯ ===== */
+        .kumo-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(16px);
+            background: rgba(10, 10, 12, 0.7);
+            border-bottom: 1px solid var(--kumo-hairline);
+            padding: 12px 0;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .kumo-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        .kumo-brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--kumo-brand-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--kumo-brand);
+        }
+        .kumo-nav-menu {
+            display: none;
+            list-style: none;
+            gap: 28px;
+        }
+        @media (min-width: 768px) {
+            .kumo-nav-menu { display: flex; }
+        }
+        .kumo-nav-link {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        .kumo-nav-link:hover { color: #fff; }
+        .kumo-nav-link.active { color: var(--kumo-brand); }
+        .kumo-nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--kumo-brand);
+            border-radius: 2px;
+        }
+        .kumo-mobile-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        @media (min-width: 768px) {
+            .kumo-mobile-toggle { display: none; }
+        }
+
+        /* ===== ГЛАВНЫЙ ХЕРО ===== */
+        .hero-section {
+            padding: 60px 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        @media (min-width: 992px) {
+            .hero-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .hero-content h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        @media (min-width: 768px) {
+            .hero-content h1 { font-size: 3.8rem; }
+        }
+        .hero-word-wrapper {
+            display: inline-block;
+            position: relative;
+            height: 1.2em;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
+        .hero-changing-word {
+            display: block;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .hero-changing-word.swap-out {
+            transform: translateY(-40px) scale(0.8);
+            opacity: 0;
+        }
+        .hero-changing-word.swap-in {
+            transform: translateY(40px) scale(0.8);
+            opacity: 0;
+        }
+        .hero-changing-word.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .hero-image-card {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--kumo-hairline);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        .hero-image-card img { width: 100%; height: 400px; object-fit: cover; }
+
+        /* ===== КНОПКИ ===== */
+        .kumo-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .kumo-btn-primary {
+            background: var(--kumo-brand);
+            color: #0a0a0c;
+        }
+        .kumo-btn-primary:hover { background: #fcd34d; transform: scale(1.02); }
+        .kumo-btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border: 1px solid var(--kumo-hairline);
+        }
+        .kumo-btn-secondary:hover { background: rgba(255,255,255,0.12); }
+        .kumo-btn-lg { padding: 14px 36px; font-size: 1rem; }
+
+        /* ===== КАРТОЧКИ НАПРАВЛЕНИЙ (3D-эффект) ===== */
+        .direction-card {
+            background: rgba(18, 18, 22, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 20px;
+            padding: 32px 24px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: transform;
+            cursor: default;
+        }
+        .direction-card:hover {
+            transform: translateY(-12px) rotateX(4deg) rotateY(2deg);
+            box-shadow: 0 30px 50px rgba(0,0,0,0.4);
+            border-color: var(--kumo-brand);
+        }
+        .direction-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: var(--kumo-brand-subtle);
+            color: var(--kumo-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+        }
+
+        /* ===== СЕКЦИЯ ОБО МНЕ С ПАРЯЩИМИ КРУГАМИ ===== */
+        .about-section {
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        @media (min-width: 992px) {
+            .about-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .about-stats {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0 28px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.04);
+            padding: 16px 24px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid var(--kumo-hairline);
+        }
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--kumo-brand);
+            display: block;
+        }
+        .about-image {
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--kumo-hairline);
+        }
+        .about-image img { width: 100%; height: 400px; object-fit: cover; }
+
+        /* ===== РАСПИСАНИЕ С НЕОБЫЧНЫМ ФОНОМ ===== */
         .schedule-section {
             padding: 80px 0;
-            border-bottom: 1px solid var(--kumo-hairline, rgba(255, 255, 255, 0.08));
-            background: var(--kumo-canvas-subtle, rgba(255, 255, 255, 0.02));
-            animation: scheduleFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            will-change: opacity, transform;
+            background: radial-gradient(circle at 30% 50%, rgba(251,191,36,0.04) 0%, transparent 60%);
+            border-top: 1px solid var(--kumo-hairline);
+            border-bottom: 1px solid var(--kumo-hairline);
         }
-
-        @keyframes scheduleFadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .schedule-card {
-            background: rgba(18, 18, 22, 0.75);
+            background: rgba(18, 18, 22, 0.7);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 32px;
             padding: 48px 32px;
             text-align: center;
             max-width: 640px;
             margin: 0 auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
             position: relative;
             overflow: hidden;
         }
-
         .schedule-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--kumo-brand, #3b82f6), transparent);
+            inset: 0;
+            background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent 60%);
+            pointer-events: none;
         }
-
-        .schedule-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 14px;
-            border-radius: 20px;
-            background: rgba(59, 130, 246, 0.12);
-            color: #60a5fa;
-            font-size: 0.825rem;
-            font-weight: 500;
-            margin-bottom: 16px;
-            border: 1px solid rgba(96, 165, 250, 0.2);
-        }
-
-        .schedule-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-            margin-bottom: 24px;
-        }
-
         .schedule-time-box {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 18px 32px;
-            border-radius: 14px;
-            margin-bottom: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--kumo-hairline);
+            padding: 18px 40px;
+            border-radius: 60px;
+            margin: 16px 0;
         }
+        .schedule-time { font-size: 1.8rem; font-weight: 600; color: #fff; }
 
-        .schedule-time {
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: #f3f4f6;
-            letter-spacing: 0.02em;
+        /* ===== FAQ С ВОЛНИСТЫМ ЭФФЕКТОМ ===== */
+        .faq-section {
+            padding: 80px 0;
+            background: var(--kumo-canvas-subtle);
         }
-
-        .schedule-note {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.5);
-            max-width: 520px;
+        .faq-header { text-align: center; margin-bottom: 48px; }
+        .faq-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            background: var(--kumo-brand-subtle);
+            color: var(--kumo-brand);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            max-width: 800px;
             margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .faq-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .faq-card {
+            background: rgba(18, 18, 22, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+        .faq-card:hover { border-color: var(--kumo-brand); }
+        .faq-question {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .faq-question-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--kumo-brand-subtle);
+            color: var(--kumo-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .faq-answer { color: var(--kumo-subtle); font-size: 0.95rem; }
+        .faq-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .faq-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid var(--kumo-hairline);
+        }
+        .faq-btn-bot { background: var(--kumo-brand-subtle); color: var(--kumo-brand); }
+        .faq-btn-author { background: rgba(255,255,255,0.04); color: #fff; }
+        .faq-btn:hover { transform: scale(1.04); }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            padding: 80px 0;
+            text-align: center;
+            background: radial-gradient(circle at 70% 30%, rgba(251,191,36,0.04), transparent 60%);
+        }
+
+        /* ===== ФУТЕР ===== */
+        .kumo-footer {
+            padding: 48px 0 24px;
+            border-top: 1px solid var(--kumo-hairline);
+            background: var(--kumo-canvas);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+        }
+        .footer-heading { color: #fff; font-weight: 600; margin-bottom: 12px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 6px; }
+        .footer-links a { color: var(--kumo-subtle); transition: color 0.3s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-bottom {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--kumo-hairline);
+            text-align: center;
+            color: var(--kumo-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===== ГЕОМЕТРИЧЕСКИЕ ФИГУРЫ (фон) ===== */
+        .floating-shapes {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            will-change: transform;
+            animation: floatShape 20s infinite alternate ease-in-out;
+        }
+        .shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #fbbf24, transparent 70%);
+            top: -10%;
+            left: -5%;
+            animation-duration: 25s;
+        }
+        .shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #f59e0b, transparent 70%);
+            bottom: -5%;
+            right: -5%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+        .shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #fcd34d, transparent 70%);
+            top: 40%;
+            left: 60%;
+            animation-duration: 22s;
+            animation-delay: -10s;
+        }
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(40px, -30px) scale(1.1) rotate(20deg); }
+            66% { transform: translate(-20px, 40px) scale(0.9) rotate(-15deg); }
+            100% { transform: translate(30px, -20px) scale(1.05) rotate(10deg); }
+        }
+
+        /* ===== ЧАСТИЦЫ (canvas) ===== */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== ОБЩИЙ КОНТЕЙНЕР ДЛЯ КОНТЕНТА (поверх фона) ===== */
+        .main-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 480px) {
+            .hero-content h1 { font-size: 2.2rem; }
+            .schedule-time { font-size: 1.4rem; }
+            .schedule-card { padding: 32px 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- KUMO NAVBAR -->
-    <nav class="kumo-navbar">
-        <div class="container nav-container">
-            <a href="index.html" class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span>НИКС</span>
-            </a>
-            <ul class="kumo-nav-menu">
-                <li><a href="index.html" class="kumo-nav-link active">🏠 Главная</a></li>
-                <li><a href="portfolio.html" class="kumo-nav-link">📸 Портфолио</a></li>
-                <li><a href="about.html" class="kumo-nav-link">👤 Обо мне</a></li>
-                <li><a href="#schedule" class="kumo-nav-link">⏰ Режим работы</a></li>
-                <li><a href="#faq" class="kumo-nav-link">❓ Частые вопросы</a></li>
-                <li><a href="blog.html" class="kumo-nav-link">📝 Блог</a></li>
-                <li><a href="contact.html" class="kumo-nav-link">📞 Контакты</a></li>
-            </ul>
-            <div class="kumo-nav-actions">
-                <div class="kumo-dropdown">
-                    <button class="kumo-dropdown-toggle" aria-label="Помощь">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span>Помощь</span>
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div class="kumo-dropdown-menu">
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Сообщить о проблеме на сайте</span>
-                        </a>
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span>Задать вопрос</span>
-                        </a>
-                    </div>
-                </div>
-                <button class="kumo-theme-toggle" aria-label="Toggle theme"></button>
-                <button class="kumo-mobile-toggle" aria-label="Open menu">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-            </div>
-        </div>
-    </nav>
-    <div class="kumo-sidebar-overlay"></div>
-    <aside class="kumo-sidebar">
-        <div class="kumo-sidebar-header">
-            <div class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span>НИКС</span>
-            </div>
-        </div>
-        <ul class="kumo-sidebar-nav">
-            <li><a href="index.html" class="active">🏠 Главная</a></li>
-            <li><a href="portfolio.html">📸 Портфолио</a></li>
-            <li><a href="about.html">👤 Обо мне</a></li>
-            <li><a href="#schedule">⏰ Режим работы</a></li>
-            <li><a href="#faq">❓ Частые вопросы</a></li>
-            <li><a href="blog.html">📝 Блог</a></li>
-            <li><a href="contact.html">📞 Контакты</a></li>
-            <li class="kumo-sidebar-divider"></li>
-            <li class="kumo-sidebar-heading">Помощь</li>
-            <li><a href="https://t.me/tylenevv" target="_blank">⚠️ Сообщить о проблеме</a></li>
-            <li><a href="https://t.me/tylenevv" target="_blank">💬 Задать вопрос</a></li>
-        </ul>
-    </aside>
 
-    <!-- HERO SECTION -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-grid">
-                <div class="hero-content">
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
-                        <span class="kumo-badge kumo-badge-brand">Никс — Фотограф</span>
-                        <span class="kumo-badge">Искусство в каждом кадре</span>
-                    </div>
-                    <h1 style="font-size: 3.25rem; font-weight: 700; line-height: 1.15; margin-bottom: 16px;">
-                        Тут надо уметь:<br>
-                        <div class="hero-word-wrapper">
-                            <span class="hero-changing-word active" id="changing-word">Действовать</span>
+    <!-- ===== ФЛОАТИНГ ФИГУРЫ ===== -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- ===== ЧАСТИЦЫ (Canvas) ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <div class="main-content">
+
+        <!-- НАВИГАЦИЯ -->
+        <nav class="kumo-navbar">
+            <div class="container nav-container">
+                <a href="index.html" class="kumo-brand-logo">
+                    <div class="kumo-brand-icon">✦</div>
+                    <span>НИКС</span>
+                </a>
+                <ul class="kumo-nav-menu">
+                    <li><a href="index.html" class="kumo-nav-link active">Главная</a></li>
+                    <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
+                    <li><a href="#schedule" class="kumo-nav-link">Режим работы</a></li>
+                    <li><a href="#faq" class="kumo-nav-link">Частые вопросы</a></li>
+                    <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
+                    <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
+                </ul>
+                <button class="kumo-mobile-toggle" aria-label="Меню">☰</button>
+            </div>
+        </nav>
+
+        <!-- ГЕРО -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                            <span style="background: var(--kumo-brand-subtle); color: var(--kumo-brand); padding: 4px 14px; border-radius: 40px; font-size: 0.8rem; font-weight: 500;">Никс — Фотограф</span>
+                            <span style="background: rgba(255,255,255,0.04); padding: 4px 14px; border-radius: 40px; font-size: 0.8rem; font-weight: 500; color: var(--kumo-subtle);">Искусство в каждом кадре</span>
                         </div>
-                    </h1>
-                    <p style="color: var(--kumo-subtle); font-size: 1.1rem; margin-bottom: 12px;">
-                        Каждый кадр — шаг к совершенству.
-                    </p>
-                    <p style="color: var(--kumo-muted); font-size: 0.95rem; margin-bottom: 32px;">
-                        Ищу свой стиль, экспериментирую с композицией и настроением.
-                    </p>
-                    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-                        <a href="portfolio.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Посмотреть работы &rarr;</a>
-                        <a href="contact.html" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Связаться</a>
+                        <h1>
+                            Тут надо уметь:<br>
+                            <div class="hero-word-wrapper">
+                                <span class="hero-changing-word active" id="changing-word">Действовать</span>
+                            </div>
+                        </h1>
+                        <p style="color: var(--kumo-subtle); font-size: 1.1rem; margin: 8px 0 4px;">Каждый кадр — шаг к совершенству.</p>
+                        <p style="color: var(--kumo-muted); font-size: 0.95rem; margin-bottom: 28px;">Ищу свой стиль, экспериментирую с композицией и настроением.</p>
+                        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                            <a href="contact.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Связаться →</a>
+                            <a href="#about" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Узнать больше</a>
+                        </div>
                     </div>
-                </div>
-                <div class="hero-media">
                     <div class="hero-image-card">
                         <img src="images/niks.png" alt="Никс Фотограф" loading="eager">
-                        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(8px); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--kumo-hairline); display: flex; align-items: center; justify-content: space-between;">
+                        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; background: rgba(9,9,11,0.8); backdrop-filter: blur(8px); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--kumo-hairline); display: flex; align-items: center; justify-content: space-between;">
                             <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: #fff;">Никс</div>
-                                <div style="font-size: 0.775rem; color: var(--kumo-subtle);">Фотограф</div>
+                                <div style="font-weight: 600; color: #fff;">Никс</div>
+                                <div style="font-size: 0.8rem; color: var(--kumo-subtle);">Фотограф</div>
                             </div>
-                            <span class="kumo-badge kumo-badge-brand">Никс</span>
+                            <span style="background: var(--kumo-brand-subtle); color: var(--kumo-brand); padding: 4px 14px; border-radius: 40px; font-size: 0.75rem; font-weight: 600;">Никс</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- SERVICES PREVIEW / DIRECTION SECTION -->
-    <section style="padding: 80px 0; border-bottom: 1px solid var(--kumo-hairline);">
-        <div class="container">
-            <div style="text-align: center; margin-bottom: 50px;">
-                <span class="kumo-badge kumo-badge-brand" style="margin-bottom: 8px;">Стиль и работа</span>
-                <h2 style="font-size: 2.25rem; font-weight: 700; letter-spacing: -0.02em;">Мои направления</h2>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-                <div class="kumo-card">
-                    <div style="width: 48px; height: 48px; border-radius: 10px; background: var(--kumo-brand-subtle); color: var(--kumo-brand); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 8px;">Портретная съёмка</h3>
-                    <p style="color: var(--kumo-subtle); font-size: 0.925rem; line-height: 1.6;">
-                        Создание качественных и выразительных портретов для различных целей.
-                    </p>
+        <!-- НАПРАВЛЕНИЯ (карточки с 3D) -->
+        <section style="padding: 60px 0; border-bottom: 1px solid var(--kumo-hairline);">
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <span style="background: var(--kumo-brand-subtle); color: var(--kumo-brand); padding: 4px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 500;">Стиль и работа</span>
+                    <h2 style="font-size: 2.2rem; font-weight: 700; margin-top: 8px;">Мои направления</h2>
                 </div>
-
-                <div class="kumo-card">
-                    <div style="width: 48px; height: 48px; border-radius: 10px; background: var(--kumo-brand-subtle); color: var(--kumo-brand); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                    <div class="direction-card">
+                        <div class="direction-icon">👤</div>
+                        <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 6px;">Портретная съёмка</h3>
+                        <p style="color: var(--kumo-subtle); font-size: 0.95rem;">Создание качественных и выразительных портретов для различных целей.</p>
                     </div>
-                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 8px;">Уличные зарисовки</h3>
-                    <p style="color: var(--kumo-subtle); font-size: 0.925rem; line-height: 1.6;">
-                        Фотосъёмка с акцентом на контрасты и эмоции в городской среде.
-                    </p>
+                    <div class="direction-card">
+                        <div class="direction-icon">🌆</div>
+                        <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 6px;">Уличные зарисовки</h3>
+                        <p style="color: var(--kumo-subtle); font-size: 0.95rem;">Фотосъёмка с акцентом на контрасты и эмоции в городской среде.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ABOUT PREVIEW SECTION -->
-    <section style="padding: 80px 0; border-bottom: 1px solid var(--kumo-hairline); background: var(--kumo-canvas-subtle);">
-        <div class="container">
-            <div class="kumo-grid-2">
-                <div>
-                    <span class="kumo-badge kumo-badge-brand" style="margin-bottom: 12px;">Обо мне</span>
-                    <h2 style="font-size: 2.25rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.02em;">Никс — фотограф</h2>
-                    <p style="color: var(--kumo-subtle); font-size: 1rem; line-height: 1.7; margin-bottom: 28px;">
-                        Привет! Меня зовут Артур, и я живу в Калининграде. Мне 16 лет, и я начинающий фотограф, который только начинает свой путь в этом увлекательном искусстве. Фотография для меня — это способ запечатлеть моменты, которые я вижу вокруг себя, и передать свои эмоции через кадры.
-                    </p>
-
-                    <div class="kumo-stats-grid">
-                        <div class="kumo-card" style="padding: 16px; text-align: center;">
-                            <span style="font-size: 2rem; font-weight: 700; color: var(--kumo-brand); display: block;">1</span>
-                            <span style="font-size: 0.825rem; color: var(--kumo-subtle); text-transform: uppercase;">Года опыта</span>
+        <!-- ОБО МНЕ (с парящими элементами) -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="about-grid">
+                    <div>
+                        <span style="background: var(--kumo-brand-subtle); color: var(--kumo-brand); padding: 4px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 500;">Обо мне</span>
+                        <h2 style="font-size: 2.4rem; font-weight: 700; margin: 12px 0 16px;">Никс — фотограф</h2>
+                        <p style="color: var(--kumo-subtle); font-size: 1rem; line-height: 1.7;">Привет! Меня зовут Артур, и я живу в Калининграде. Мне 16 лет, и я начинающий фотограф, который только начинает свой путь в этом увлекательном искусстве. Фотография для меня — это способ запечатлеть моменты и передать эмоции.</p>
+                        <div class="about-stats">
+                            <div class="stat-card"><span class="stat-number">1</span><span style="color: var(--kumo-muted); font-size: 0.8rem;">год опыта</span></div>
+                            <div class="stat-card"><span class="stat-number">30+</span><span style="color: var(--kumo-muted); font-size: 0.8rem;">съёмок</span></div>
                         </div>
-                        <div class="kumo-card" style="padding: 16px; text-align: center;">
-                            <span style="font-size: 2rem; font-weight: 700; color: var(--kumo-default); display: block;">30+</span>
-                            <span style="font-size: 0.825rem; color: var(--kumo-subtle); text-transform: uppercase;">Проведенных съемок</span>
-                        </div>
+                        <a href="about.html" class="kumo-btn kumo-btn-secondary">Подробнее →</a>
                     </div>
-
-                    <a href="about.html" class="kumo-btn kumo-btn-secondary">Узнать больше &rarr;</a>
-                </div>
-
-                <div class="kumo-card" style="padding: 0; overflow: hidden;">
-                    <img src="media/portfolio/photo_2025-12-29_08-46-03.jpg" alt="Артур Никс" style="width: 100%; height: 420px; object-fit: cover;">
+                    <div class="about-image">
+                        <img src="media/portfolio/photo_2025-12-29_08-46-03.jpg" alt="Артур Никс">
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- SCHEDULE SECTION -->
-    <section id="schedule" class="schedule-section">
-        <div class="container">
-            <div class="schedule-card">
-                <div class="schedule-badge">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>График</span>
-                </div>
-                <h2 class="schedule-title">Режим работы</h2>
-                <div class="schedule-time-box">
-                    <span class="schedule-time">Пн–Вс: 9:00 – 16:30</span>
-                </div>
-                <p class="schedule-note">
-                    * Время работы указано ориентировочно. Точное время проведения фотосессии согласовывается индивидуально в зависимости от загруженности фотографа.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ SECTION -->
-    <section id="faq" class="faq-section">
-        <!-- SVG Gradient Definitions -->
-        <svg style="width:0; height:0; position:absolute;" aria-hidden="true">
-            <defs>
-                <linearGradient id="goldWaveGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#FFD700" stop-opacity="1" />
-                    <stop offset="50%" stop-color="#D4AF37" stop-opacity="0.8" />
-                    <stop offset="100%" stop-color="#FFF099" stop-opacity="0.95" />
-                </linearGradient>
-            </defs>
-        </svg>
-
-        <div class="container">
-            <div class="faq-header">
-                <span class="faq-badge">Ответы на вопросы</span>
-                <h2 class="faq-title">Частые вопросы</h2>
-            </div>
-
-            <div class="faq-grid">
-                <!-- Question 1 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <div class="faq-question-icon">?</div>
-                        <h3 class="faq-question-text">Как записаться на съёмку?</h3>
+        <!-- РАСПИСАНИЕ -->
+        <section id="schedule" class="schedule-section">
+            <div class="container">
+                <div class="schedule-card">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--kumo-brand-subtle); color: var(--kumo-brand); padding: 4px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 500; margin-bottom: 12px;">⏰ График</div>
+                    <h2 style="font-size: 2.2rem; font-weight: 700;">Режим работы</h2>
+                    <div class="schedule-time-box">
+                        <span class="schedule-time">Пн–Вс: 9:00 – 16:30</span>
                     </div>
-                    <div class="faq-wavy-container">
-                        <svg class="faq-wavy-svg" viewBox="0 0 24 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path class="faq-wavy-path" d="M 12 0 C 24 14, 0 28, 12 40 C 24 50, 0 60, 12 65" />
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Напишите в Telegram бота @tvoy_photographer_bot либо в личные сообщения фотографу @tylenevv.</p>
-                        <div class="faq-buttons">
-                            <a href="https://t.me/tvoy_photographer_bot" target="_blank" rel="noopener noreferrer" class="faq-btn faq-btn-bot">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z"/></svg>
-                                <span>Перейти в бота</span>
-                            </a>
-                            <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="faq-btn faq-btn-author">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                <span>Написать фотографу</span>
-                            </a>
+                    <p style="color: var(--kumo-muted); font-size: 0.85rem;">* Время работы указано ориентировочно. Точное время согласовывается индивидуально.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="faq-section">
+            <div class="container">
+                <div class="faq-header">
+                    <span class="faq-badge">Ответы на вопросы</span>
+                    <h2 style="font-size: 2.2rem; font-weight: 700; margin-top: 8px;">Частые вопросы</h2>
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-card">
+                        <div class="faq-question"><span class="faq-question-icon">?</span><h3 style="font-size: 1rem;">Как записаться на съёмку?</h3></div>
+                        <div class="faq-answer">
+                            <p>Напишите в Telegram бота @tvoy_photographer_bot либо в личные сообщения @tylenevv.</p>
+                            <div class="faq-buttons">
+                                <a href="https://t.me/tvoy_photographer_bot" target="_blank" class="faq-btn faq-btn-bot">🤖 Бот</a>
+                                <a href="https://t.me/tylenevv" target="_blank" class="faq-btn faq-btn-author">✉️ Написать</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Question 2 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <div class="faq-question-icon">?</div>
-                        <h3 class="faq-question-text">Сколько стоит фотосессия?</h3>
+                    <div class="faq-card">
+                        <div class="faq-question"><span class="faq-question-icon">?</span><h3 style="font-size: 1rem;">Сколько стоит фотосессия?</h3></div>
+                        <div class="faq-answer"><p>Цена — 500 рублей за час. Итоговая стоимость зависит от длительности и локации.</p></div>
                     </div>
-                    <div class="faq-wavy-container">
-                        <svg class="faq-wavy-svg" viewBox="0 0 24 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path class="faq-wavy-path" d="M 12 0 C 24 14, 0 28, 12 40 C 24 50, 0 60, 12 65" />
-                        </svg>
+                    <div class="faq-card">
+                        <div class="faq-question"><span class="faq-question-icon">?</span><h3 style="font-size: 1rem;">Где проходят съёмки?</h3></div>
+                        <div class="faq-answer"><p>Только в городе (локация обсуждается заранее).</p></div>
                     </div>
-                    <div class="faq-answer">
-                        <p>Цена — 500 рублей за час. Итоговая стоимость зависит от длительности съёмки и выбранной локации, уточняйте индивидуально.</p>
-                    </div>
-                </div>
-
-                <!-- Question 3 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <div class="faq-question-icon">?</div>
-                        <h3 class="faq-question-text">Где проходят съёмки?</h3>
-                    </div>
-                    <div class="faq-wavy-container">
-                        <svg class="faq-wavy-svg" viewBox="0 0 24 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path class="faq-wavy-path" d="M 12 0 C 24 14, 0 28, 12 40 C 24 50, 0 60, 12 65" />
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Только в городе (локация обсуждается заранее).</p>
-                    </div>
-                </div>
-
-                <!-- Question 4 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <div class="faq-question-icon">?</div>
-                        <h3 class="faq-question-text">Через сколько будут готовы фото?</h3>
-                    </div>
-                    <div class="faq-wavy-container">
-                        <svg class="faq-wavy-svg" viewBox="0 0 24 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path class="faq-wavy-path" d="M 12 0 C 24 14, 0 28, 12 40 C 24 50, 0 60, 12 65" />
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Без обработки — скидываю в этот же день.</p>
+                    <div class="faq-card">
+                        <div class="faq-question"><span class="faq-question-icon">?</span><h3 style="font-size: 1rem;">Через сколько готовы фото?</h3></div>
+                        <div class="faq-answer"><p>Без обработки — скидываю в этот же день.</p></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- CALL TO ACTION -->
-    <section style="padding: 80px 0;">
-        <div class="container" style="max-width: 800px; text-align: center;">
-            <span class="kumo-badge kumo-badge-brand" style="margin-bottom: 12px;">Связь</span>
-            <h2 style="font-size: 2.25rem; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em;">Хочешь,что бы твой момент стал кадром? :)</h2>
-            <p style="color: var(--kumo-subtle); font-size: 1.05rem; margin-bottom: 32px; line-height: 1.6;">
-                Свяжись со мной, чтобы обсудить твою фотосессию
-            </p>
-            <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                <a href="contact.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Связаться сейчас &rarr;</a>
-                <a href="portfolio.html" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Портфолио</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- KUMO FOOTER -->
-    <footer class="kumo-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="index.html" class="kumo-brand-logo">
-                        <div class="kumo-brand-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        </div>
-                        <span>НИКС</span>
-                    </a>
-                    <p>Фотограф</p>
-                </div>
-                <div>
-                    <h4 class="footer-heading">Навигация</h4>
-                    <ul class="footer-links">
-                        <li><a href="index.html">Главная</a></li>
-                        <li><a href="portfolio.html">Портфолио</a></li>
-                        <li><a href="about.html">Обо мне</a></li>
-                        <li><a href="#schedule">Режим работы</a></li>
-                        <li><a href="#faq">Частые вопросы</a></li>
-                        <li><a href="blog.html">Блог</a></li>
-                        <li><a href="contact.html">Контакты</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="footer-heading">Контакты</h4>
-                    <ul class="footer-links">
-                        <li><a href="mailto:niksfotograf@gmail.com">Email: niksfotograf@gmail.com</a></li>
-                        <li><a href="https://t.me/objektivniksa" target="_blank">Telegram: @objektivniksa</a></li>
-                    </ul>
+        <!-- CTA -->
+        <section class="cta-section">
+            <div class="container">
+                <span style="background: var(--kumo-brand-subtle); color: var(--kumo-brand); padding: 4px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 500;">Связь</span>
+                <h2 style="font-size: 2.4rem; font-weight: 700; margin: 12px 0 16px;">Хочешь, чтобы твой момент стал кадром? :)</h2>
+                <p style="color: var(--kumo-subtle); font-size: 1.05rem; max-width: 600px; margin: 0 auto 32px;">Свяжись со мной, чтобы обсудить твою фотосессию</p>
+                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                    <a href="contact.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Связаться →</a>
+                    <a href="#about" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Обо мне</a>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 НИКС. Все права защищены.</p>
+        </section>
 
+        <!-- ФУТЕР -->
+        <footer class="kumo-footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <div>
+                        <a href="index.html" class="kumo-brand-logo"><div class="kumo-brand-icon">✦</div><span>НИКС</span></a>
+                        <p style="color: var(--kumo-subtle); margin-top: 4px;">Фотограф</p>
+                    </div>
+                    <div>
+                        <h4 class="footer-heading">Навигация</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Главная</a></li>
+                            <li><a href="about.html">Обо мне</a></li>
+                            <li><a href="#schedule">Режим работы</a></li>
+                            <li><a href="#faq">Частые вопросы</a></li>
+                            <li><a href="blog.html">Блог</a></li>
+                            <li><a href="contact.html">Контакты</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="footer-heading">Контакты</h4>
+                        <ul class="footer-links">
+                            <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
+                            <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom"><p>&copy; 2026 НИКС. Все права защищены.</p></div>
             </div>
-        </div>
-    </footer>
+        </footer>
 
-    <script src="theme.js"></script>
+    </div> <!-- /main-content -->
+
+    <!-- ===== СКРИПТЫ ===== -->
+
+    <!-- 1. Смена слов в хедере -->
     <script>
-        // High-end 3D Slot Morphing Word Switcher
-        const words = ['Действовать', 'Мечтать', 'Творить', 'Воплощать'];
-        let wordIndex = 0;
-        const changingWord = document.getElementById('changing-word');
-
-        if (changingWord) {
+        (function() {
+            const words = ['Действовать', 'Мечтать', 'Творить', 'Воплощать'];
+            let index = 0;
+            const el = document.getElementById('changing-word');
+            if (!el) return;
             setInterval(() => {
-                wordIndex = (wordIndex + 1) % words.length;
-                changingWord.className = 'hero-changing-word swap-out';
-
+                index = (index + 1) % words.length;
+                el.className = 'hero-changing-word swap-out';
                 setTimeout(() => {
-                    changingWord.textContent = words[wordIndex];
-                    changingWord.className = 'hero-changing-word swap-in';
-                    
+                    el.textContent = words[index];
+                    el.className = 'hero-changing-word swap-in';
                     requestAnimationFrame(() => {
-                        setTimeout(() => {
-                            changingWord.className = 'hero-changing-word active';
-                        }, 20);
+                        setTimeout(() => { el.className = 'hero-changing-word active'; }, 30);
                     });
                 }, 300);
             }, 2600);
-        }
+        })();
     </script>
+
+    <!-- 2. Частицы (Canvas) -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            const particles = [];
+            const COUNT = 80;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > w) this.speedX *= -1;
+                    if (this.y < 0 || this.y > h) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+            let mouseX = null, mouseY = null;
+            canvas.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            canvas.addEventListener('mouseleave', () => { mouseX = null; mouseY = null; });
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    if (mouseX !== null && mouseY !== null) {
+                        const dx = p.x - mouseX;
+                        const dy = p.y - mouseY;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 150) {
+                            const force = (150 - dist) / 150 * 0.02;
+                            p.x += dx * force;
+                            p.y += dy * force;
+                        }
+                    }
+                    p.update();
+                    p.draw();
+                });
+                // соединительные линии
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(251, 191, 36, ${0.08 * (1 - dist/120)})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+    </script>
+
+    <!-- 3. Плавное появление элементов при скролле (Intersection Observer) -->
+    <script>
+        (function() {
+            const cards = document.querySelectorAll('.direction-card, .faq-card, .about-grid > *');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.15 });
+            cards.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
+                observer.observe(el);
+            });
+        })();
+    </script>
+
+    <!-- 4. Мобильное меню (простой toggle) -->
+    <script>
+        document.querySelector('.kumo-mobile-toggle')?.addEventListener('click', function() {
+            const menu = document.querySelector('.kumo-nav-menu');
+            if (menu) {
+                menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+                menu.style.flexDirection = 'column';
+                menu.style.position = 'absolute';
+                menu.style.top = '100%';
+                menu.style.left = '0';
+                menu.style.right = '0';
+                menu.style.background = 'rgba(10,10,12,0.95)';
+                menu.style.backdropFilter = 'blur(16px)';
+                menu.style.padding = '20px 24px';
+                menu.style.borderBottom = '1px solid var(--kumo-hairline)';
+                menu.style.gap = '12px';
+            }
+        });
+    </script>
+
 </body>
 </html>
