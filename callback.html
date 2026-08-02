@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обработка заказа</title>
+    <style>
+        body {
+            background: #0a0a0c;
+            color: #f4f4f5;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 16px; }
+        .status { font-size: 1.5rem; padding: 20px; border-radius: 16px; margin: 20px 0; }
+        .accepted { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .rejected { background: rgba(204, 0, 0, 0.15); color: #ff4444; }
+        .remind { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+        .back { color: #fbbf24; text-decoration: none; font-weight: 600; }
+        .back:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Обработка заказа</h1>
+        <div id="result"></div>
+        <a href="index.html" class="back">← Вернуться на главную</a>
+    </div>
+
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            const telegram = params.get('telegram');
+            const date = params.get('date') || '—';
+            const time = params.get('time') || '—';
+
+            const result = document.getElementById('result');
+
+            if (status === 'accepted') {
+                // Сохраняем в localStorage
+                localStorage.setItem('niks_last_order_status', 'accepted');
+                localStorage.setItem('niks_last_order_telegram', telegram);
+                localStorage.setItem('niks_last_order_date', date);
+                localStorage.setItem('niks_last_order_time', time);
+
+                result.innerHTML = `
+                    <div class="status accepted">✅ Заказ принят!</div>
+                    <p style="color: var(--kumo-subtle);">Клиент: ${telegram}<br>Дата: ${date} в ${time}</p>
+                    <p style="color: var(--kumo-subtle); font-size: 0.9rem;">Уведомление отправлено на сайт</p>
+                `;
+            } else if (status === 'rejected') {
+                localStorage.setItem('niks_last_order_status', 'rejected');
+                localStorage.setItem('niks_last_order_telegram', telegram);
+
+                result.innerHTML = `
+                    <div class="status rejected">❌ Заказ отклонён</div>
+                    <p style="color: var(--kumo-subtle);">Клиент: ${telegram}</p>
+                    <p style="color: var(--kumo-subtle); font-size: 0.9rem;">Уведомление отправлено на сайт</p>
+                `;
+            } else if (status === 'remind') {
+                // Напоминание через 30 минут
+                localStorage.setItem('niks_last_order_status', 'remind');
+                localStorage.setItem('niks_last_order_telegram', telegram);
+
+                result.innerHTML = `
+                    <div class="status remind">⏰ Напоминание установлено!</div>
+                    <p style="color: var(--kumo-subtle);">Напомню через 30 минут</p>
+                    <p style="color: var(--kumo-subtle); font-size: 0.9rem;">Клиент: ${telegram}</p>
+                `;
+
+                // Через 30 минут отправляем напоминание
+                setTimeout(() => {
+                    localStorage.setItem('niks_last_order_status', 'remind_triggered');
+                    alert('⏰ Напоминание! Пора ответить клиенту.');
+                }, 30 * 60 * 1000);
+            } else {
+                result.innerHTML = `
+                    <div class="status">❌ Ошибка: не переданы параметры</div>
+                `;
+            }
+        })();
+    </script>
+</body>
+</html>
