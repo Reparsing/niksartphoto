@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Записаться на съёмку — Никс</title>
-    <meta name="description" content="Запишись на фотосессию к Никсу в Калининграде.">
+    <title>Записаться на съёмку — Артурик</title>
+    <meta name="description" content="Запишись на фотосессию к Артурику в Калининграде.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --kumo-brand: #fbbf24;
-            --kumo-brand-glow: rgba(251, 191, 36, 0.3);
-            --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
-            --kumo-canvas: #0a0a0c;
-            --kumo-hairline: rgba(255, 255, 255, 0.08);
-            --kumo-subtle: #a1a1aa;
-            --kumo-muted: #71717a;
-            --kumo-default: #f4f4f5;
-            --kumo-card-bg: rgba(18, 18, 22, 0.6);
-        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--kumo-canvas);
-            color: var(--kumo-default);
+            background: #0a0a0c;
+            color: #f4f4f5;
             overflow-x: hidden;
             line-height: 1.7;
             min-height: 100vh;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        a { text-decoration: none; color: inherit; transition: all 0.3s; }
+        a { text-decoration: none; color: inherit; transition: all .3s; }
         img { display: block; max-width: 100%; }
 
+        :root {
+            --brand: #fbbf24;
+            --brand-glow: rgba(251, 191, 36, 0.3);
+            --brand-subtle: rgba(251, 191, 36, 0.12);
+            --hairline: rgba(255, 255, 255, 0.08);
+            --subtle: #a1a1aa;
+            --muted: #71717a;
+            --default: #f4f4f5;
+            --card-bg: rgba(18, 18, 22, 0.6);
+        }
+
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
-        ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 10px; }
 
         #particles-canvas {
             position: fixed;
@@ -44,95 +44,89 @@
             pointer-events: none;
             z-index: 0;
         }
-        .floating-shapes {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .shape {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.05;
-            will-change: transform;
-            animation: floatShape 30s infinite alternate ease-in-out;
-        }
-        .shape:nth-child(1) { width: 400px; height: 400px; background: radial-gradient(circle, #fbbf24, transparent 70%); top: -20%; left: -15%; animation-duration: 35s; }
-        .shape:nth-child(2) { width: 300px; height: 300px; background: radial-gradient(circle, #f59e0b, transparent 70%); bottom: -15%; right: -15%; animation-duration: 40s; animation-delay: -10s; }
-        .shape:nth-child(3) { width: 200px; height: 200px; background: radial-gradient(circle, #fcd34d, transparent 70%); top: 40%; left: 60%; animation-duration: 32s; animation-delay: -18s; }
-        @keyframes floatShape {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            33% { transform: translate(80px, -50px) scale(1.2) rotate(30deg); }
-            66% { transform: translate(-40px, 60px) scale(0.8) rotate(-25deg); }
-            100% { transform: translate(50px, -40px) scale(1.1) rotate(20deg); }
-        }
 
-        .kumo-navbar {
+        /* ===== НАВИГАЦИЯ ===== */
+        .navbar {
             position: sticky;
             top: 0;
             z-index: 50;
             backdrop-filter: blur(20px);
             background: rgba(10, 10, 12, 0.7);
-            border-bottom: 1px solid var(--kumo-hairline);
+            border-bottom: 1px solid var(--hairline);
             padding: 12px 0;
+            transition: all .5s cubic-bezier(.16, 1, .3, 1);
+        }
+        .navbar.scrolled {
+            background: rgba(10, 10, 12, .92);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, .4);
+            border-bottom-color: rgba(251, 191, 36, .15);
         }
         .nav-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .kumo-brand-logo {
+        .logo {
             display: flex;
             align-items: center;
             gap: 10px;
             font-weight: 800;
             font-size: 1.3rem;
-            letter-spacing: -0.02em;
             color: #fff;
+            text-decoration: none;
         }
-        .kumo-brand-icon {
+        .logo .icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: var(--kumo-brand-subtle);
+            background: var(--brand-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--kumo-brand);
+            color: var(--brand);
             font-size: 1.2rem;
         }
-        .kumo-nav-menu {
+        .logo .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .logo .brand-text .sub {
+            font-size: .65rem;
+            color: var(--brand);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .nav-menu {
             display: none;
             list-style: none;
             gap: 32px;
         }
-        @media (min-width: 768px) { .kumo-nav-menu { display: flex; } }
-        .kumo-nav-link {
-            color: var(--kumo-subtle);
-            font-size: 0.9rem;
+        @media(min-width:768px) { .nav-menu { display: flex; } }
+        .nav-link {
+            color: var(--subtle);
+            font-size: .9rem;
             font-weight: 500;
-            transition: all 0.3s;
-            position: relative;
+            transition: all .3s;
             padding: 4px 0;
+            position: relative;
         }
-        .kumo-nav-link:hover { color: #fff; }
-        .kumo-nav-link.active {
-            color: var(--kumo-brand);
-            font-weight: 600;
-        }
-        .kumo-nav-link.active::after {
+        .nav-link:hover { color: #fff; }
+        .nav-link.active { color: var(--brand); font-weight: 600; }
+        .nav-link.active::after {
             content: '';
             position: absolute;
             bottom: -4px;
             left: 0;
             width: 100%;
             height: 2px;
-            background: var(--kumo-brand);
+            background: var(--brand);
             border-radius: 2px;
-            box-shadow: 0 0 20px var(--kumo-brand-glow);
+            box-shadow: 0 0 20px var(--brand-glow);
         }
-        .kumo-mobile-toggle {
+        .mobile-toggle {
             background: none;
             border: none;
             color: #fff;
@@ -140,80 +134,79 @@
             cursor: pointer;
             padding: 4px 8px;
         }
-        @media (min-width: 768px) { .kumo-mobile-toggle { display: none; } }
+        @media(min-width:768px) { .mobile-toggle { display: none; } }
 
         .mobile-menu {
             display: none;
             flex-direction: column;
             gap: 12px;
             padding: 20px 0;
-            background: rgba(10,10,12,0.96);
+            background: rgba(10, 10, 12, .96);
             backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--kumo-hairline);
+            border-bottom: 1px solid var(--hairline);
         }
         .mobile-menu.open { display: flex; }
-        .mobile-menu a {
-            color: var(--kumo-subtle);
-            font-size: 1rem;
-            font-weight: 500;
-            padding: 6px 0;
-            transition: color 0.3s;
-        }
+        .mobile-menu a { color: var(--subtle); font-size: 1rem; font-weight: 500; padding: 6px 0; }
         .mobile-menu a:hover { color: #fff; }
-        .mobile-menu a.active { color: var(--kumo-brand); }
-        @media (min-width: 768px) { .mobile-menu { display: none !important; } }
+        .mobile-menu a.active { color: var(--brand); }
+        @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
         .main-content {
             position: relative;
             z-index: 1;
             padding: 120px 0 80px;
         }
 
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px) scale(.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-fadeUp { opacity: 0; animation: fadeUp .8s cubic-bezier(.16, 1, .3, 1) forwards; }
+        .delay-1 { animation-delay: .1s; }
+
+        /* ===== ЗАГОЛОВОК ===== */
         .booking-header {
             text-align: center;
             margin-bottom: 50px;
-            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
         }
         .booking-header .badge {
             display: inline-block;
             padding: 6px 18px;
             border-radius: 40px;
-            background: var(--kumo-brand-subtle);
-            color: var(--kumo-brand);
-            font-size: 0.75rem;
+            background: var(--brand-subtle);
+            color: var(--brand);
+            font-size: .75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: .05em;
             margin-bottom: 12px;
         }
         .booking-header h1 {
             font-size: 3rem;
             font-weight: 900;
-            letter-spacing: -0.03em;
+            letter-spacing: -.03em;
             margin-bottom: 8px;
         }
         .booking-header h1 .highlight {
-            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            background: linear-gradient(135deg, #fff 0%, var(--brand) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        @media (max-width: 768px) { .booking-header h1 { font-size: 2.2rem; } }
+        @media(max-width:768px) { .booking-header h1 { font-size: 2.2rem; } }
         .booking-header p {
-            color: var(--kumo-subtle);
+            color: var(--subtle);
             font-size: 1.1rem;
             max-width: 500px;
             margin: 0 auto;
         }
 
+        /* ===== КАРТОЧКА С ФОРМОЙ ===== */
         .booking-card {
-            background: var(--kumo-card-bg);
+            background: var(--card-bg);
             backdrop-filter: blur(16px);
-            border: 1px solid var(--kumo-hairline);
+            border: 1px solid var(--hairline);
             border-radius: 28px;
             padding: 48px 40px;
             max-width: 750px;
@@ -221,20 +214,18 @@
             position: relative;
             overflow: hidden;
             opacity: 0;
-            transform: translateY(30px) scale(0.96);
-            animation: cardAppear 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transform: translateY(30px) scale(.96);
+            animation: fadeUp .8s cubic-bezier(.16, 1, .3, 1) .2s forwards;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
         }
-        @keyframes cardAppear {
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
+
         .booking-card::before {
             content: '';
             position: absolute;
             inset: -2px;
             border-radius: 28px;
             padding: 2px;
-            background: conic-gradient(from 0deg, transparent, var(--kumo-brand), transparent, var(--kumo-brand), transparent);
+            background: conic-gradient(from 0deg, transparent, var(--brand), transparent, var(--brand), transparent);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -245,18 +236,19 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ===== ФОРМА ===== */
         .form-group {
             margin-bottom: 24px;
         }
         .form-group label {
             display: block;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: .9rem;
             color: #fff;
             margin-bottom: 6px;
         }
         .form-group label .required {
-            color: var(--kumo-brand);
+            color: var(--brand);
         }
         .form-group input,
         .form-group select,
@@ -264,34 +256,35 @@
             width: 100%;
             padding: 14px 18px;
             border-radius: 12px;
-            border: 1px solid var(--kumo-hairline);
-            background: rgba(255,255,255,0.04);
-            color: var(--kumo-default);
+            border: 1px solid var(--hairline);
+            background: rgba(255, 255, 255, .04);
+            color: var(--default);
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
-            transition: all 0.3s;
+            transition: all .3s;
             outline: none;
         }
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: var(--kumo-brand);
-            box-shadow: 0 0 30px var(--kumo-brand-glow);
-            background: rgba(255,255,255,0.08);
+            border-color: var(--brand);
+            box-shadow: 0 0 30px var(--brand-glow);
+            background: rgba(255, 255, 255, .08);
         }
         .form-group input::placeholder,
         .form-group textarea::placeholder {
-            color: var(--kumo-muted);
+            color: var(--muted);
         }
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
         }
         .form-group select option {
-            background: var(--kumo-canvas);
-            color: var(--kumo-default);
+            background: var(--canvas);
+            color: var(--default);
         }
 
+        /* ===== ДАТЫ ===== */
         .date-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -302,17 +295,17 @@
             padding: 4px;
         }
         .date-grid::-webkit-scrollbar { width: 4px; }
-        .date-grid::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 4px; }
+        .date-grid::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 4px; }
         .date-grid .date-btn {
             padding: 8px 0;
             border-radius: 8px;
-            border: 1px solid var(--kumo-hairline);
-            background: rgba(255,255,255,0.02);
-            color: var(--kumo-subtle);
-            font-size: 0.75rem;
+            border: 1px solid var(--hairline);
+            background: rgba(255, 255, 255, .02);
+            color: var(--subtle);
+            font-size: .75rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all .3s;
             text-align: center;
             min-height: 48px;
             display: flex;
@@ -321,19 +314,19 @@
             justify-content: center;
         }
         .date-grid .date-btn:hover {
-            border-color: var(--kumo-brand);
+            border-color: var(--brand);
             color: #fff;
             transform: scale(1.05);
         }
         .date-grid .date-btn.active {
-            border-color: var(--kumo-brand);
-            background: var(--kumo-brand-subtle);
-            color: var(--kumo-brand);
-            box-shadow: 0 0 30px var(--kumo-brand-glow);
+            border-color: var(--brand);
+            background: var(--brand-subtle);
+            color: var(--brand);
+            box-shadow: 0 0 30px var(--brand-glow);
         }
         .date-grid .date-btn .day {
-            font-size: 0.55rem;
-            color: var(--kumo-muted);
+            font-size: .55rem;
+            color: var(--muted);
             display: block;
         }
         .date-grid .date-btn .number {
@@ -341,43 +334,49 @@
             font-weight: 700;
         }
         .date-grid .date-btn .month {
-            font-size: 0.5rem;
-            color: var(--kumo-muted);
+            font-size: .5rem;
+            color: var(--muted);
             display: block;
         }
 
+        /* ============================================
+                   КНОПКА ОТПРАВКИ
+                   ============================================ */
         .submit-btn {
             width: 100%;
             padding: 16px;
             border-radius: 60px;
             border: none;
-            background: var(--kumo-brand);
+            background: var(--brand);
             color: #0a0a0c;
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 40px rgba(251, 191, 36, 0.2);
+            transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
+            box-shadow: 0 0 40px rgba(251, 191, 36, .2);
             margin-top: 8px;
         }
         .submit-btn:hover {
             transform: scale(1.02);
-            box-shadow: 0 0 80px var(--kumo-brand-glow);
+            box-shadow: 0 0 80px var(--brand-glow);
         }
         .submit-btn:active {
-            transform: scale(0.96);
+            transform: scale(.96);
         }
 
+        /* ============================================
+                   СООБЩЕНИЯ
+                   ============================================ */
         .success-message {
             display: none;
             text-align: center;
             padding: 20px;
             margin-top: 20px;
             border-radius: 16px;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, .1);
+            border: 1px solid rgba(34, 197, 94, .3);
             color: #22c55e;
-            animation: fadeUp 0.5s ease forwards;
+            animation: fadeUp .5s ease forwards;
         }
         .success-message.show {
             display: block;
@@ -388,12 +387,35 @@
             margin-bottom: 8px;
         }
 
-        .kumo-footer {
+        .error-message {
+            display: none;
+            text-align: center;
+            padding: 16px 20px;
+            margin-top: 16px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, .1);
+            border: 1px solid rgba(239, 68, 68, .2);
+            color: #f87171;
+            font-size: .95rem;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .error-message .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ============================================
+                   ФУТЕР
+                   ============================================ */
+        .footer {
             position: relative;
             z-index: 1;
             padding: 48px 0 24px;
-            border-top: 1px solid var(--kumo-hairline);
-            background: rgba(10, 10, 12, 0.8);
+            border-top: 1px solid var(--hairline);
+            background: rgba(10, 10, 12, .8);
             backdrop-filter: blur(12px);
             margin-top: 60px;
         }
@@ -402,42 +424,42 @@
             grid-template-columns: 1fr;
             gap: 32px;
         }
-        @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr 1fr; } }
-        .footer-heading {
+        @media(min-width:768px) { .footer-grid { grid-template-columns: 1fr 1fr 1fr; } }
+        .footer .heading {
             color: #fff;
             font-weight: 700;
             margin-bottom: 12px;
             font-size: 1rem;
         }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 6px; }
-        .footer-links a {
-            color: var(--kumo-subtle);
-            font-size: 0.9rem;
-            transition: color 0.3s;
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 6px; }
+        .footer ul a {
+            color: var(--subtle);
+            font-size: .9rem;
+            transition: color .3s;
         }
-        .footer-links a:hover { color: var(--kumo-brand); }
-        .footer-bottom {
+        .footer ul a:hover { color: var(--brand); }
+        .footer .bottom {
             margin-top: 32px;
             padding-top: 16px;
-            border-top: 1px solid var(--kumo-hairline);
+            border-top: 1px solid var(--hairline);
             text-align: center;
-            color: var(--kumo-muted);
-            font-size: 0.85rem;
+            color: var(--muted);
+            font-size: .85rem;
         }
 
-        @media (max-width: 768px) {
+        @media(max-width:768px) {
             .booking-card { padding: 32px 20px; }
             .date-grid { gap: 4px; }
-            .date-grid .date-btn { padding: 6px 0; font-size: 0.65rem; min-height: 40px; }
-            .date-grid .date-btn .number { font-size: 0.85rem; }
+            .date-grid .date-btn { padding: 6px 0; font-size: .65rem; min-height: 40px; }
+            .date-grid .date-btn .number { font-size: .85rem; }
         }
-        @media (max-width: 480px) {
+        @media(max-width:480px) {
             .booking-card { padding: 24px 16px; }
             .booking-header h1 { font-size: 1.8rem; }
             .date-grid { gap: 3px; }
-            .date-grid .date-btn { padding: 4px 0; font-size: 0.6rem; min-height: 34px; }
-            .date-grid .date-btn .number { font-size: 0.75rem; }
+            .date-grid .date-btn { padding: 4px 0; font-size: .6rem; min-height: 34px; }
+            .date-grid .date-btn .number { font-size: .75rem; }
         }
     </style>
 </head>
@@ -445,45 +467,42 @@
 
     <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
     <canvas id="particles-canvas"></canvas>
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
 
     <!-- ===== НАВИГАЦИЯ ===== -->
-    <nav class="kumo-navbar">
+    <nav class="navbar" id="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="kumo-brand-logo">
-                <div class="kumo-brand-icon">✦</div>
-                <span>НИКС</span>
+            <a href="index.html" class="logo">
+                <div class="icon">✦</div>
+                <div class="brand-text">
+                    <span style="font-size:1.3rem;font-weight:900;color:#fff;">Артурик</span>
+                    <span class="sub">Кадр решает</span>
+                </div>
             </a>
-            <ul class="kumo-nav-menu">
-                <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
-                <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
-                <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
-                <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
-                <li><a href="places.html" class="kumo-nav-link">🗺️ Маршруты</a></li>
-                <li><a href="my-awards.html" class="kumo-nav-link">🏆 Мои награды</a></li>
-                <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
-                <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
-                <li><a href="booking.html" class="kumo-nav-link active">📅 Запись</a></li>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Главная</a></li>
+                <li><a href="about.html" class="nav-link">Обо мне</a></li>
+                <li><a href="blog.html" class="nav-link">Блог</a></li>
+                <li><a href="contact.html" class="nav-link">Контакты</a></li>
+                <li><a href="booking.html" class="nav-link active">📅 Запись</a></li>
+                <li><a href="first-shot.html" class="nav-link">📸 Первый кадр</a></li>
+                <li><a href="places.html" class="nav-link">🗺️ Маршруты</a></li>
+                <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
             </ul>
-            <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
+            <button class="mobile-toggle" id="mobileToggle">☰</button>
         </div>
     </nav>
 
+    <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
     <div class="mobile-menu" id="mobileMenu">
-        <div class="container" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="container" style="display:flex;flex-direction:column;gap:12px;">
             <a href="index.html">Главная</a>
             <a href="about.html">Обо мне</a>
-            <a href="index.html#schedule">Режим работы</a>
-            <a href="index.html#faq">FAQ</a>
-            <a href="places.html">🗺️ Маршруты</a>
-            <a href="my-awards.html">🏆 Мои награды</a>
             <a href="blog.html">Блог</a>
             <a href="contact.html">Контакты</a>
             <a href="booking.html" class="active">📅 Запись</a>
+            <a href="first-shot.html">📸 Первый кадр</a>
+            <a href="places.html">🗺️ Маршруты</a>
+            <a href="my-awards.html">🏆 Мои награды</a>
         </div>
     </div>
 
@@ -491,7 +510,8 @@
     <main class="main-content">
         <div class="container">
 
-            <header class="booking-header">
+            <!-- ЗАГОЛОВОК -->
+            <header class="booking-header animate-fadeUp">
                 <span class="badge">📅 Запись</span>
                 <h1>
                     <span class="highlight">Запишись</span> на съёмку
@@ -499,21 +519,23 @@
                 <p>Выбери дату, время и оставь свои контакты</p>
             </header>
 
+            <!-- КАРТОЧКА С ФОРМОЙ -->
             <div class="booking-card">
 
                 <form id="bookingForm">
 
+                    <!-- ДАТА -->
                     <div class="form-group">
                         <label>📅 Выбери дату <span class="required">*</span></label>
                         <div class="date-grid" id="dateGrid"></div>
                         <input type="hidden" id="selectedDate" name="date" required>
                     </div>
 
+                    <!-- ВРЕМЯ -->
                     <div class="form-group">
                         <label>⏰ Выбери время <span class="required">*</span></label>
                         <select id="selectedTime" name="time" required>
                             <option value="">— Выбери время —</option>
-                            <option value="9:00">9:00</option>
                             <option value="10:00">10:00</option>
                             <option value="11:00">11:00</option>
                             <option value="12:00">12:00</option>
@@ -521,32 +543,49 @@
                             <option value="14:00">14:00</option>
                             <option value="15:00">15:00</option>
                             <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="19:00">19:00</option>
+                            <option value="20:00">20:00</option>
+                            <option value="21:00">21:00</option>
                         </select>
                     </div>
 
+                    <!-- ИМЯ -->
                     <div class="form-group">
                         <label>👤 Твоё имя <span class="required">*</span></label>
                         <input type="text" id="userName" placeholder="Как тебя зовут?" required>
                     </div>
 
+                    <!-- TELEGRAM -->
                     <div class="form-group">
                         <label>💬 Telegram <span class="required">*</span></label>
                         <input type="text" id="userTelegram" placeholder="@username или номер телефона" required>
                     </div>
 
+                    <!-- КОММЕНТАРИЙ -->
                     <div class="form-group">
                         <label>📝 Комментарий</label>
                         <textarea id="userComment" placeholder="Что хочешь снять? Особые пожелания?"></textarea>
                     </div>
 
+                    <!-- КНОПКА -->
                     <button type="submit" class="submit-btn">
                         📸 Отправить заявку
                     </button>
 
+                    <!-- СООБЩЕНИЕ ОБ УСПЕХЕ -->
                     <div class="success-message" id="successMessage">
                         <span class="icon">✅</span>
                         <strong>Заявка отправлена!</strong><br>
                         Я свяжусь с тобой в ближайшее время 🤘
+                    </div>
+
+                    <!-- СООБЩЕНИЕ ОБ ОШИБКЕ -->
+                    <div class="error-message" id="errorMessage">
+                        <span class="icon">⏰</span>
+                        <strong>Заказы принимаются с 10:00 до 21:00</strong><br>
+                        Пожалуйста, вернитесь в рабочее время или напишите мне в Telegram.
                     </div>
 
                 </form>
@@ -557,37 +596,41 @@
     </main>
 
     <!-- ===== ФУТЕР ===== -->
-    <footer class="kumo-footer">
+    <footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <a href="index.html" class="kumo-brand-logo">
-                        <div class="kumo-brand-icon">✦</div>
-                        <span>НИКС</span>
+                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;">
+                        <div class="icon" style="width:32px;height:32px;font-size:1rem;">✦</div>
+                        <div>
+                            <span style="font-weight:800;color:#fff;">Артурик</span>
+                            <span style="display:block;font-size:.6rem;color:var(--brand);">Кадр решает</span>
+                        </div>
                     </a>
-                    <p style="color: var(--kumo-subtle); margin-top: 4px;">Фотограф</p>
+                    <p style="color:var(--subtle);margin-top:4px;">Фотограф</p>
                 </div>
                 <div>
-                    <h4 class="footer-heading">Навигация</h4>
-                    <ul class="footer-links">
+                    <h4 class="heading">Навигация</h4>
+                    <ul>
                         <li><a href="index.html">Главная</a></li>
                         <li><a href="about.html">Обо мне</a></li>
-                        <li><a href="booking.html">📅 Запись</a></li>
                         <li><a href="blog.html">Блог</a></li>
                         <li><a href="contact.html">Контакты</a></li>
+                        <li><a href="booking.html">📅 Запись</a></li>
+                        <li><a href="first-shot.html">📸 Первый кадр</a></li>
+                        <li><a href="places.html">🗺️ Маршруты</a></li>
+                        <li><a href="my-awards.html">🏆 Мои награды</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="footer-heading">Контакты</h4>
-                    <ul class="footer-links">
+                    <h4 class="heading">Контакты</h4>
+                    <ul>
                         <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
                         <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Никс. Все права защищены.</p>
-            </div>
+            <div class="bottom"><p>&copy; 2026 Артурик. Все права защищены.</p></div>
         </div>
     </footer>
 
@@ -601,85 +644,50 @@
             const canvas = document.getElementById('particles-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            let w, h;
-            const particles = [];
-            const COUNT = 100;
+            let w, h, particles = [],
+                COUNT = 100;
 
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
+            function resize() { w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight; }
             window.addEventListener('resize', resize);
             resize();
 
             class Particle {
                 constructor() { this.reset(); }
-                reset() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.size = Math.random() * 2.5 + 0.5;
-                    this.speedX = (Math.random() - 0.5) * 0.4;
-                    this.speedY = (Math.random() - 0.5) * 0.4;
-                    this.opacity = Math.random() * 0.4 + 0.15;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.x < 0 || this.x > w) this.speedX *= -1;
-                    if (this.y < 0 || this.y > h) this.speedY *= -1;
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`;
-                    ctx.fill();
-                }
+                reset() { this.x = Math.random() * w, this.y = Math.random() * h, this.size = Math.random() * 2.5 + .5, this.speedX = (Math
+                        .random() - .5) * .4, this.speedY = (Math.random() - .5) * .4, this.opacity = Math.random() * .4 + .15; }
+                update() { this.x += this.speedX, this.y += this.speedY, (this.x < 0 || this.x > w) && (this.speedX *= -1), (this
+                        .y < 0 || this.y > h) && (this.speedY *= -1); }
+                draw() { ctx.beginPath(), ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2), ctx.fillStyle =
+                        `rgba(251, 191, 36, ${this.opacity})`, ctx.fill(); }
             }
-
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            let mouseX = null, mouseY = null;
-            canvas.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-            canvas.addEventListener('mouseleave', () => {
-                mouseX = null;
+            let mouseX = null,
                 mouseY = null;
-            });
+            canvas.addEventListener('mousemove', e => { mouseX = e.clientX, mouseY = e.clientY; });
+            canvas.addEventListener('mouseleave', () => { mouseX = null, mouseY = null; });
 
             function animate() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
                     if (mouseX !== null && mouseY !== null) {
-                        const dx = p.x - mouseX;
-                        const dy = p.y - mouseY;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 180) {
-                            const force = (180 - dist) / 180 * 0.03;
-                            p.x += dx * force;
-                            p.y += dy * force;
-                        }
+                        const dx = p.x - mouseX,
+                            dy = p.y - mouseY,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 180) { const force = (180 - dist) / 180 * .03;
+                            p.x += dx * force, p.y += dy * force; }
                     }
-                    p.update();
-                    p.draw();
+                    p.update(), p.draw();
                 });
-
-                for (let i = 0; i < particles.length; i++) {
+                for (let i = 0; i < particles.length; i++)
                     for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 130) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(251, 191, 36, ${0.06 * (1 - dist/130)})`;
-                            ctx.lineWidth = 0.8;
-                            ctx.stroke();
-                        }
+                        const dx = particles[i].x - particles[j].x,
+                            dy = particles[i].y - particles[j].y,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) ctx.beginPath(), ctx.moveTo(particles[i].x, particles[i].y), ctx.lineTo(particles[j].x,
+                            particles[j].y), ctx.strokeStyle = `rgba(251, 191, 36, ${.06 * (1 - dist / 130)})`, ctx
+                            .lineWidth = .8, ctx.stroke();
                     }
-                }
                 requestAnimationFrame(animate);
             }
             animate();
@@ -693,7 +701,7 @@
         });
     </script>
 
-    <!-- 3. ЛОГИКА ЗАПИСИ -->
+    <!-- 3. ЛОГИКА ЗАПИСИ (С ПРОВЕРКОЙ ВРЕМЕНИ) -->
     <script>
         (function() {
             // === ДАТЫ ===
@@ -741,12 +749,31 @@
                 dateGrid.appendChild(btn);
             }
 
-            // === ОТПРАВКА ===
+            // === ОТПРАВКА С ПРОВЕРКОЙ ВРЕМЕНИ ===
             const form = document.getElementById('bookingForm');
             const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+
+                // Проверяем время
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const currentTime = hours + minutes / 60;
+
+                const startWork = 10; // 10:00
+                const endWork = 21;   // 21:00
+
+                if (currentTime < startWork || currentTime >= endWork) {
+                    errorMessage.classList.add('show');
+                    successMessage.classList.remove('show');
+                    return;
+                }
+
+                // Скрываем ошибку, если была
+                errorMessage.classList.remove('show');
 
                 const name = document.getElementById('userName').value.trim();
                 const telegram = document.getElementById('userTelegram').value.trim();
