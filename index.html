@@ -526,6 +526,104 @@
         }
 
         /* ============================================
+                   ДОСТИЖЕНИЯ (НОВАЯ СЕКЦИЯ)
+                   ============================================ */
+        .awards-section {
+            padding: 80px 0;
+            background: radial-gradient(circle at 30% 40%, rgba(251,191,36,0.03) 0%, transparent 60%);
+            border-top: 1px solid var(--kumo-hairline);
+            border-bottom: 1px solid var(--kumo-hairline);
+        }
+        .awards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        .award-card {
+            background: var(--kumo-card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            transform: translateY(30px) scale(0.96);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        .award-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .award-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--kumo-brand);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 40px rgba(251,191,36,0.05);
+        }
+        .award-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--kumo-brand);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 0 20px var(--kumo-brand-glow);
+        }
+        .award-icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .award-card:hover .award-icon {
+            transform: scale(1.15) rotate(-6deg);
+        }
+        .award-year {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 40px;
+            background: var(--kumo-brand-subtle);
+            color: var(--kumo-brand);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            margin-bottom: 10px;
+        }
+        .award-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+        .award-desc {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+        .award-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--kumo-hairline);
+            font-size: 0.7rem;
+            color: var(--kumo-muted);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .award-card:hover .award-badge {
+            border-color: var(--kumo-brand);
+            color: var(--kumo-brand);
+        }
+
+        /* ============================================
                    РАСПИСАНИЕ
                    ============================================ */
         .schedule-section {
@@ -746,11 +844,16 @@
             .schedule-card { padding: 32px 16px; }
             .about-stats { flex-direction: column; align-items: stretch; }
             .hero-image-card img { height: 300px; }
+            .awards-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .award-card { padding: 24px 16px; }
+            .award-icon { font-size: 2.4rem; }
+            .award-title { font-size: 1rem; }
         }
         @media (max-width: 480px) {
             .hero-content h1 { font-size: 2rem; }
             .hero-word-wrapper { min-width: 100px; }
             .kumo-btn-lg { padding: 12px 24px; font-size: 0.9rem; }
+            .awards-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -781,7 +884,8 @@
                     <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
                     <li><a href="#schedule" class="kumo-nav-link">Режим работы</a></li>
                     <li><a href="#faq" class="kumo-nav-link">FAQ</a></li>
-                    <li><a href="places.html" class="kumo-nav-link">🗺️ Маршруты любимых мест</a></li>
+                    <li><a href="places.html" class="kumo-nav-link">🗺️ Маршруты</a></li>
+                    <li><a href="my-awards.html" class="kumo-nav-link">🏆 Мои награды</a></li>
                     <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
                     <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
                 </ul>
@@ -796,7 +900,8 @@
                 <a href="about.html">Обо мне</a>
                 <a href="#schedule">Режим работы</a>
                 <a href="#faq">FAQ</a>
-                <a href="places.html">🗺️ Маршруты любимых мест</a>
+                <a href="places.html">🗺️ Маршруты</a>
+                <a href="my-awards.html">🏆 Мои награды</a>
                 <a href="blog.html">Блог</a>
                 <a href="contact.html">Контакты</a>
             </div>
@@ -889,8 +994,8 @@
                                 <span class="stat-label">Проведённых съёмок</span>
                             </div>
                             <div class="stat-card">
-                                <span class="stat-number">100%</span>
-                                <span class="stat-label">Индивидуальный подход</span>
+                                <span class="stat-number">🏆</span>
+                                <span class="stat-label">Диплом призёра</span>
                             </div>
                         </div>
                         <a href="about.html" class="kumo-btn kumo-btn-secondary">Узнать больше →</a>
@@ -898,6 +1003,54 @@
                     <div class="about-image">
                         <img src="media/portfolio/photo_2025-12-29_08-46-03.jpg" alt="Артур Никс">
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ДОСТИЖЕНИЯ (НОВАЯ СЕКЦИЯ) ===== -->
+        <section class="awards-section" id="awards">
+            <div class="container">
+                <div style="text-align: center;">
+                    <span class="section-label">🏆 Достижения</span>
+                    <h2 class="section-title">
+                        Мои награды
+                        <span class="accent-line"></span>
+                    </h2>
+                    <p style="color: var(--kumo-subtle); font-size: 1.05rem; max-width: 500px; margin: 8px auto 0;">
+                        Каждая награда — это шаг вперёд и признание моего труда
+                    </p>
+                </div>
+
+                <div class="awards-grid">
+                    <div class="award-card" data-delay="0">
+                        <span class="award-icon">🥉</span>
+                        <span class="award-year">2026</span>
+                        <h3 class="award-title">Абилимпикс</h3>
+                        <p class="award-desc">3-е место в компетенции «Фотография» среди юниоров</p>
+                        <span class="award-badge">📍 Калининград</span>
+                    </div>
+
+                    <div class="award-card" data-delay="100">
+                        <span class="award-icon">🏅</span>
+                        <span class="award-year">2025</span>
+                        <h3 class="award-title">Участник городского конкурса</h3>
+                        <p class="award-desc">Портретная серия «Городские лица» вошла в топ-10</p>
+                        <span class="award-badge">📍 Калининград</span>
+                    </div>
+
+                    <div class="award-card" data-delay="200">
+                        <span class="award-icon">📸</span>
+                        <span class="award-year">2025</span>
+                        <h3 class="award-title">Персональная выставка</h3>
+                        <p class="award-desc">Выставка уличной фотографии в молодёжном центре</p>
+                        <span class="award-badge">📍 Калининград</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 32px;">
+                    <a href="my-awards.html" class="kumo-btn kumo-btn-primary">
+                        Все награды →
+                    </a>
                 </div>
             </div>
         </section>
@@ -1008,7 +1161,8 @@
                             <li><a href="about.html">Обо мне</a></li>
                             <li><a href="#schedule">Режим работы</a></li>
                             <li><a href="#faq">Частые вопросы</a></li>
-                            <li><a href="places.html">🗺️ Маршруты любимых мест</a></li>
+                            <li><a href="places.html">🗺️ Маршруты</a></li>
+                            <li><a href="my-awards.html">🏆 Мои награды</a></li>
                             <li><a href="blog.html">Блог</a></li>
                             <li><a href="contact.html">Контакты</a></li>
                         </ul>
@@ -1056,7 +1210,7 @@
         })();
     </script>
 
-    <!-- 2. ЧАСТИЦЫ (СОЗВЕЗДИЯ) -->
+    <!-- 2. ЧАСТИЦЫ -->
     <script>
         (function() {
             const canvas = document.getElementById('particles-canvas');
@@ -1173,7 +1327,7 @@
                 rootMargin: '0px 0px -40px 0px'
             });
 
-            document.querySelectorAll('.direction-card, .faq-card').forEach(el => {
+            document.querySelectorAll('.direction-card, .faq-card, .award-card').forEach(el => {
                 observer.observe(el);
             });
         })();
