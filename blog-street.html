@@ -3,166 +3,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Эстетика городских улиц — Никс ArtPhoto</title>
-    <meta name="description" content="Уличная съемка в Калининграде: геометрия архитектуры, ритм прохожих и естественный свет.">
+    <title>Уличная фотография: ловим момент — Никс</title>
+    <meta name="description" content="Контрасты, эмоции и Калининград глазами фотографа.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ТЕ ЖЕ СТИЛИ, ЧТО И В blog-street.html ===== */
+        :root {
+            --kumo-brand: #fbbf24;
+            --kumo-brand-glow: rgba(251, 191, 36, 0.3);
+            --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
+            --kumo-canvas: #0a0a0c;
+            --kumo-hairline: rgba(255, 255, 255, 0.08);
+            --kumo-subtle: #a1a1aa;
+            --kumo-muted: #71717a;
+            --kumo-default: #f4f4f5;
+            --kumo-card-bg: rgba(18, 18, 22, 0.6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--kumo-canvas);
+            color: var(--kumo-default);
+            overflow-x: hidden;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        a { text-decoration: none; color: inherit; transition: all 0.3s; }
+        img { display: block; max-width: 100%; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
+        ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
+
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .floating-shapes {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            will-change: transform;
+            animation: floatShape 30s infinite alternate ease-in-out;
+        }
+        .shape:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #fbbf24, transparent 70%);
+            top: -20%;
+            left: -15%;
+            animation-duration: 35s;
+        }
+        .shape:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #f59e0b, transparent 70%);
+            bottom: -15%;
+            right: -15%;
+            animation-duration: 40s;
+            animation-delay: -10s;
+        }
+        .shape:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #fcd34d, transparent 70%);
+            top: 40%;
+            left: 60%;
+            animation-duration: 32s;
+            animation-delay: -18s;
+        }
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(80px, -50px) scale(1.2) rotate(30deg); }
+            66% { transform: translate(-40px, 60px) scale(0.8) rotate(-25deg); }
+            100% { transform: translate(50px, -40px) scale(1.1) rotate(20deg); }
+        }
+
+        .kumo-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 12, 0.7);
+            border-bottom: 1px solid var(--kumo-hairline);
+            padding: 12px 0;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .kumo-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        .kumo-brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--kumo-brand-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--kumo-brand);
+            font-size: 1.2rem;
+        }
+        .kumo-nav-menu {
+            display: none;
+            list-style: none;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .kumo-nav-menu { display: flex; }
+        }
+        .kumo-nav-link {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            padding: 4px 0;
+        }
+        .kumo-nav-link:hover { color: #fff; }
+        .kumo-nav-link.active {
+            color: var(--kumo-brand);
+            font-weight: 600;
+        }
+        .kumo-nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--kumo-brand);
+            border-radius: 2px;
+            box-shadow: 0 0 20px var(--kumo-brand-glow);
+        }
+        .kumo-mobile-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        @media (min-width: 768px) {
+            .kumo-mobile-toggle { display: none; }
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+            background: rgba(10,10,12,0.96);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--kumo-hairline);
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            color: var(--kumo-subtle);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 6px 0;
+            transition: color 0.3s;
+        }
+        .mobile-menu a:hover { color: #fff; }
+        .mobile-menu a.active { color: var(--kumo-brand); }
+        @media (min-width: 768px) {
+            .mobile-menu { display: none !important; }
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 1;
+            padding: 120px 0 80px;
+        }
+
+        .article-header {
+            margin-bottom: 40px;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .article-header .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--kumo-subtle);
+            font-weight: 500;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+        .article-header .back-link:hover {
+            color: var(--kumo-brand);
+            gap: 14px;
+        }
+        .article-header .badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            background: var(--kumo-brand-subtle);
+            color: var(--kumo-brand);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        .article-header h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        @media (max-width: 768px) {
+            .article-header h1 { font-size: 2rem; }
+        }
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            color: var(--kumo-subtle);
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--kumo-hairline);
+            padding-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .article-card {
+            background: var(--kumo-card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(30px) scale(0.96);
+            animation: cardAppear 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        @keyframes cardAppear {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .article-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        @media (max-width: 768px) {
+            .article-card img { height: 250px; }
+        }
+        .article-card .body {
+            padding: 40px;
+        }
+        @media (max-width: 768px) {
+            .article-card .body { padding: 24px 20px; }
+        }
+        .article-card .body p {
+            color: var(--kumo-subtle);
+            font-size: 1.05rem;
+            line-height: 1.9;
+            margin-bottom: 20px;
+        }
+        .article-card .body p:last-child {
+            margin-bottom: 0;
+        }
+        .article-card .body h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 32px 0 16px;
+            color: #fff;
+        }
+
+        .article-nav {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--kumo-hairline);
+        }
+        .kumo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            cursor: pointer;
+        }
+        .kumo-btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border: 1px solid var(--kumo-hairline);
+        }
+        .kumo-btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+            transform: scale(1.05);
+        }
+        .kumo-btn-primary {
+            background: var(--kumo-brand);
+            color: #0a0a0c;
+        }
+        .kumo-btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px var(--kumo-brand-glow);
+        }
+
+        .kumo-footer {
+            position: relative;
+            z-index: 1;
+            padding: 48px 0 24px;
+            border-top: 1px solid var(--kumo-hairline);
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(12px);
+            margin-top: 60px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+        }
+        .footer-heading {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 6px; }
+        .footer-links a {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover { color: var(--kumo-brand); }
+        .footer-bottom {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--kumo-hairline);
+            text-align: center;
+            color: var(--kumo-muted);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
-    <!-- KUMO NAVBAR -->
+
+    <canvas id="particles-canvas"></canvas>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
     <nav class="kumo-navbar">
         <div class="container nav-container">
             <a href="index.html" class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span>Никс</span>
-                <span class="kumo-badge kumo-badge-brand">ArtPhoto</span>
+                <div class="kumo-brand-icon">✦</div>
+                <span>НИКС</span>
             </a>
             <ul class="kumo-nav-menu">
                 <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
-                <li><a href="portfolio.html" class="kumo-nav-link">Портфолио</a></li>
                 <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
-                <li><a href="index.html#faq" class="kumo-nav-link">Частые вопросы</a></li>
+                <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
+                <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
+                <li><a href="places.html" class="kumo-nav-link">🗺️ Маршруты</a></li>
+                <li><a href="my-awards.html" class="kumo-nav-link">🏆 Мои награды</a></li>
                 <li><a href="blog.html" class="kumo-nav-link active">Блог</a></li>
                 <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
             </ul>
-            <div class="kumo-nav-actions">
-                <div class="kumo-dropdown">
-                    <button class="kumo-dropdown-toggle" aria-label="Помощь">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span>Помощь</span>
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div class="kumo-dropdown-menu">
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Сообщить о проблеме на сайте</span>
-                        </a>
-                        <a href="https://t.me/tylenevv" target="_blank" rel="noopener noreferrer" class="kumo-dropdown-item">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span>Задать вопрос</span>
-                        </a>
-                    </div>
-                </div>
-                <button class="kumo-theme-toggle" aria-label="Toggle theme"></button>
-                <button class="kumo-mobile-toggle" aria-label="Open menu">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-            </div>
+            <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
         </div>
     </nav>
-    <div class="kumo-sidebar-overlay"></div>
-    <aside class="kumo-sidebar">
-        <div class="kumo-sidebar-header">
-            <div class="kumo-brand-logo">
-                <div class="kumo-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span>НИКС</span>
-            </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="container" style="display:flex; flex-direction:column; gap:12px;">
+            <a href="index.html">Главная</a>
+            <a href="about.html">Обо мне</a>
+            <a href="index.html#schedule">Режим работы</a>
+            <a href="index.html#faq">FAQ</a>
+            <a href="places.html">🗺️ Маршруты</a>
+            <a href="my-awards.html">🏆 Мои награды</a>
+            <a href="blog.html" class="active">Блог</a>
+            <a href="contact.html">Контакты</a>
         </div>
-        <ul class="kumo-sidebar-nav">
-            <li><a href="index.html">🏠 Главная</a></li>
-            <li><a href="portfolio.html">📸 Портфолио</a></li>
-            <li><a href="about.html">👤 Обо мне</a></li>
-            <li><a href="index.html#faq">❓ Частые вопросы</a></li>
-            <li><a href="blog.html" class="active">📝 Блог</a></li>
-            <li><a href="contact.html">📞 Контакты</a></li>
-            <li class="kumo-sidebar-divider"></li>
-            <li class="kumo-sidebar-heading">Помощь</li>
-            <li><a href="https://t.me/tylenevv" target="_blank">⚠️ Сообщить о проблеме</a></li>
-            <li><a href="https://t.me/tylenevv" target="_blank">💬 Задать вопрос</a></li>
-        </ul>
-    </aside>
+    </div>
 
-    <main style="padding-top: 110px; padding-bottom: 80px;">
-        <div class="container" style="max-width: 860px;">
-            <div style="margin-bottom: 24px;">
-                <a href="blog.html" class="kumo-btn kumo-btn-sm kumo-btn-ghost">&larr; Вернуться в блог</a>
-            </div>
+    <main class="main-content">
+        <div class="container">
 
-            <span class="kumo-badge kumo-badge-brand" style="margin-bottom: 12px;">Стрит</span>
-            <h1 style="font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.2;">
-                Эстетика городских улиц: Взгляд фотографа
-            </h1>
-
-            <div style="display: flex; gap: 16px; align-items: center; color: var(--kumo-subtle); font-size: 0.875rem; margin-bottom: 32px; border-bottom: 1px solid var(--kumo-hairline); padding-bottom: 16px;">
-                <span>📅 10 ноября 2024</span>
-                <span>⏱ 3 мин чтения</span>
-                <span>👤 Автор: Никс</span>
-            </div>
-
-            <div class="kumo-card" style="margin-bottom: 32px; padding: 0; overflow: hidden;">
-                <img src="media/photo_2026-03-08_16-36-34.jpg" alt="Эстетика улиц" style="width: 100%; height: 380px; object-fit: cover;" onerror="this.src='media/portfolio/photo_2025-12-28_17-52-51.jpg'">
-            </div>
-
-            <article style="font-size: 1.05rem; line-height: 1.8; color: var(--kumo-default);">
-                <p style="margin-bottom: 20px;">
-                    Гуляя по улицам Калининграда, я стараюсь подмечать текстуры старого кирпича, брусчатку, блики в лужах и свет, пробивающийся сквозь кроны деревьев. Улица живет своей динамикой.
-                </p>
-
-                <h2 style="font-size: 1.6rem; font-weight: 600; margin: 32px 0 16px;">Композиция в деталях</h2>
-                <p style="margin-bottom: 20px;">
-                    Иногда одна деталь — тень от велосипеда, арка или отражение в витрине магазина — может сказать о настроении дня гораздо больше, чем постановочный кадр.
-                </p>
+            <article class="article-header">
+                <a href="blog.html" class="back-link">← Вернуться в блог</a>
+                <span class="badge">Стрит</span>
+                <h1>Уличная фотография: ловим момент</h1>
+                <div class="article-meta">
+                    <span>📅 15 декабря 2024</span>
+                    <span>⏱ 4 мин чтения</span>
+                    <span>👤 Автор: Никс</span>
+                </div>
             </article>
 
-            <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--kumo-hairline); display: flex; justify-content: space-between;">
-                <a href="blog-portrait.html" class="kumo-btn kumo-btn-secondary">&larr; Предыдущая статья</a>
-                <a href="blog.html" class="kumo-btn kumo-btn-primary">Все статьи &rarr;</a>
+            <div class="article-card">
+                <img src="media/portfolio/photo_2025-12-28_17-52-51.jpg" alt="Уличная фотография">
+                <div class="body">
+                    <p>
+                        Уличная фотография — это искусство быть невидимым. Ты должен раствориться в толпе, стать частью города, чтобы поймать тот самый момент.
+                    </p>
+
+                    <h2>Как я выбираю кадр</h2>
+                    <p>
+                        Я не ищу идеальную картинку. Я ищу историю. Прохожий, который обернулся, тень, упавшая на стену, или случайная встреча двух незнакомцев — это и есть настоящая жизнь.
+                    </p>
+
+                    <h2>Калининград как вдохновение</h2>
+                    <p>
+                        Город у моря имеет свой ритм. Здесь смешиваются советская архитектура, немецкое наследие и современные кварталы. Это даёт бесконечное разнообразие для съёмки.
+                    </p>
+                </div>
             </div>
+
+            <div class="article-nav">
+                <a href="blog-600d-review.html" class="kumo-btn kumo-btn-secondary">← Предыдущая статья</a>
+                <a href="blog-street.html" class="kumo-btn kumo-btn-secondary">Следующая статья →</a>
+                <a href="blog.html" class="kumo-btn kumo-btn-primary">Все статьи →</a>
+            </div>
+
         </div>
     </main>
 
-    <!-- KUMO FOOTER -->
     <footer class="kumo-footer">
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-brand">
+                <div>
                     <a href="index.html" class="kumo-brand-logo">
-                        <div class="kumo-brand-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        </div>
-                        <span>Никс ArtPhoto</span>
+                        <div class="kumo-brand-icon">✦</div>
+                        <span>НИКС</span>
                     </a>
-                    <p>Портретная съёмка и уличная фотография. Искусство в каждом кадре, эмоции и контрасты.</p>
+                    <p style="color: var(--kumo-subtle); margin-top: 4px;">Фотограф</p>
                 </div>
                 <div>
                     <h4 class="footer-heading">Навигация</h4>
                     <ul class="footer-links">
                         <li><a href="index.html">Главная</a></li>
-                        <li><a href="portfolio.html">Портфолио</a></li>
-                        <li><a href="about.html">О фотографе</a></li>
+                        <li><a href="about.html">Обо мне</a></li>
+                        <li><a href="places.html">🗺️ Маршруты</a></li>
+                        <li><a href="my-awards.html">🏆 Мои награды</a></li>
                         <li><a href="blog.html">Блог</a></li>
                         <li><a href="contact.html">Контакты</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="footer-heading">Жанры</h4>
-                    <ul class="footer-links">
-                        <li><a href="portfolio.html">Портреты</a></li>
-                        <li><a href="portfolio.html">Уличная съёмка</a></li>
-                        <li><a href="portfolio.html">Граффити</a></li>
-                    </ul>
-                </div>
-                <div>
                     <h4 class="footer-heading">Контакты</h4>
                     <ul class="footer-links">
-                        <li><a href="https://t.me/niks_artphoto" target="_blank">Telegram: @niks_artphoto</a></li>
-                        <li><a href="mailto:info@niks-artphoto.ru">info@niks-artphoto.ru</a></li>
+                        <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
+                        <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Никс ArtPhoto. Все права защищены.</p>
-
+                <p>&copy; 2026 Никс. Все права защищены.</p>
             </div>
         </div>
     </footer>
 
-    <script src="theme.js"></script>
+    <script>
+        // ЧАСТИЦЫ
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            const particles = [];
+            const COUNT = 100;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 2.5 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.4;
+                    this.speedY = (Math.random() - 0.5) * 0.4;
+                    this.opacity = Math.random() * 0.4 + 0.15;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > w) this.speedX *= -1;
+                    if (this.y < 0 || this.y > h) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+            let mouseX = null, mouseY = null;
+            canvas.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            canvas.addEventListener('mouseleave', () => {
+                mouseX = null;
+                mouseY = null;
+            });
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    if (mouseX !== null && mouseY !== null) {
+                        const dx = p.x - mouseX;
+                        const dy = p.y - mouseY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 180) {
+                            const force = (180 - dist) / 180 * 0.03;
+                            p.x += dx * force;
+                            p.y += dy * force;
+                        }
+                    }
+                    p.update();
+                    p.draw();
+                });
+
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(251, 191, 36, ${0.06 * (1 - dist/130)})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+
+        // МОБИЛЬНОЕ МЕНЮ
+        document.getElementById('mobileToggle')?.addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        });
+    </script>
+
 </body>
 </html>
