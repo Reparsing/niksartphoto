@@ -200,7 +200,7 @@
         }
 
         /* ============================================
-                   ГЕРО-СЕКЦИЯ (СЛАЙДЕР)
+                   ГЕРО-СЕКЦИЯ (НОВЫЙ СЛАЙДЕР)
                    ============================================ */
         .hero-section {
             padding: 80px 0 60px;
@@ -243,7 +243,7 @@
             border: 1px solid var(--kumo-hairline);
         }
 
-        /* ===== СЛАЙДЕР СЛОВ (ОТДЕЛЬНАЯ СТРОКА) ===== */
+        /* ===== НОВЫЙ СЛАЙДЕР: СЛОВА ПОЯВЛЯЮТСЯ СЛЕВА ===== */
         .hero-title-wrapper {
             font-size: 3rem;
             font-weight: 800;
@@ -264,10 +264,12 @@
         .hero-title-wrapper .slider-track {
             position: relative;
             height: 100%;
+            width: 100%;
         }
         .hero-title-wrapper .slider-word {
             display: flex;
             align-items: center;
+            justify-content: flex-start;
             position: absolute;
             top: 0;
             left: 0;
@@ -279,20 +281,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            transform: translateY(0);
-            opacity: 1;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
-        }
-        .hero-title-wrapper .slider-word.exit-up {
-            transform: translateY(-100%);
+            transform: translateX(-100%);
             opacity: 0;
-        }
-        .hero-title-wrapper .slider-word.enter-up {
-            transform: translateY(100%);
-            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
         }
         .hero-title-wrapper .slider-word.active {
-            transform: translateY(0);
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .hero-title-wrapper .slider-word.exit {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .hero-title-wrapper .slider-word.enter {
+            transform: translateX(0);
             opacity: 1;
         }
 
@@ -900,7 +902,7 @@
                             <span class="kumo-badge kumo-badge-ghost">Искусство видеть</span>
                         </div>
 
-                        <!-- СЛАЙДЕР СЛОВ (ОТДЕЛЬНАЯ СТРОКА) -->
+                        <!-- НОВЫЙ СЛАЙДЕР: СЛЕВА НАПРАВО -->
                         <div class="hero-title-wrapper">
                             <span class="static-text">Фотография — это</span>
                             <div class="slider-container" id="wordSlider">
@@ -1161,7 +1163,7 @@
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. СЛАЙДЕР СЛОВ -->
+    <!-- 1. СЛАЙДЕР СЛОВ (СЛЕВА НАПРАВО) -->
     <script>
         (function() {
             const words = document.querySelectorAll('.slider-word');
@@ -1170,46 +1172,53 @@
             let currentIndex = 0;
             const totalWords = words.length;
 
+            // Инициализация: первое слово видно, остальные слева
             words.forEach((w, i) => {
                 if (i === 0) {
                     w.classList.add('active');
-                    w.style.transform = 'translateY(0)';
+                    w.style.transform = 'translateX(0)';
                     w.style.opacity = '1';
                 } else {
-                    w.classList.add('enter-up');
-                    w.style.transform = 'translateY(100%)';
+                    w.style.transform = 'translateX(-100%)';
                     w.style.opacity = '0';
                 }
             });
 
             function slideNext() {
+                // Текущее слово уезжает вправо
                 const current = words[currentIndex];
                 current.classList.remove('active');
-                current.classList.add('exit-up');
-                current.style.transform = 'translateY(-100%)';
+                current.classList.add('exit');
+                current.style.transform = 'translateX(100%)';
                 current.style.opacity = '0';
 
+                // Следующее слово
                 const nextIndex = (currentIndex + 1) % totalWords;
                 const next = words[nextIndex];
                 
-                next.classList.remove('exit-up', 'enter-up');
-                next.style.transform = 'translateY(100%)';
+                // Ставим следующее слово слева (за пределами)
+                next.classList.remove('exit', 'enter');
+                next.style.transform = 'translateX(-100%)';
                 next.style.opacity = '0';
                 
+                // Принудительный reflow для анимации
                 void next.offsetWidth;
                 
-                next.classList.add('enter-up');
-                next.style.transform = 'translateY(0)';
+                // Заезжает в центр
+                next.classList.add('enter');
+                next.style.transform = 'translateX(0)';
                 next.style.opacity = '1';
 
+                // Убираем старые классы у предыдущего
                 setTimeout(() => {
-                    current.classList.remove('exit-up');
+                    current.classList.remove('exit');
                     current.style.transform = '';
                     current.style.opacity = '';
-                }, 700);
+                }, 800);
 
+                // Переключаем активный класс
                 setTimeout(() => {
-                    next.classList.remove('enter-up');
+                    next.classList.remove('enter');
                     next.classList.add('active');
                     next.style.transform = '';
                     next.style.opacity = '';
@@ -1218,6 +1227,7 @@
                 currentIndex = nextIndex;
             }
 
+            // Запускаем слайдер каждые 3 секунды
             setInterval(slideNext, 3000);
         })();
     </script>
