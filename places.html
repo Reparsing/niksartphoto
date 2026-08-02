@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Маршруты любимых мест — Никс</title>
+    <title>Скоро — Никс</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,477 +27,335 @@
             overflow: hidden;
             height: 100vh;
             width: 100vw;
-            user-select: none;
-        }
-
-        /* ===== КОНТЕЙНЕР КАРТЫ ===== */
-        .map-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        #map {
-            width: 100%;
-            height: 100%;
-            background: #1a1a2e;
-        }
-
-        /* ===== НАВИГАЦИЯ ===== */
-        .kumo-navbar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-            background: rgba(10, 10, 12, 0.7);
-            border-bottom: 1px solid var(--kumo-hairline);
-            padding: 12px 0;
-            pointer-events: auto;
-        }
-        .nav-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-        .kumo-brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 1.3rem;
-            letter-spacing: -0.02em;
-            color: #fff;
-        }
-        .kumo-brand-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--kumo-brand-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--kumo-brand);
-            font-size: 1.2rem;
-        }
-        .kumo-nav-menu {
-            display: none;
-            list-style: none;
-            gap: 32px;
-        }
-        @media (min-width: 768px) {
-            .kumo-nav-menu { display: flex; }
-        }
-        .kumo-nav-link {
-            color: var(--kumo-subtle);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            position: relative;
-            padding: 4px 0;
-        }
-        .kumo-nav-link:hover { color: #fff; }
-        .kumo-nav-link.active {
-            color: var(--kumo-brand);
-            font-weight: 600;
-        }
-        .kumo-nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--kumo-brand);
-            border-radius: 2px;
-            box-shadow: 0 0 20px var(--kumo-brand-glow);
-        }
-        .kumo-mobile-toggle {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 4px 8px;
-        }
-        @media (min-width: 768px) {
-            .kumo-mobile-toggle { display: none; }
         }
 
-        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px 0;
-            background: rgba(10,10,12,0.96);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--kumo-hairline);
-            position: absolute;
-            top: 64px;
-            left: 0;
-            right: 0;
-            z-index: 999;
-        }
-        .mobile-menu.open { display: flex; }
-        .mobile-menu a {
-            color: var(--kumo-subtle);
-            font-size: 1rem;
-            font-weight: 500;
-            padding: 6px 24px;
-            transition: color 0.3s;
-        }
-        .mobile-menu a:hover { color: #fff; }
-        .mobile-menu a.active { color: var(--kumo-brand); }
-        @media (min-width: 768px) {
-            .mobile-menu { display: none !important; }
-        }
-
-        /* ===== ИНФО-ПАНЕЛЬ ===== */
-        .info-panel {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 500;
-            background: rgba(10, 10, 12, 0.8);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--kumo-hairline);
-            border-radius: 20px;
-            padding: 16px 28px;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            color: var(--kumo-subtle);
-            font-size: 0.85rem;
+        /* ===== ФОН С ПАРЯЩИМИ ФИГУРАМИ ===== */
+        .bg-shapes {
+            position: fixed;
+            inset: 0;
             pointer-events: none;
-            white-space: nowrap;
+            z-index: 0;
+            overflow: hidden;
         }
-        .info-panel .dot {
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            will-change: transform;
+            animation: floatShape 30s infinite alternate ease-in-out;
+        }
+        .shape:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #fbbf24, transparent 70%);
+            top: -20%;
+            left: -15%;
+            animation-duration: 35s;
+        }
+        .shape:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #f59e0b, transparent 70%);
+            bottom: -15%;
+            right: -15%;
+            animation-duration: 40s;
+            animation-delay: -10s;
+        }
+        .shape:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, #fcd34d, transparent 70%);
+            top: 50%;
+            left: 50%;
+            animation-duration: 32s;
+            animation-delay: -18s;
+        }
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(80px, -50px) scale(1.2) rotate(30deg); }
+            66% { transform: translate(-40px, 60px) scale(0.8) rotate(-25deg); }
+            100% { transform: translate(50px, -40px) scale(1.1) rotate(20deg); }
+        }
+
+        /* ===== ЧАСТИЦЫ (canvas) ===== */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 600px;
+            padding: 40px 24px;
+            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ===== ИКОНКА ===== */
+        .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--kumo-brand-subtle);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            margin-bottom: 32px;
+            animation: pulseIcon 2.5s ease-in-out infinite;
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.05);
+        }
+        .icon-wrapper .icon {
+            font-size: 3.6rem;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50% { transform: translateY(-12px) rotate(4deg); }
+        }
+        @keyframes pulseIcon {
+            0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.05); }
+            50% { box-shadow: 0 0 60px rgba(251, 191, 36, 0.15); }
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
+        .title {
+            font-size: 3.2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        @media (max-width: 768px) {
+            .title { font-size: 2.4rem; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--kumo-subtle);
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        /* ===== СТРОКА "СКОРО" ===== */
+        .soon-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 24px;
+            border-radius: 60px;
+            background: var(--kumo-brand-subtle);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--kumo-brand);
+            margin-bottom: 28px;
+        }
+        .soon-badge .dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #22c55e;
-            animation: blinkDot 1.5s infinite;
+            background: var(--kumo-brand);
+            animation: blinkDot 1.2s infinite;
         }
         @keyframes blinkDot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
-        }
-        .info-panel .speed {
-            color: var(--kumo-default);
-            font-weight: 600;
-        }
-        .info-panel .speed span {
-            color: var(--kumo-brand);
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(0.8); }
         }
 
-        /* ===== КАСТОМНЫЕ МАРКЕРЫ ===== */
-        .custom-marker {
-            display: flex;
-            flex-direction: column;
+        /* ===== ТЕКСТ ===== */
+        .description {
+            color: var(--kumo-muted);
+            font-size: 1rem;
+            line-height: 1.8;
+            max-width: 440px;
+            margin: 0 auto 32px;
+        }
+
+        /* ===== КНОПКА НАЗАД ===== */
+        .btn-back {
+            display: inline-flex;
             align-items: center;
-            transform: translate(-50%, -100%);
-            pointer-events: none;
-            z-index: 10;
-        }
-        .custom-marker .marker-dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #0a0a0c;
             background: var(--kumo-brand);
-            box-shadow: 0 0 30px var(--kumo-brand-glow);
-            border: 2px solid rgba(255,255,255,0.3);
-            animation: pulseMarker 2s infinite;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-decoration: none;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
         }
-        @keyframes pulseMarker {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
+        .btn-back:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 60px var(--kumo-brand-glow);
         }
-        .custom-marker .marker-label {
-            margin-top: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--kumo-hairline);
-            color: #fff;
-            white-space: nowrap;
-        }
-        .custom-marker .marker-sub {
-            font-size: 0.55rem;
-            color: var(--kumo-subtle);
-            margin-top: 2px;
-            background: rgba(0,0,0,0.5);
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-
-        /* ===== ФОТОАППАРАТ ===== */
-        .camera-marker {
-            position: absolute;
-            z-index: 20;
-            transform: translate(-50%, -100%);
-            pointer-events: none;
-            will-change: transform;
-            transition: none;
-        }
-        .camera-icon {
-            font-size: 2.6rem;
-            filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.6));
-            display: block;
-            line-height: 1;
-            animation: cameraFloat 2s ease-in-out infinite;
-        }
-        @keyframes cameraFloat {
-            0%, 100% { transform: translateY(0) rotate(-3deg); }
-            50% { transform: translateY(-10px) rotate(3deg); }
+        .btn-back:active {
+            transform: scale(0.94);
         }
 
         /* ===== АДАПТИВ ===== */
-        @media (max-width: 768px) {
-            .info-panel { padding: 12px 16px; font-size: 0.7rem; gap: 12px; flex-wrap: wrap; justify-content: center; bottom: 16px; white-space: normal; }
-            .custom-marker .marker-label { font-size: 0.6rem; padding: 2px 8px; }
-            .custom-marker .marker-sub { font-size: 0.5rem; }
-            .camera-icon { font-size: 2rem; }
-        }
         @media (max-width: 480px) {
-            .custom-marker .marker-dot { width: 14px; height: 14px; }
-            .camera-icon { font-size: 1.6rem; }
-            .info-panel { font-size: 0.6rem; padding: 8px 12px; gap: 6px; }
+            .title { font-size: 2rem; }
+            .subtitle { font-size: 1rem; }
+            .icon-wrapper { width: 80px; height: 80px; }
+            .icon-wrapper .icon { font-size: 2.8rem; }
+            .description { font-size: 0.9rem; }
+            .btn-back { padding: 12px 24px; font-size: 0.85rem; }
+            .soon-badge { font-size: 0.75rem; padding: 6px 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== КОНТЕЙНЕР КАРТЫ ===== -->
-    <div class="map-wrapper">
+    <!-- ===== ФОН: ПАРЯЩИЕ ФИГУРЫ ===== -->
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
 
-        <!-- Карта -->
-        <div id="map"></div>
+    <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
+    <canvas id="particles-canvas"></canvas>
 
-        <!-- ===== НАВИГАЦИЯ ===== -->
-        <nav class="kumo-navbar">
-            <div class="nav-container">
-                <a href="index.html" class="kumo-brand-logo">
-                    <div class="kumo-brand-icon">✦</div>
-                    <span>НИКС</span>
-                </a>
-                <ul class="kumo-nav-menu">
-                    <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
-                    <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
-                    <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
-                    <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
-                    <li><a href="places.html" class="kumo-nav-link active">🗺️ Маршруты любимых мест</a></li>
-                    <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
-                    <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
-                </ul>
-                <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
-            </div>
-        </nav>
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <div class="content">
 
-        <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="index.html">Главная</a>
-            <a href="about.html">Обо мне</a>
-            <a href="index.html#schedule">Режим работы</a>
-            <a href="index.html#faq">FAQ</a>
-            <a href="places.html" class="active">🗺️ Маршруты любимых мест</a>
-            <a href="blog.html">Блог</a>
-            <a href="contact.html">Контакты</a>
+        <div class="icon-wrapper">
+            <span class="icon">🗺️</span>
         </div>
 
-        <!-- ===== ИНФО-ПАНЕЛЬ ===== -->
-        <div class="info-panel">
+        <div class="soon-badge">
             <span class="dot"></span>
-            <span>Маршрут активен</span>
-            <span class="speed">🚶 <span id="speedDisplay">4.0</span> км/ч</span>
-            <span id="progressDisplay">📍 ТЦ Европа → Додо Пицца</span>
+            Скоро будет доступно
         </div>
+
+        <h1 class="title">Маршруты<br>любимых мест</h1>
+        <p class="subtitle">Карта с анимированным фотоаппаратом</p>
+
+        <p class="description">
+            Я работаю над интерактивной картой Калининграда,<br>
+            где ты сможешь увидеть мои любимые места<br>
+            и маршруты в реальном времени.
+        </p>
+
+        <a href="index.html" class="btn-back">
+            ← Вернуться на главную
+        </a>
 
     </div>
 
     <!-- ============================================
-    ПОДКЛЮЧАЕМ LEAFLET
+    СКРИПТЫ
     ============================================ -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- 1. ЧАСТИЦЫ -->
     <script>
-        // ============================================
-        // 1. КАРТА
-        // ============================================
-        const map = L.map('map', {
-            center: [54.7104, 20.4522],
-            zoom: 15,
-            zoomControl: false,
-            scrollWheelZoom: true,
-            dragging: true,
-        });
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            const particles = [];
+            const COUNT = 100;
 
-        // 👇 ЗДЕСЬ МЕНЯЕМ СЛОЙ КАРТЫ НА РАБОЧИЙ (без ключа)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            minZoom: 12,
-            maxZoom: 19,
-        }).addTo(map);
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
 
-        // ============================================
-        // 2. ТОЧКИ
-        // ============================================
-        const points = [
-            { lat: 54.7108, lng: 20.4530, name: 'ТЦ Европа', sub: 'ул. Театральная' },
-            { lat: 54.7135, lng: 20.4565, name: 'Додо Пицца', sub: 'пр. Мира' },
-            { lat: 54.7162, lng: 20.4600, name: 'ТЦ Акрополь', sub: 'ул. Фрунзе' }
-        ];
-
-        points.forEach((p) => {
-            const iconHtml = `
-                <div class="custom-marker">
-                    <div class="marker-dot"></div>
-                    <div class="marker-label">${p.name}</div>
-                    <div class="marker-sub">${p.sub}</div>
-                </div>
-            `;
-            const icon = L.divIcon({
-                html: iconHtml,
-                className: '',
-                iconSize: [0, 0],
-                iconAnchor: [0, 0],
-            });
-            L.marker([p.lat, p.lng], { icon: icon, interactive: false }).addTo(map);
-        });
-
-        // ============================================
-        // 3. МАРШРУТ
-        // ============================================
-        const routeCoords = points.map(p => [p.lat, p.lng]);
-        L.polyline(routeCoords, {
-            color: '#fbbf24',
-            weight: 4,
-            opacity: 0.9,
-            smoothFactor: 1,
-            dashArray: '10, 8',
-        }).addTo(map);
-
-        L.polyline(routeCoords, {
-            color: '#fbbf24',
-            weight: 12,
-            opacity: 0.15,
-            smoothFactor: 1,
-        }).addTo(map);
-
-        // ============================================
-        // 4. ФОТОАППАРАТ
-        // ============================================
-        const cameraEl = document.createElement('div');
-        cameraEl.className = 'camera-marker';
-        cameraEl.innerHTML = `<span class="camera-icon">📸</span>`;
-        document.querySelector('.map-wrapper').appendChild(cameraEl);
-
-        function getRoutePosition(t) {
-            const totalSegments = points.length - 1;
-            const segLength = 1 / totalSegments;
-            const segIndex = Math.min(Math.floor(t / segLength), totalSegments - 1);
-            const localT = (t - segIndex * segLength) / segLength;
-            const p0 = points[segIndex];
-            const p1 = points[segIndex + 1];
-            return {
-                lat: p0.lat + (p1.lat - p0.lat) * localT,
-                lng: p0.lng + (p1.lng - p0.lng) * localT,
-                segIndex
-            };
-        }
-
-        function latLngToPixel(lat, lng) {
-            const point = map.latLngToContainerPoint([lat, lng]);
-            return { x: point.x, y: point.y };
-        }
-
-        let progress = 0;
-        let currentSegment = 0;
-        const speed = 0.0035;
-        let isPaused = false;
-
-        function animateCamera() {
-            if (isPaused) {
-                requestAnimationFrame(animateCamera);
-                return;
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 2.5 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.4;
+                    this.speedY = (Math.random() - 0.5) * 0.4;
+                    this.opacity = Math.random() * 0.4 + 0.15;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > w) this.speedX *= -1;
+                    if (this.y < 0 || this.y > h) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`;
+                    ctx.fill();
+                }
             }
 
-            progress += speed;
-            if (progress >= 1) {
-                progress = 0;
-                currentSegment++;
-                if (currentSegment >= points.length - 1) currentSegment = 0;
-                const next = (currentSegment + 1) % points.length;
-                document.getElementById('progressDisplay').textContent =
-                    `📍 ${points[currentSegment].name} → ${points[next].name}`;
-            }
+            for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            const totalSegments = points.length - 1;
-            const globalT = (currentSegment + progress) / totalSegments;
-            const clampedT = Math.min(Math.max(globalT, 0), 1);
-            const pos = getRoutePosition(clampedT);
-            const pixel = latLngToPixel(pos.lat, pos.lng);
-
-            cameraEl.style.left = pixel.x + 'px';
-            cameraEl.style.top = (pixel.y - 10) + 'px';
-
-            const speedVariation = 1 + Math.sin(Date.now() / 2500) * 0.06;
-            document.getElementById('speedDisplay').textContent = (4 * speedVariation).toFixed(1);
-
-            requestAnimationFrame(animateCamera);
-        }
-
-        // ============================================
-        // 5. ЗАПУСК
-        // ============================================
-        setTimeout(() => {
-            const startPos = getRoutePosition(0);
-            const pixel = latLngToPixel(startPos.lat, startPos.lng);
-            cameraEl.style.left = pixel.x + 'px';
-            cameraEl.style.top = (pixel.y - 10) + 'px';
-            document.getElementById('progressDisplay').textContent =
-                `📍 ${points[0].name} → ${points[1].name}`;
-            requestAnimationFrame(animateCamera);
-        }, 800);
-
-        // Пауза по клику
-        document.getElementById('map').addEventListener('click', function() {
-            isPaused = !isPaused;
-            document.getElementById('progressDisplay').textContent = isPaused ?
-                '⏸️ Пауза' :
-                `📍 ${points[currentSegment].name} → ${points[(currentSegment + 1) % points.length].name}`;
-        });
-
-        // ============================================
-        // 6. МОБИЛЬНОЕ МЕНЮ
-        // ============================================
-        document.getElementById('mobileToggle')?.addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('open');
-        });
-
-        // ============================================
-        // 7. ПЕРЕРИСОВКА ПРИ РЕСАЙЗЕ
-        // ============================================
-        window.addEventListener('resize', function() {
-            map.invalidateSize();
-            requestAnimationFrame(() => {
-                const totalSegments = points.length - 1;
-                const globalT = (currentSegment + progress) / totalSegments;
-                const clampedT = Math.min(Math.max(globalT, 0), 1);
-                const pos = getRoutePosition(clampedT);
-                const pixel = latLngToPixel(pos.lat, pos.lng);
-                cameraEl.style.left = pixel.x + 'px';
-                cameraEl.style.top = (pixel.y - 10) + 'px';
+            let mouseX = null,
+                mouseY = null;
+            canvas.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
             });
-        });
+            canvas.addEventListener('mouseleave', () => {
+                mouseX = null;
+                mouseY = null;
+            });
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    if (mouseX !== null && mouseY !== null) {
+                        const dx = p.x - mouseX;
+                        const dy = p.y - mouseY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 180) {
+                            const force = (180 - dist) / 180 * 0.03;
+                            p.x += dx * force;
+                            p.y += dy * force;
+                        }
+                    }
+                    p.update();
+                    p.draw();
+                });
+
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(251, 191, 36, ${0.06 * (1 - dist/130)})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
     </script>
 
 </body>
