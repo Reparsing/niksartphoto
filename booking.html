@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ===== СТИЛИ (те же, что и раньше) ===== */
         :root {
             --kumo-brand: #fbbf24;
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
@@ -34,6 +33,7 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         a { text-decoration: none; color: inherit; transition: all 0.3s; }
         img { display: block; max-width: 100%; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
         ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
@@ -468,8 +468,6 @@
                 <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
                 <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
                 <li><a href="booking.html" class="kumo-nav-link active">📅 Запись</a></li>
-                <li><a href="profile.html" class="kumo-nav-link">👤 Профиль</a></li>
-                <li><a href="orders.html" class="kumo-nav-link">📋 Заказы</a></li>
             </ul>
             <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
         </div>
@@ -486,8 +484,6 @@
             <a href="blog.html">Блог</a>
             <a href="contact.html">Контакты</a>
             <a href="booking.html" class="active">📅 Запись</a>
-            <a href="profile.html">👤 Профиль</a>
-            <a href="orders.html">📋 Заказы</a>
         </div>
     </div>
 
@@ -697,7 +693,7 @@
         });
     </script>
 
-    <!-- 3. ЛОГИКА ЗАПИСИ (УПРОЩЁННАЯ, РАБОЧАЯ) -->
+    <!-- 3. ЛОГИКА ЗАПИСИ -->
     <script>
         (function() {
             // === ДАТЫ ===
@@ -765,10 +761,6 @@
                 const botToken = '8987479768:AAE6ZmRVA3AWo0nzL2O5eUrnefCnaZ33vVo';
                 const chatId = '7709067838';
 
-                // === URL ДЛЯ КНОПОК (твой сайт) ===
-                const siteUrl = 'https://reparsing.github.io/niksartphoto';
-
-                // Текст сообщения
                 const message = `
     📸 НОВАЯ ЗАЯВКА НА СЪЁМКУ!
 
@@ -777,31 +769,7 @@
     👤 Имя: ${name}
     💬 Telegram: ${telegram}
     📝 Комментарий: ${comment || '—'}
-
-    👇 Нажми кнопку, чтобы ответить:
                 `;
-
-                // === РАБОЧИЕ КНОПКИ (ССЫЛКИ) ===
-                const keyboard = {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: '✅ Принять',
-                                url: `${siteUrl}/callback.html?status=accepted&telegram=${telegram}&date=${selectedDate}&time=${time}`
-                            },
-                            {
-                                text: '❌ Отклонить',
-                                url: `${siteUrl}/callback.html?status=rejected&telegram=${telegram}&date=${selectedDate}&time=${time}`
-                            }
-                        ],
-                        [
-                            {
-                                text: '⏰ Напомнить позже',
-                                url: `${siteUrl}/callback.html?status=remind&telegram=${telegram}&date=${selectedDate}&time=${time}`
-                            }
-                        ]
-                    ]
-                };
 
                 const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -811,7 +779,6 @@
                     body: JSON.stringify({
                         chat_id: chatId,
                         text: message,
-                        reply_markup: keyboard,
                         parse_mode: 'HTML',
                     })
                 })
@@ -821,10 +788,6 @@
                         successMessage.classList.add('show');
                         form.querySelector('.submit-btn').style.display = 'none';
                         form.querySelectorAll('.form-group').forEach(el => el.style.display = 'none');
-
-                        if (window.orderSubmitted) {
-                            window.orderSubmitted();
-                        }
                     } else {
                         alert('Ошибка отправки. Попробуй ещё раз.');
                         console.error('Telegram error:', data);
