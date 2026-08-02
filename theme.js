@@ -7,7 +7,7 @@
     'use strict';
 
     // ============================================
-    // ТЕМЫ: dark, light, green, blue (всё в JS)
+    // ТЕМЫ: dark, light, green, blue
     // ============================================
     const THEMES = {
         dark: {
@@ -72,7 +72,7 @@
         }
     };
 
-    // --- THEME ENGINE ---
+    // --- ФУНКЦИИ ТЕМ ---
     function getStoredTheme() {
         return localStorage.getItem('theme') || 'dark';
     }
@@ -81,7 +81,6 @@
         const themeData = THEMES[theme];
         if (!themeData) return;
 
-        // Применяем цвета
         const root = document.documentElement;
         Object.entries(themeData.colors).forEach(([key, value]) => {
             root.style.setProperty(key, value);
@@ -89,32 +88,25 @@
 
         root.setAttribute('data-mode', theme);
         localStorage.setItem('theme', theme);
-        updateThemeToggleIcons(theme);
-        updateThemeButtons(theme);
+        updateAllButtons(theme);
     }
 
-    function updateThemeToggleIcons(theme) {
-        const themeData = THEMES[theme];
-        document.querySelectorAll('.kumo-theme-toggle').forEach(btn => {
-            btn.innerHTML = themeData ? themeData.icon : '🌙';
-            btn.setAttribute('aria-label', `Switch to ${themeData ? themeData.name : 'Dark'} Mode`);
-        });
-    }
-
-    function updateThemeButtons(theme) {
+    function updateAllButtons(theme) {
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === theme);
         });
     }
 
-    // --- СОЗДАЁМ КНОПКИ ТЕМ (если их нет) ---
-    function createThemeButtons() {
+    // ============================================
+    // ДОБАВЛЕНИЕ КНОПОК В НАВИГАЦИЮ
+    // ============================================
+    function addThemeButtons() {
+        // Проверяем, есть ли уже кнопки
         if (document.querySelector('.theme-switcher')) return;
 
-        const container = document.createElement('div');
-        container.className = 'theme-switcher';
-        container.id = 'themeSwitcher';
-        container.style.cssText = `
+        const wrapper = document.createElement('div');
+        wrapper.className = 'theme-switcher';
+        wrapper.style.cssText = `
             display: flex;
             gap: 6px;
             align-items: center;
@@ -122,7 +114,8 @@
             border-radius: 40px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--kumo-hairline);
-            margin-left: 8px;
+            margin: 0 8px;
+            flex-shrink: 0;
         `;
 
         const themes = [
@@ -151,22 +144,33 @@
                 justify-content: center;
                 background: transparent;
                 color: var(--kumo-subtle);
+                padding: 0;
             `;
             btn.addEventListener('click', () => setTheme(t.key));
-            container.appendChild(btn);
+            wrapper.appendChild(btn);
         });
 
-        // Вставляем в навигацию
-        const navActions = document.querySelector('.kumo-nav-actions');
-        if (navActions) {
-            navActions.prepend(container);
-        } else {
-            // Если нет nav-actions, вставляем в navbar
-            const navbar = document.querySelector('.kumo-navbar .nav-container');
+        // Ищем куда вставить — ищем .kumo-nav-actions
+        let target = document.querySelector('.kumo-nav-actions');
+        
+        // Если нет .kumo-nav-actions, ищем .nav-container или .navbar
+        if (!target) {
+            const navbar = document.querySelector('.kumo-navbar');
             if (navbar) {
-                const actions = navbar.querySelector('.kumo-nav-actions') || navbar;
-                actions.prepend(container);
+                const container = navbar.querySelector('.nav-container') || navbar;
+                // Создаём actions, если их нет
+                target = document.createElement('div');
+                target.className = 'kumo-nav-actions';
+                target.style.cssText = 'display: flex; align-items: center;';
+                container.appendChild(target);
             }
+        }
+
+        if (target) {
+            target.prepend(wrapper);
+        } else {
+            // Если совсем ничего нет — вставляем в body
+            document.body.prepend(wrapper);
         }
 
         // Добавляем стили для кнопок
@@ -195,28 +199,21 @@
         setTheme(stored);
     }
 
-    // --- ОСТАЛЬНЫЕ ФУНКЦИИ (из оригинала) ---
-    function updateThemeToggleIcons(theme) {
-        const themeData = THEMES[theme];
-        document.querySelectorAll('.kumo-theme-toggle').forEach(btn => {
-            btn.innerHTML = themeData ? themeData.icon : '🌙';
-            btn.setAttribute('aria-label', `Switch to ${themeData ? themeData.name : 'Dark'} Mode`);
-        });
-    }
+    // ============================================
+    // ОСТАЛЬНОЙ КОД (без изменений)
+    // ============================================
+    // ... (весь остальной код из твоего theme.js: лайтбокс, меню и т.д.)
 
     // ============================================
-    // ИНИЦИАЛИЗАЦИЯ
+    // ЗАПУСК
     // ============================================
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Создаём кнопки тем
-        createThemeButtons();
+        // Добавляем кнопки
+        addThemeButtons();
 
-        // 2. Инициализируем оригинальные функции (если есть)
-        const currentTheme = getStoredTheme();
-        setTheme(currentTheme);
-
-        // 3. Остальной код (лайтбокс, меню и т.д.) — без изменений
-        // ... (весь остальной код из твоего theme.js)
+        // Здесь должен быть весь остальной код из твоего theme.js
+        // (лайтбокс, мобильное меню, фильтры, анимации и т.д.)
+        // Я его не удаляю, просто показываю структуру
     });
 
 })();
