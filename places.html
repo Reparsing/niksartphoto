@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Маршруты любимых мест — Никс</title>
+    <title>Маршруты — Никс</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
+        /* ============================================
+                   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+                   ============================================ */
         :root {
             --kumo-brand: #fbbf24;
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
@@ -206,213 +208,143 @@
         }
 
         /* ============================================
-                   КАРТА С МАРШРУТОМ
+                   ОСНОВНОЙ КОНТЕНТ
                    ============================================ */
-        .map-container {
+        .content {
             position: relative;
-            width: 90%;
-            max-width: 800px;
-            aspect-ratio: 16 / 9;
-            background: radial-gradient(ellipse at 50% 60%, #14141a 0%, #08080a 80%);
-            border-radius: 24px;
-            border: 1px solid var(--kumo-hairline);
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            margin-top: 80px;
-        }
-
-        /* Стилизованные улицы */
-        .streets {
-            position: absolute;
-            inset: 0;
-            opacity: 0.12;
-            pointer-events: none;
-        }
-        .street {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 2px;
-        }
-        .street.h { height: 2px; width: 100%; }
-        .street.v { width: 2px; height: 100%; }
-        .street.d { height: 2px; width: 60%; }
-        .street.c {
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            background: transparent;
-        }
-
-        /* ===== ТОЧКИ ===== */
-        .point {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .point:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-        .point .dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--kumo-brand);
-            box-shadow: 0 0 30px var(--kumo-brand-glow);
-            border: 2px solid rgba(255,255,255,0.3);
-            animation: pulseDot 2s infinite;
-        }
-        @keyframes pulseDot {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-        }
-        .point .label {
-            margin-top: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--kumo-hairline);
-            color: #fff;
-            white-space: nowrap;
-        }
-        .point .sub {
-            font-size: 0.55rem;
-            color: var(--kumo-subtle);
-            margin-top: 2px;
-            background: rgba(0,0,0,0.5);
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-
-        /* ===== МАРШРУТ (замкнутая линия вокруг точек) ===== */
-        .route-svg {
-            position: absolute;
-            inset: 0;
-            z-index: 5;
-            pointer-events: none;
-            width: 100%;
-            height: 100%;
-        }
-        .route-svg path {
-            fill: none;
-            stroke: url(#routeGrad);
-            stroke-width: 3;
-            stroke-linecap: round;
-            animation: drawRoute 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.3));
-        }
-        @keyframes drawRoute {
-            to { stroke-dashoffset: 0; }
-        }
-
-        /* ===== КАМЕРА (Blink-анимация + движение) ===== */
-        .camera-marker {
-            position: absolute;
-            z-index: 20;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            will-change: transform, left, top;
-            transition: none;
-        }
-        .camera-icon {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.6));
-            animation: cameraBlink 2.4s ease-in-out infinite;
-            display: block;
-        }
-        @keyframes cameraBlink {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(0.85) rotate(-6deg); }
-            50% { transform: scale(1.15) rotate(6deg); }
-            75% { transform: scale(0.9) rotate(-3deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        /* ============================================
-                   ИНФО-ПАНЕЛЬ
-                   ============================================ */
-        .info-panel {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding: 12px 28px;
-            border-radius: 40px;
-            background: rgba(18, 18, 22, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--kumo-hairline);
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--kumo-subtle);
-            z-index: 10;
-            animation: fadeUp 1s ease 0.5s both;
-        }
-        .info-panel .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #22c55e;
-            animation: blinkDot 1.5s infinite;
-        }
-        @keyframes blinkDot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
-        }
-        .info-panel .speed-value {
-            color: var(--kumo-brand);
+            z-index: 1;
+            text-align: center;
+            max-width: 600px;
+            padding: 40px 24px;
+            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            margin-top: 60px;
         }
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* ============================================
-                   КНОПКА НАЗАД
-                   ============================================ */
+        /* ===== ИКОНКА ===== */
+        .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--kumo-brand-subtle);
+            border: 2px solid rgba(251, 191, 36, 0.2);
+            margin-bottom: 32px;
+            animation: pulseIcon 2.5s ease-in-out infinite;
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.05);
+        }
+        .icon-wrapper .icon {
+            font-size: 4.2rem;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50% { transform: translateY(-16px) rotate(4deg); }
+        }
+        @keyframes pulseIcon {
+            0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.05); }
+            50% { box-shadow: 0 0 80px rgba(251, 191, 36, 0.15); }
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
+        .title {
+            font-size: 3.6rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        @media (max-width: 768px) {
+            .title { font-size: 2.8rem; }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--kumo-subtle);
+            margin-bottom: 16px;
+            font-weight: 400;
+        }
+
+        /* ===== СТРОКА "ВРЕМЕННО НЕ ДОСТУПНО" ===== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 28px;
+            border-radius: 60px;
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--kumo-brand);
+            margin-bottom: 24px;
+            letter-spacing: 0.04em;
+        }
+        .status-badge .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--kumo-brand);
+            animation: blinkDot 1.2s infinite;
+        }
+        @keyframes blinkDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(0.8); }
+        }
+
+        /* ===== ТЕКСТ ===== */
+        .description {
+            color: var(--kumo-muted);
+            font-size: 1.05rem;
+            line-height: 1.9;
+            max-width: 460px;
+            margin: 0 auto 32px;
+        }
+
+        /* ===== КНОПКА НАЗАД ===== */
         .btn-back {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 28px;
+            padding: 16px 36px;
             border-radius: 60px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #0a0a0c;
             background: var(--kumo-brand);
             border: none;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-decoration: none;
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
-            margin-top: 16px;
-            animation: fadeUp 1s ease 0.8s both;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.2);
         }
         .btn-back:hover {
             transform: scale(1.06);
-            box-shadow: 0 0 60px var(--kumo-brand-glow);
+            box-shadow: 0 0 80px var(--kumo-brand-glow);
+        }
+        .btn-back:active {
+            transform: scale(0.94);
         }
 
         /* ============================================
                    АДАПТИВ
                    ============================================ */
-        @media (max-width: 768px) {
-            .map-container { width: 95%; aspect-ratio: 4/3; margin-top: 70px; }
-            .point .label { font-size: 0.55rem; padding: 2px 8px; }
-            .point .sub { font-size: 0.45rem; }
-            .camera-icon { width: 36px; height: 36px; }
-            .info-panel { font-size: 0.75rem; padding: 8px 16px; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        }
         @media (max-width: 480px) {
-            .map-container { aspect-ratio: 1/1; }
-            .camera-icon { width: 28px; height: 28px; }
-            .point .dot { width: 14px; height: 14px; }
+            .title { font-size: 2.2rem; }
+            .subtitle { font-size: 1rem; }
+            .icon-wrapper { width: 90px; height: 90px; }
+            .icon-wrapper .icon { font-size: 3.2rem; }
+            .description { font-size: 0.9rem; }
+            .btn-back { padding: 14px 28px; font-size: 0.9rem; }
+            .status-badge { font-size: 0.85rem; padding: 8px 18px; }
         }
     </style>
 </head>
@@ -461,174 +393,38 @@
         <a href="contact.html">Контакты</a>
     </div>
 
-    <!-- ===== КОНТЕЙНЕР С КАРТОЙ ===== -->
-    <div class="map-container" id="mapContainer">
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <div class="content">
 
-        <!-- Стилизованные улицы -->
-        <div class="streets">
-            <div class="street h" style="top:30%;"></div>
-            <div class="street h" style="top:55%;"></div>
-            <div class="street h" style="top:75%;"></div>
-            <div class="street v" style="left:25%;"></div>
-            <div class="street v" style="left:50%;"></div>
-            <div class="street v" style="left:75%;"></div>
-            <div class="street d" style="top:15%; left:10%; transform:rotate(25deg);"></div>
-            <div class="street d" style="top:55%; left:35%; transform:rotate(-20deg);"></div>
-            <div class="street c" style="width:140px; height:140px; top:35%; left:55%;"></div>
-            <div class="street c" style="width:100px; height:100px; top:25%; left:20%;"></div>
+        <div class="icon-wrapper">
+            <span class="icon">🚧</span>
         </div>
 
-        <!-- ТОЧКА 1: ТЦ Европа -->
-        <div class="point" id="point1" style="top:32%; left:28%;">
-            <div class="dot"></div>
-            <div class="label">🛍️ ТЦ Европа</div>
-            <div class="sub">ул. Театральная</div>
+        <div class="status-badge">
+            <span class="dot"></span>
+            Временно не доступно
         </div>
 
-        <!-- ТОЧКА 2: Додо Пицца -->
-        <div class="point" id="point2" style="top:55%; left:55%;">
-            <div class="dot"></div>
-            <div class="label">🍕 Додо Пицца</div>
-            <div class="sub">пр. Мира</div>
-        </div>
+        <h1 class="title">Маршруты<br>любимых мест</h1>
+        <p class="subtitle">Карта с анимированным фотоаппаратом</p>
 
-        <!-- ТОЧКА 3: ТЦ Акрополь -->
-        <div class="point" id="point3" style="top:42%; left:78%;">
-            <div class="dot"></div>
-            <div class="label">🏛️ ТЦ Акрополь</div>
-            <div class="sub">ул. Фрунзе</div>
-        </div>
+        <p class="description">
+            Я работаю над интерактивной картой Калининграда,<br>
+            где ты сможешь увидеть мои любимые места<br>
+            и маршруты в реальном времени.
+        </p>
 
-        <!-- МАРШРУТ: замкнутая линия вокруг точек -->
-        <svg class="route-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#fbbf24" stop-opacity="1" />
-                    <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.8" />
-                    <stop offset="100%" stop-color="#fcd34d" stop-opacity="1" />
-                </linearGradient>
-            </defs>
-            <!-- Линия, которая проходит через все три точки -->
-            <path d="M 28 32 C 35 20, 50 20, 55 55 C 60 60, 70 50, 78 42 C 85 30, 70 20, 55 55 C 40 45, 30 40, 28 32" 
-                  stroke-dasharray="1000" stroke-dashoffset="1000" />
-        </svg>
-
-        <!-- КАМЕРА -->
-        <div class="camera-marker" id="cameraMarker">
-            <img src="images/camera.png" alt="Камера" class="camera-icon" id="cameraImg">
-        </div>
+        <a href="index.html" class="btn-back">
+            ← Вернуться на главную
+        </a>
 
     </div>
-
-    <!-- ===== ИНФО-ПАНЕЛЬ ===== -->
-    <div class="info-panel">
-        <span class="dot"></span>
-        <span>Маршрут активен</span>
-        <span>🚶 <span class="speed-value">4</span> км/ч</span>
-        <span id="progressDisplay">📍 ТЦ Европа → Додо Пицца → ТЦ Акрополь</span>
-    </div>
-
-    <!-- ===== КНОПКА НАЗАД ===== -->
-    <a href="index.html" class="btn-back">
-        ← Вернуться на главную
-    </a>
 
     <!-- ============================================
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. АНИМАЦИЯ КАМЕРЫ ПО МАРШРУТУ -->
-    <script>
-        (function() {
-            const camera = document.getElementById('cameraMarker');
-            const container = document.getElementById('mapContainer');
-            if (!camera || !container) return;
-
-            // Три точки маршрута (в процентах)
-            const points = [
-                { x: 28, y: 32 },  // ТЦ Европа
-                { x: 55, y: 55 },  // Додо Пицца
-                { x: 78, y: 42 }   // ТЦ Акрополь
-            ];
-
-            let currentSegment = 0;
-            let progress = 0;
-            const speed = 0.004;
-
-            function getPosition(t) {
-                const totalSegments = points.length - 1;
-                const segLength = 1 / totalSegments;
-                const segIndex = Math.min(Math.floor(t / segLength), totalSegments - 1);
-                const localT = (t - segIndex * segLength) / segLength;
-
-                const p0 = points[segIndex];
-                const p1 = points[segIndex + 1];
-                const cp1 = {
-                    x: p0.x + (p1.x - p0.x) * 0.3 + (segIndex === 0 ? 5 : -5),
-                    y: p0.y + (p1.y - p0.y) * 0.3 - (segIndex === 0 ? 8 : 5)
-                };
-                const cp2 = {
-                    x: p1.x - (p1.x - p0.x) * 0.3 + (segIndex === totalSegments - 1 ? -5 : 5),
-                    y: p1.y - (p1.y - p0.y) * 0.3 + (segIndex === totalSegments - 1 ? 8 : 5)
-                };
-
-                const mt = 1 - localT;
-                const x = mt*mt*mt * p0.x + 3*mt*mt*localT * cp1.x + 3*mt*localT*localT * cp2.x + localT*localT*localT * p1.x;
-                const y = mt*mt*mt * p0.y + 3*mt*mt*localT * cp1.y + 3*mt*localT*localT * cp2.y + localT*localT*localT * p1.y;
-                return { x, y };
-            }
-
-            function updateCamera() {
-                progress += speed;
-                if (progress >= 1) {
-                    progress = 0;
-                    currentSegment++;
-                    if (currentSegment >= points.length - 1) {
-                        currentSegment = 0;
-                    }
-                    // Обновляем текст в панели
-                    const next = (currentSegment + 1) % points.length;
-                    document.getElementById('progressDisplay').textContent =
-                        `📍 ${['ТЦ Европа', 'Додо Пицца', 'ТЦ Акрополь'][currentSegment]} → ${['ТЦ Европа', 'Додо Пицца', 'ТЦ Акрополь'][next]}`;
-                }
-
-                const totalSegments = points.length - 1;
-                const globalT = (currentSegment + progress) / totalSegments;
-                const clampedT = Math.min(Math.max(globalT, 0), 1);
-                const pos = getPosition(clampedT);
-
-                const rect = container.getBoundingClientRect();
-                const xPx = (pos.x / 100) * rect.width;
-                const yPx = (pos.y / 100) * rect.height;
-
-                camera.style.left = xPx + 'px';
-                camera.style.top = yPx + 'px';
-
-                requestAnimationFrame(updateCamera);
-            }
-
-            // Запуск
-            setTimeout(() => {
-                const rect = container.getBoundingClientRect();
-                const startPos = getPosition(0);
-                camera.style.left = (startPos.x / 100 * rect.width) + 'px';
-                camera.style.top = (startPos.y / 100 * rect.height) + 'px';
-                requestAnimationFrame(updateCamera);
-            }, 500);
-
-            // Пересчёт при ресайзе
-            window.addEventListener('resize', () => {
-                const rect = container.getBoundingClientRect();
-                const totalSegments = points.length - 1;
-                const globalT = (currentSegment + progress) / totalSegments;
-                const pos = getPosition(Math.min(Math.max(globalT, 0), 1));
-                camera.style.left = (pos.x / 100 * rect.width) + 'px';
-                camera.style.top = (pos.y / 100 * rect.height) + 'px';
-            });
-        })();
-    </script>
-
-    <!-- 2. ЧАСТИЦЫ -->
+    <!-- 1. ЧАСТИЦЫ -->
     <script>
         (function() {
             const canvas = document.getElementById('particles-canvas');
@@ -719,7 +515,7 @@
         })();
     </script>
 
-    <!-- 3. МОБИЛЬНОЕ МЕНЮ -->
+    <!-- 2. МОБИЛЬНОЕ МЕНЮ -->
     <script>
         document.getElementById('mobileToggle')?.addEventListener('click', function() {
             document.getElementById('mobileMenu').classList.toggle('open');
