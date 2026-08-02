@@ -350,6 +350,7 @@
             border: 1px solid var(--hairline);
             box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
             transition: all .5s cubic-bezier(.34, 1.56, .64, 1);
+            cursor: pointer;
         }
         .medals-column .image-box:hover {
             transform: scale(1.02);
@@ -395,6 +396,7 @@
             justify-content: center;
             min-height: 200px;
             height: 100%;
+            cursor: pointer;
         }
         .diplom-box:hover {
             transform: scale(1.02);
@@ -529,6 +531,72 @@
         }
 
         /* ============================================
+                   ЛАЙТБОКС
+                   ============================================ */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 40px;
+        }
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            transform: scale(0.92);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .lightbox.open .lightbox-content {
+            transform: scale(1);
+        }
+
+        .lightbox .lightbox-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            display: block;
+        }
+
+        .lightbox .lightbox-close {
+            position: absolute;
+            top: -14px;
+            right: -14px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(24, 24, 27, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(8px);
+        }
+        .lightbox .lightbox-close:hover {
+            background: var(--brand);
+            color: #0a0a0c;
+            transform: scale(1.1);
+        }
+
+        /* ============================================
                    ФУТЕР
                    ============================================ */
         .footer {
@@ -642,18 +710,18 @@
 
                     <!-- ЛЕВАЯ КОЛОНКА: ДВЕ МЕДАЛИ -->
                     <div class="medals-column">
-                        <div class="image-box">
+                        <div class="image-box" data-img="images/IMG_20260803_004001_536.jpg">
                             <img src="images/IMG_20260803_004001_536.jpg" alt="Медаль Абилимпикс 2026 — лицевая сторона" loading="lazy">
                             <span class="label">🏅 Лицевая сторона</span>
                         </div>
-                        <div class="image-box">
+                        <div class="image-box" data-img="images/IMG_20260803_004009_670.jpg">
                             <img src="images/IMG_20260803_004009_670.jpg" alt="Медаль Абилимпикс 2026 — обратная сторона" loading="lazy">
                             <span class="label">🏅 Обратная сторона</span>
                         </div>
                     </div>
 
                     <!-- ПРАВАЯ КОЛОНКА: ДИПЛОМ -->
-                    <div class="diplom-box">
+                    <div class="diplom-box" data-img="images/IMG_20260802_200231_820.png">
                         <img src="images/IMG_20260802_200231_820.png" alt="Диплом Абилимпикс 2026" loading="lazy">
                         <span class="label">📜 Диплом</span>
                     </div>
@@ -683,6 +751,16 @@
 
         </div>
     </main>
+
+    <!-- ============================================
+    ЛАЙТБОКС
+    ============================================ -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose">✕</button>
+            <img src="" alt="Увеличенное изображение" id="lightboxImg">
+        </div>
+    </div>
 
     <!-- ============================================
     ФУТЕР
@@ -802,6 +880,47 @@
                     navbar.classList.add('scrolled');
                 } else {
                     navbar.classList.remove('scrolled');
+                }
+            });
+        })();
+    </script>
+
+    <!-- 4. ЛАЙТБОКС ЛОГИКА -->
+    <script>
+        (function() {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const closeBtn = document.getElementById('lightboxClose');
+
+            // Открыть лайтбокс по клику на любое фото
+            document.querySelectorAll('[data-img]').forEach(el => {
+                el.addEventListener('click', function() {
+                    const imgSrc = this.getAttribute('data-img');
+                    lightboxImg.src = imgSrc;
+                    lightbox.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Закрыть по крестику
+            closeBtn.addEventListener('click', function() {
+                lightbox.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+
+            // Закрыть по клику на фон
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Закрыть по ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+                    lightbox.classList.remove('open');
+                    document.body.style.overflow = '';
                 }
             });
         })();
