@@ -243,51 +243,54 @@
             border: 1px solid var(--kumo-hairline);
         }
 
-        /* ===== СЛАЙДЕР СЛОВ ===== */
-        .slider-container {
-            position: relative;
-            height: 5rem;
-            overflow: hidden;
-            margin: 0 0 16px 0;
-            width: 100%;
-            max-width: 700px;
+        /* ===== СЛАЙДЕР СЛОВ (НАДЁЖНЫЙ) ===== */
+        .hero-title-wrapper {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
         }
-        .slider-track {
+        .hero-title-wrapper .static-text {
+            display: inline-block;
+        }
+        .hero-title-wrapper .slider-container {
+            display: inline-block;
+            position: relative;
+            height: 1.3em;
+            overflow: hidden;
+            vertical-align: bottom;
+            min-width: 200px;
+        }
+        .hero-title-wrapper .slider-track {
             position: relative;
             height: 100%;
-            width: 100%;
         }
-        .slider-word {
+        .hero-title-wrapper .slider-word {
+            display: block;
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            align-items: center;
-            font-size: 3.8rem;
             font-weight: 900;
-            letter-spacing: -0.02em;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            will-change: transform, opacity;
-            white-space: nowrap;
-            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
-            transform: translateX(-100%);
-            opacity: 0;
-        }
-        .slider-word.active {
-            transform: translateX(0);
+            transform: translateY(0);
             opacity: 1;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
         }
-        .slider-word.exit {
-            transform: translateX(100%);
+        .hero-title-wrapper .slider-word.exit-up {
+            transform: translateY(-100%);
             opacity: 0;
         }
-        .slider-word.enter {
-            transform: translateX(0);
+        .hero-title-wrapper .slider-word.enter-up {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        .hero-title-wrapper .slider-word.active {
+            transform: translateY(0);
             opacity: 1;
         }
 
@@ -373,7 +376,7 @@
         .kumo-btn-lg { padding: 16px 40px; font-size: 1rem; }
 
         /* ============================================
-                   НАПРАВЛЕНИЯ
+                   ОСТАЛЬНЫЕ СЕКЦИИ
                    ============================================ */
         .directions-section {
             padding: 80px 0;
@@ -465,9 +468,6 @@
             line-height: 1.6;
         }
 
-        /* ============================================
-                   ОБО МНЕ
-                   ============================================ */
         .about-section {
             padding: 80px 0;
         }
@@ -527,9 +527,6 @@
             object-fit: cover;
         }
 
-        /* ============================================
-                   ДОСТИЖЕНИЯ
-                   ============================================ */
         .awards-section {
             padding: 80px 0;
             background: radial-gradient(circle at 30% 40%, rgba(251,191,36,0.03) 0%, transparent 60%);
@@ -626,9 +623,6 @@
             color: var(--kumo-brand);
         }
 
-        /* ============================================
-                   РАСПИСАНИЕ
-                   ============================================ */
         .schedule-section {
             padding: 80px 0;
             background: radial-gradient(circle at 30% 40%, rgba(251,191,36,0.04) 0%, transparent 60%);
@@ -674,9 +668,6 @@
             letter-spacing: 0.02em;
         }
 
-        /* ============================================
-                   FAQ
-                   ============================================ */
         .faq-section {
             padding: 80px 0;
             background: var(--kumo-canvas-subtle);
@@ -761,18 +752,12 @@
         }
         .faq-btn:hover { transform: scale(1.04); }
 
-        /* ============================================
-                   CTA
-                   ============================================ */
         .cta-section {
             padding: 80px 0;
             text-align: center;
             background: radial-gradient(circle at 70% 30%, rgba(251,191,36,0.04), transparent 60%);
         }
 
-        /* ============================================
-                   ФУТЕР
-                   ============================================ */
         .kumo-footer {
             padding: 48px 0 24px;
             border-top: 1px solid var(--kumo-hairline);
@@ -810,9 +795,6 @@
             font-size: 0.85rem;
         }
 
-        /* ============================================
-                   МОБИЛЬНОЕ МЕНЮ
-                   ============================================ */
         .mobile-menu {
             display: none;
             flex-direction: column;
@@ -836,13 +818,9 @@
             .mobile-menu { display: none !important; }
         }
 
-        /* ============================================
-                   АДАПТИВ
-                   ============================================ */
         @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.4rem; }
-            .slider-word { font-size: 2.6rem; }
-            .slider-container { height: 3.8rem; }
+            .hero-title-wrapper { font-size: 2.4rem; }
+            .hero-title-wrapper .slider-container { min-width: 140px; }
             .section-title { font-size: 2rem; }
             .schedule-time { font-size: 1.5rem; }
             .schedule-card { padding: 32px 16px; }
@@ -850,9 +828,8 @@
             .hero-image-card img { height: 300px; }
         }
         @media (max-width: 480px) {
-            .hero-content h1 { font-size: 2rem; }
-            .slider-word { font-size: 2rem; }
-            .slider-container { height: 3rem; }
+            .hero-title-wrapper { font-size: 2rem; }
+            .hero-title-wrapper .slider-container { min-width: 110px; }
             .kumo-btn-lg { padding: 12px 24px; font-size: 0.9rem; }
         }
     </style>
@@ -917,17 +894,17 @@
                             <span class="kumo-badge kumo-badge-ghost">Искусство видеть</span>
                         </div>
 
-                        <!-- СЛАЙДЕР СЛОВ -->
-                        <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 0;">
-                            Фотография — это
-                        </h1>
-                        <div class="slider-container" id="wordSlider">
-                            <div class="slider-track">
-                                <div class="slider-word active" data-index="0">Искусство</div>
-                                <div class="slider-word" data-index="1">Свет</div>
-                                <div class="slider-word" data-index="2">Эмоция</div>
-                                <div class="slider-word" data-index="3">История</div>
-                                <div class="slider-word" data-index="4">Вдохновение</div>
+                        <!-- НОВЫЙ СЛАЙДЕР (ВЕРТИКАЛЬНЫЙ) -->
+                        <div class="hero-title-wrapper">
+                            <span class="static-text">Фотография — это</span>
+                            <div class="slider-container" id="wordSlider">
+                                <div class="slider-track">
+                                    <div class="slider-word active" data-index="0">Искусство</div>
+                                    <div class="slider-word" data-index="1">Свет</div>
+                                    <div class="slider-word" data-index="2">Эмоция</div>
+                                    <div class="slider-word" data-index="3">История</div>
+                                    <div class="slider-word" data-index="4">Вдохновение</div>
+                                </div>
                             </div>
                         </div>
 
@@ -1178,7 +1155,7 @@
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. СЛАЙДЕР СЛОВ -->
+    <!-- 1. СЛАЙДЕР СЛОВ (ВЕРТИКАЛЬНЫЙ) -->
     <script>
         (function() {
             const words = document.querySelectorAll('.slider-word');
@@ -1187,54 +1164,57 @@
             let currentIndex = 0;
             const totalWords = words.length;
 
-            // Инициализация: первое слово видно, остальные слева
+            // Инициализация: первое слово видно, остальные внизу
             words.forEach((w, i) => {
                 if (i === 0) {
                     w.classList.add('active');
-                    w.style.transform = 'translateX(0)';
+                    w.style.transform = 'translateY(0)';
                     w.style.opacity = '1';
                 } else {
-                    w.style.transform = 'translateX(-100%)';
+                    w.classList.add('enter-up');
+                    w.style.transform = 'translateY(100%)';
                     w.style.opacity = '0';
                 }
             });
 
             function slideNext() {
-                // Текущее слово уезжает вправо
-                words[currentIndex].classList.remove('active');
-                words[currentIndex].classList.add('exit');
-                words[currentIndex].style.transform = 'translateX(100%)';
-                words[currentIndex].style.opacity = '0';
+                // Текущее слово уезжает вверх
+                const current = words[currentIndex];
+                current.classList.remove('active');
+                current.classList.add('exit-up');
+                current.style.transform = 'translateY(-100%)';
+                current.style.opacity = '0';
 
                 // Следующее слово
                 const nextIndex = (currentIndex + 1) % totalWords;
+                const next = words[nextIndex];
                 
-                // Ставим следующее слово слева (за пределами)
-                words[nextIndex].style.transform = 'translateX(-100%)';
-                words[nextIndex].style.opacity = '0';
-                words[nextIndex].classList.remove('exit', 'enter');
+                // Ставим следующее слово снизу
+                next.classList.remove('exit-up', 'enter-up');
+                next.style.transform = 'translateY(100%)';
+                next.style.opacity = '0';
                 
                 // Принудительный reflow для анимации
-                void words[nextIndex].offsetWidth;
+                void next.offsetWidth;
                 
                 // Заезжает в центр
-                words[nextIndex].classList.add('enter');
-                words[nextIndex].style.transform = 'translateX(0)';
-                words[nextIndex].style.opacity = '1';
+                next.classList.add('enter-up');
+                next.style.transform = 'translateY(0)';
+                next.style.opacity = '1';
 
                 // Убираем старые классы у предыдущего
                 setTimeout(() => {
-                    words[currentIndex].classList.remove('exit');
-                    words[currentIndex].style.transform = '';
-                    words[currentIndex].style.opacity = '';
+                    current.classList.remove('exit-up');
+                    current.style.transform = '';
+                    current.style.opacity = '';
                 }, 700);
 
                 // Переключаем активный класс
                 setTimeout(() => {
-                    words[nextIndex].classList.remove('enter');
-                    words[nextIndex].classList.add('active');
-                    words[nextIndex].style.transform = '';
-                    words[nextIndex].style.opacity = '';
+                    next.classList.remove('enter-up');
+                    next.classList.add('active');
+                    next.style.transform = '';
+                    next.style.opacity = '';
                 }, 50);
 
                 currentIndex = nextIndex;
