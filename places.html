@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ru" data-mode="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="view-transition" content="same-origin">
+    <title>Маршруты любимых мест — Никс</title>
+    <meta name="description" content="Где я бываю чаще всего в Калининграде: маршруты и любимые места.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+                   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+                   ============================================ */
+        :root {
+            --kumo-brand: #fbbf24;
+            --kumo-brand-glow: rgba(251, 191, 36, 0.3);
+            --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
+            --kumo-canvas: #0a0a0c;
+            --kumo-hairline: rgba(255, 255, 255, 0.08);
+            --kumo-subtle: #a1a1aa;
+            --kumo-muted: #71717a;
+            --kumo-default: #f4f4f5;
+            --kumo-card-bg: rgba(18, 18, 22, 0.6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--kumo-canvas);
+            color: var(--kumo-default);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+        }
+
+        /* ============================================
+                   КОНТЕЙНЕР КАРТЫ
+                   ============================================ */
+        .map-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(ellipse at 50% 60%, #14141a 0%, #08080a 80%);
+            overflow: hidden;
+        }
+
+        /* ============================================
+                   ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ФОНА (стиль Blink)
+                   ============================================ */
+        .bg-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        .bg-glow:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #fbbf24, transparent 70%);
+            top: 10%;
+            left: 20%;
+            animation: floatGlow 12s infinite alternate ease-in-out;
+        }
+        .bg-glow:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #f59e0b, transparent 70%);
+            bottom: 10%;
+            right: 15%;
+            animation: floatGlow 15s infinite alternate-reverse ease-in-out;
+        }
+        .bg-glow:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #fcd34d, transparent 70%);
+            top: 50%;
+            left: 60%;
+            animation: floatGlow 10s infinite alternate ease-in-out;
+        }
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, -30px) scale(1.2); }
+        }
+
+        /* ============================================
+                   СЕТКА УЛИЦ (стилизованная карта)
+                   ============================================ */
+        .streets {
+            position: absolute;
+            inset: 0;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .street {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+        }
+        .street.horizontal {
+            height: 2px;
+            width: 100%;
+            top: var(--y);
+            left: 0;
+        }
+        .street.vertical {
+            width: 2px;
+            height: 100%;
+            left: var(--x);
+            top: 0;
+        }
+        .street.diagonal {
+            height: 2px;
+            width: 60%;
+            top: var(--y);
+            left: var(--x);
+            transform: rotate(var(--angle));
+        }
+        .street.circle {
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            width: var(--size);
+            height: var(--size);
+            top: var(--y);
+            left: var(--x);
+            background: transparent;
+        }
+
+        /* ============================================
+                   ТОЧКИ НА КАРТЕ
+                   ============================================ */
+        .point {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .point:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+        .point-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--kumo-brand);
+            box-shadow: 0 0 30px var(--kumo-brand-glow), 0 0 60px rgba(251, 191, 36, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+            position: relative;
+        }
+        .point-marker::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            animation: pulseMarker 2s infinite;
+        }
+        @keyframes pulseMarker {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.6); opacity: 0; }
+        }
+        .point-label {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--kumo-hairline);
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+        .point-sub {
+            font-size: 0.6rem;
+            color: var(--kumo-subtle);
+            margin-top: 2px;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        /* ============================================
+                   ФОТОАППАРАТ (анимированный)
+                   ============================================ */
+        .camera-marker {
+            position: absolute;
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: none;
+            will-change: transform, left, top;
+        }
+        .camera-icon {
+            font-size: 2.4rem;
+            filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.6)) drop-shadow(0 0 60px rgba(251, 191, 36, 0.2));
+            animation: cameraFloat 2s ease-in-out infinite;
+            display: block;
+            line-height: 1;
+            transform-origin: center;
+        }
+        @keyframes cameraFloat {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+
+        /* ============================================
+                   СЛЕД МАРШРУТА
+                   ============================================ */
+        .route-path {
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .route-path svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        .route-path path {
+            fill: none;
+            stroke: url(#routeGrad);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawRoute 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.3));
+        }
+        @keyframes drawRoute {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* ============================================
+                   НАВИГАЦИЯ (поверх карты)
+                   ============================================ */
+        .kumo-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 12, 0.7);
+            border-bottom: 1px solid var(--kumo-hairline);
+            padding: 12px 0;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .kumo-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        .kumo-brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--kumo-brand-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--kumo-brand);
+            font-size: 1.2rem;
+        }
+        .kumo-nav-menu {
+            display: none;
+            list-style: none;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .kumo-nav-menu { display: flex; }
+        }
+        .kumo-nav-link {
+            color: var(--kumo-subtle);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            padding: 4px 0;
+        }
+        .kumo-nav-link:hover { color: #fff; }
+        .kumo-nav-link.active {
+            color: var(--kumo-brand);
+            font-weight: 600;
+        }
+        .kumo-nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--kumo-brand);
+            border-radius: 2px;
+            box-shadow: 0 0 20px var(--kumo-brand-glow);
+        }
+        .kumo-mobile-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        @media (min-width: 768px) {
+            .kumo-mobile-toggle { display: none; }
+        }
+
+        /* ============================================
+                   ИНФО-БЛОК (нижняя часть)
+                   ============================================ */
+        .info-panel {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 20px;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: var(--kumo-subtle);
+            font-size: 0.85rem;
+            animation: fadeUp 1s ease 1s forwards;
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .info-panel .speed {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--kumo-default);
+            font-weight: 600;
+        }
+        .info-panel .speed span {
+            color: var(--kumo-brand);
+        }
+        .info-panel .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: blinkDot 1.5s infinite;
+        }
+        @keyframes blinkDot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        /* ============================================
+                   МОБИЛЬНОЕ МЕНЮ
+                   ============================================ */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+            background: rgba(10,10,12,0.96);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--kumo-hairline);
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            z-index: 99;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            color: var(--kumo-subtle);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 6px 24px;
+            transition: color 0.3s;
+        }
+        .mobile-menu a:hover { color: #fff; }
+        .mobile-menu a.active { color: var(--kumo-brand); }
+        @media (min-width: 768px) {
+            .mobile-menu { display: none !important; }
+        }
+
+        /* ============================================
+                   АДАПТИВ
+                   ============================================ */
+        @media (max-width: 768px) {
+            .point-label { font-size: 0.6rem; padding: 2px 8px; }
+            .point-sub { font-size: 0.5rem; padding: 1px 6px; }
+            .camera-icon { font-size: 1.8rem; }
+            .info-panel { padding: 12px 16px; font-size: 0.7rem; gap: 12px; flex-wrap: wrap; justify-content: center; bottom: 16px; }
+        }
+        @media (max-width: 480px) {
+            .point-marker { width: 14px; height: 14px; }
+            .camera-icon { font-size: 1.4rem; }
+            .info-panel { padding: 10px 14px; font-size: 0.6rem; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== КОНТЕЙНЕР КАРТЫ ===== -->
+    <div class="map-container" id="mapContainer">
+
+        <!-- Фоновое свечение (стиль Blink) -->
+        <div class="bg-glow"></div>
+        <div class="bg-glow"></div>
+        <div class="bg-glow"></div>
+
+        <!-- Стилизованные улицы -->
+        <div class="streets">
+            <div class="street horizontal" style="--y: 35%;"></div>
+            <div class="street horizontal" style="--y: 55%;"></div>
+            <div class="street horizontal" style="--y: 72%;"></div>
+            <div class="street vertical" style="--x: 25%;"></div>
+            <div class="street vertical" style="--x: 50%;"></div>
+            <div class="street vertical" style="--x: 75%;"></div>
+            <div class="street diagonal" style="--y: 20%; --x: 10%; --angle: 25deg;"></div>
+            <div class="street diagonal" style="--y: 60%; --x: 40%; --angle: -20deg;"></div>
+            <div class="street circle" style="--size: 200px; --y: 40%; --x: 55%;"></div>
+            <div class="street circle" style="--size: 120px; --y: 30%; --x: 20%;"></div>
+        </div>
+
+        <!-- ===== ТОЧКА 1: ТЦ "Европа" ===== -->
+        <div class="point" id="point1" style="top: 32%; left: 28%;">
+            <div class="point-marker"></div>
+            <div class="point-label">🛍️ ТЦ Европа</div>
+            <div class="point-sub">ул. Театральная</div>
+        </div>
+
+        <!-- ===== ТОЧКА 2: "Додо Пицца" ===== -->
+        <div class="point" id="point2" style="top: 55%; left: 55%;">
+            <div class="point-marker"></div>
+            <div class="point-label">🍕 Додо Пицца</div>
+            <div class="point-sub">пр. Мира</div>
+        </div>
+
+        <!-- ===== ТОЧКА 3: ТЦ "Акрополь" ===== -->
+        <div class="point" id="point3" style="top: 42%; left: 78%;">
+            <div class="point-marker"></div>
+            <div class="point-label">🏛️ ТЦ Акрополь</div>
+            <div class="point-sub">ул. Фрунзе</div>
+        </div>
+
+        <!-- ===== МАРШРУТ (линия между точками) ===== -->
+        <svg class="route-path" style="position:absolute; inset:0; z-index:5; pointer-events:none; width:100%; height:100%;">
+            <defs>
+                <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#fcd34d;stop-opacity:1" />
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Кривая Безье: от точки 1 к точке 2, затем к точке 3 -->
+            <path d="M 28% 32% C 40% 25%, 45% 45%, 55% 55% C 60% 60%, 70% 50%, 78% 42%" 
+                  stroke="url(#routeGrad)" stroke-width="3" fill="none" 
+                  stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000"
+                  filter="url(#glow)" id="routePath"/>
+        </svg>
+
+        <!-- ===== ФОТОАППАРАТ (плавно движется по маршруту) ===== -->
+        <div class="camera-marker" id="cameraMarker">
+            <span class="camera-icon">📸</span>
+        </div>
+
+        <!-- ===== НАВИГАЦИЯ ===== -->
+        <nav class="kumo-navbar">
+            <div class="nav-container">
+                <a href="index.html" class="kumo-brand-logo">
+                    <div class="kumo-brand-icon">✦</div>
+                    <span>НИКС</span>
+                </a>
+                <ul class="kumo-nav-menu">
+                    <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
+                    <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
+                    <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
+                    <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
+                    <li><a href="places.html" class="kumo-nav-link active">🗺️ Маршруты любимых мест</a></li>
+                    <li><a href="blog.html" class="kumo-nav-link">Блог</a></li>
+                    <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
+                </ul>
+                <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
+            </div>
+        </nav>
+
+        <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html">Главная</a>
+            <a href="about.html">Обо мне</a>
+            <a href="index.html#schedule">Режим работы</a>
+            <a href="index.html#faq">FAQ</a>
+            <a href="places.html" class="active">🗺️ Маршруты любимых мест</a>
+            <a href="blog.html">Блог</a>
+            <a href="contact.html">Контакты</a>
+        </div>
+
+        <!-- ===== ИНФО-ПАНЕЛЬ ===== -->
+        <div class="info-panel">
+            <span class="dot"></span>
+            <span>Маршрут активен</span>
+            <span class="speed">🚶 <span id="speedDisplay">4</span> км/ч</span>
+            <span id="progressDisplay">📍 ТЦ Европа → Додо Пицца → ТЦ Акрополь</span>
+        </div>
+
+    </div>
+
+    <!-- ============================================
+    СКРИПТЫ
+    ============================================ -->
+
+    <!-- 1. АНИМАЦИЯ ДВИЖЕНИЯ ФОТОАППАРАТА ПО МАРШРУТУ -->
+    <script>
+        (function() {
+            const camera = document.getElementById('cameraMarker');
+            const path = document.getElementById('routePath');
+            const speedDisplay = document.getElementById('speedDisplay');
+            const progressDisplay = document.getElementById('progressDisplay');
+            
+            if (!camera || !path) return;
+
+            // Точки маршрута (в процентах)
+            const points = [
+                { x: 28, y: 32 },  // ТЦ Европа
+                { x: 55, y: 55 },  // Додо Пицца
+                { x: 78, y: 42 }   // ТЦ Акрополь
+            ];
+
+            // Названия точек для отображения
+            const pointNames = ['ТЦ Европа', 'Додо Пицца', 'ТЦ Акрополь'];
+            let currentSegment = 0;
+            let progress = 0; // 0..1 внутри сегмента
+            const speed = 0.004; // скорость движения (4 км/ч в пересчёте на анимацию)
+            let isPaused = false;
+            let lastTime = 0;
+
+            // Функция для получения позиции на кривой Безье (приближённо)
+            function getBezierPoint(t) {
+                // Аппроксимируем путь через три сегмента
+                const totalSegments = points.length - 1;
+                const segmentLength = 1 / totalSegments;
+                const segIndex = Math.min(Math.floor(t / segmentLength), totalSegments - 1);
+                const localT = (t - segIndex * segmentLength) / segmentLength;
+
+                const p0 = points[segIndex];
+                const p1 = points[segIndex + 1];
+                
+                // Контрольные точки для плавной кривой (смещение)
+                const cp1 = {
+                    x: p0.x + (p1.x - p0.x) * 0.3 + (segIndex === 0 ? 5 : -5),
+                    y: p0.y + (p1.y - p0.y) * 0.3 - (segIndex === 0 ? 8 : 5)
+                };
+                const cp2 = {
+                    x: p1.x - (p1.x - p0.x) * 0.3 + (segIndex === totalSegments - 1 ? -5 : 5),
+                    y: p1.y - (p1.y - p0.y) * 0.3 + (segIndex === totalSegments - 1 ? 8 : 5)
+                };
+
+                // Кубическая кривая Безье
+                const mt = 1 - localT;
+                const x = mt*mt*mt * p0.x + 3*mt*mt*localT * cp1.x + 3*mt*localT*localT * cp2.x + localT*localT*localT * p1.x;
+                const y = mt*mt*mt * p0.y + 3*mt*mt*localT * cp1.y + 3*mt*localT*localT * cp2.y + localT*localT*localT * p1.y;
+                
+                return { x, y, segIndex };
+            }
+
+            function updateCamera(timestamp) {
+                if (isPaused) {
+                    requestAnimationFrame(updateCamera);
+                    return;
+                }
+
+                // Обновляем прогресс
+                progress += speed;
+                
+                // Если дошли до конца сегмента
+                if (progress >= 1) {
+                    progress = 0;
+                    currentSegment++;
+                    if (currentSegment >= points.length - 1) {
+                        // Зацикливаем маршрут
+                        currentSegment = 0;
+                    }
+                    // Обновляем отображение прогресса
+                    const next = (currentSegment + 1) % points.length;
+                    progressDisplay.textContent = `📍 ${pointNames[currentSegment]} → ${pointNames[next]}`;
+                }
+
+                // Вычисляем глобальный прогресс (0..1)
+                const totalSegments = points.length - 1;
+                const globalT = (currentSegment + progress) / totalSegments;
+                const clampedT = Math.min(Math.max(globalT, 0), 1);
+
+                const pos = getBezierPoint(clampedT);
+                
+                // Обновляем позицию камеры
+                camera.style.left = pos.x + '%';
+                camera.style.top = pos.y + '%';
+
+                // Обновляем скорость (изменяем плавно, чтобы казалось реалистичнее)
+                const speedVariation = 1 + Math.sin(timestamp / 2000) * 0.05;
+                const currentSpeed = (4 * speedVariation).toFixed(1);
+                speedDisplay.textContent = currentSpeed;
+
+                requestAnimationFrame(updateCamera);
+            }
+
+            // Запускаем анимацию с небольшой задержкой
+            setTimeout(() => {
+                // Инициализируем камеру в первой точке
+                const startPos = getBezierPoint(0);
+                camera.style.left = startPos.x + '%';
+                camera.style.top = startPos.y + '%';
+                progressDisplay.textContent = `📍 ${pointNames[0]} → ${pointNames[1]}`;
+                
+                // Активируем рисование пути
+                document.getElementById('routePath')?.setAttribute('stroke-dashoffset', '0');
+                
+                requestAnimationFrame(updateCamera);
+            }, 1500);
+
+            // При клике на карту можно ставить на паузу (для отладки)
+            document.getElementById('mapContainer')?.addEventListener('click', () => {
+                isPaused = !isPaused;
+                if (isPaused) {
+                    progressDisplay.textContent = '⏸️ Пауза';
+                } else {
+                    const next = (currentSegment + 1) % points.length;
+                    progressDisplay.textContent = `📍 ${pointNames[currentSegment]} → ${pointNames[next]}`;
+                }
+            });
+
+        })();
+    </script>
+
+    <!-- 2. МОБИЛЬНОЕ МЕНЮ -->
+    <script>
+        document.getElementById('mobileToggle')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+        });
+    </script>
+
+</body>
+</html>
