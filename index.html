@@ -26,7 +26,6 @@
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
             --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
             --kumo-canvas: #0a0a0c;
-            --kumo-canvas-subtle: rgba(255, 255, 255, 0.02);
             --kumo-hairline: rgba(255, 255, 255, 0.08);
             --kumo-subtle: #a1a1aa;
             --kumo-muted: #71717a;
@@ -201,11 +200,14 @@
         }
 
         /* ============================================
-                   ГЕРО-СЕКЦИЯ
+                   ГЕРО-СЕКЦИЯ (НОВЫЙ СЛАЙДЕР)
                    ============================================ */
         .hero-section {
             padding: 80px 0 60px;
             position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
         }
         .hero-grid {
             display: grid;
@@ -241,57 +243,53 @@
             border: 1px solid var(--kumo-hairline);
         }
 
-        .hero-content h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            letter-spacing: -0.02em;
-        }
-        @media (min-width: 768px) {
-            .hero-content h1 { font-size: 4rem; }
-        }
-        .hero-content h1 .highlight {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero-word-wrapper {
-            display: inline-block;
+        /* ===== СЛАЙДЕР СЛОВ ===== */
+        .slider-container {
             position: relative;
-            height: 1.2em;
+            height: 5rem;
             overflow: hidden;
-            vertical-align: bottom;
-            min-width: 180px;
+            margin: 0 0 16px 0;
+            width: 100%;
+            max-width: 700px;
         }
-        .hero-changing-word {
-            display: block;
+        .slider-track {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+        .slider-word {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-size: 3.8rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
-            transform: translateY(0);
+            will-change: transform, opacity;
+            transition: none;
+            white-space: nowrap;
+        }
+        .slider-word.active {
+            transform: translateX(0);
             opacity: 1;
-            font-weight: 900;
         }
-        .hero-changing-word.swap-out {
-            transform: translateY(-50px) scale(0.9);
+        .slider-word.exit {
+            transform: translateX(100%);
             opacity: 0;
-            filter: blur(4px);
         }
-        .hero-changing-word.swap-in {
-            transform: translateY(50px) scale(0.9);
-            opacity: 0;
-            filter: blur(4px);
-        }
-        .hero-changing-word.active {
-            transform: translateY(0) scale(1);
+        .slider-word.enter {
+            transform: translateX(0);
             opacity: 1;
-            filter: blur(0);
         }
 
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .hero-description {
             color: var(--kumo-subtle);
             font-size: 1.1rem;
@@ -374,7 +372,7 @@
         .kumo-btn-lg { padding: 16px 40px; font-size: 1rem; }
 
         /* ============================================
-                   НАПРАВЛЕНИЯ (3D-карточки)
+                   НАПРАВЛЕНИЯ
                    ============================================ */
         .directions-section {
             padding: 80px 0;
@@ -485,6 +483,7 @@
             display: flex;
             gap: 16px;
             margin: 24px 0 32px;
+            flex-wrap: wrap;
         }
         .stat-card {
             background: rgba(255,255,255,0.04);
@@ -493,6 +492,8 @@
             text-align: center;
             border: 1px solid var(--kumo-hairline);
             transition: all 0.3s;
+            flex: 1;
+            min-width: 80px;
         }
         .stat-card:hover {
             border-color: var(--kumo-brand);
@@ -526,7 +527,7 @@
         }
 
         /* ============================================
-                   ДОСТИЖЕНИЯ (НОВАЯ СЕКЦИЯ)
+                   ДОСТИЖЕНИЯ
                    ============================================ */
         .awards-section {
             padding: 80px 0;
@@ -536,9 +537,10 @@
         }
         .awards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: 1fr;
             gap: 24px;
-            margin-top: 40px;
+            max-width: 500px;
+            margin: 40px auto 0;
         }
         .award-card {
             background: var(--kumo-card-bg);
@@ -838,22 +840,19 @@
                    ============================================ */
         @media (max-width: 768px) {
             .hero-content h1 { font-size: 2.4rem; }
-            .hero-word-wrapper { min-width: 120px; }
+            .slider-word { font-size: 2.6rem; }
+            .slider-container { height: 3.8rem; }
             .section-title { font-size: 2rem; }
             .schedule-time { font-size: 1.5rem; }
             .schedule-card { padding: 32px 16px; }
             .about-stats { flex-direction: column; align-items: stretch; }
             .hero-image-card img { height: 300px; }
-            .awards-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
-            .award-card { padding: 24px 16px; }
-            .award-icon { font-size: 2.4rem; }
-            .award-title { font-size: 1rem; }
         }
         @media (max-width: 480px) {
             .hero-content h1 { font-size: 2rem; }
-            .hero-word-wrapper { min-width: 100px; }
+            .slider-word { font-size: 2rem; }
+            .slider-container { height: 3rem; }
             .kumo-btn-lg { padding: 12px 24px; font-size: 0.9rem; }
-            .awards-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -916,13 +915,21 @@
                             <span class="kumo-badge kumo-badge-brand">Никс — Фотограф</span>
                             <span class="kumo-badge kumo-badge-ghost">Искусство видеть</span>
                         </div>
+
+                        <!-- НОВЫЙ СЛАЙДЕР СЛОВ -->
                         <h1>
-                            Фотография — это<br>
-                            <span class="highlight">искусство</span>
-                            <div class="hero-word-wrapper">
-                                <span class="hero-changing-word active" id="changing-word">Видеть</span>
+                            Фотография — это
+                            <div class="slider-container" id="wordSlider">
+                                <div class="slider-track">
+                                    <div class="slider-word active" data-index="0">Искусство</div>
+                                    <div class="slider-word" data-index="1">Свет</div>
+                                    <div class="slider-word" data-index="2">Эмоция</div>
+                                    <div class="slider-word" data-index="3">История</div>
+                                    <div class="slider-word" data-index="4">Вдохновение</div>
+                                </div>
                             </div>
                         </h1>
+
                         <p class="hero-description">
                             Профессиональная портретная и уличная фотография.<br>
                             Каждый кадр — это история, рассказанная через свет, композицию и эмоции.
@@ -1007,7 +1014,7 @@
             </div>
         </section>
 
-        <!-- ===== ДОСТИЖЕНИЯ (НОВАЯ СЕКЦИЯ) ===== -->
+        <!-- ===== ДОСТИЖЕНИЯ ===== -->
         <section class="awards-section" id="awards">
             <div class="container">
                 <div style="text-align: center;">
@@ -1026,23 +1033,7 @@
                         <span class="award-icon">🥉</span>
                         <span class="award-year">2026</span>
                         <h3 class="award-title">Абилимпикс</h3>
-                        <p class="award-desc">3-е место в компетенции «Фотография» среди юниоров</p>
-                        <span class="award-badge">📍 Калининград</span>
-                    </div>
-
-                    <div class="award-card" data-delay="100">
-                        <span class="award-icon">🏅</span>
-                        <span class="award-year">2025</span>
-                        <h3 class="award-title">Участник городского конкурса</h3>
-                        <p class="award-desc">Портретная серия «Городские лица» вошла в топ-10</p>
-                        <span class="award-badge">📍 Калининград</span>
-                    </div>
-
-                    <div class="award-card" data-delay="200">
-                        <span class="award-icon">📸</span>
-                        <span class="award-year">2025</span>
-                        <h3 class="award-title">Персональная выставка</h3>
-                        <p class="award-desc">Выставка уличной фотографии в молодёжном центре</p>
+                        <p class="award-desc">3-е место в компетенции «Фотография» среди участников</p>
                         <span class="award-badge">📍 Калининград</span>
                     </div>
                 </div>
@@ -1187,26 +1178,65 @@
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. АНИМАЦИЯ СМЕНЫ СЛОВ В ЗАГОЛОВКЕ -->
+    <!-- 1. СЛАЙДЕР СЛОВ (выезд слева направо) -->
     <script>
         (function() {
-            const words = ['Видеть', 'Чувствовать', 'Создавать', 'Вдохновлять', 'Запечатлевать'];
-            let index = 0;
-            const el = document.getElementById('changing-word');
-            if (!el) return;
-            setInterval(() => {
-                index = (index + 1) % words.length;
-                el.className = 'hero-changing-word swap-out';
+            const words = document.querySelectorAll('.slider-word');
+            if (!words.length) return;
+            
+            let currentIndex = 0;
+            const totalWords = words.length;
+
+            function slideNext() {
+                // Текущее слово уезжает вправо
+                words[currentIndex].classList.remove('active');
+                words[currentIndex].classList.add('exit');
+
+                // Следующее слово заезжает слева
+                const nextIndex = (currentIndex + 1) % totalWords;
+                words[nextIndex].style.transform = 'translateX(-100%)';
+                words[nextIndex].style.opacity = '0';
+                words[nextIndex].classList.remove('exit');
+                
+                // Принудительный reflow для анимации
+                void words[nextIndex].offsetWidth;
+                
+                words[nextIndex].classList.add('enter');
+                words[nextIndex].style.transform = 'translateX(0)';
+                words[nextIndex].style.opacity = '1';
+
+                // Убираем старые классы у предыдущего
                 setTimeout(() => {
-                    el.textContent = words[index];
-                    el.className = 'hero-changing-word swap-in';
-                    requestAnimationFrame(() => {
-                        setTimeout(() => {
-                            el.className = 'hero-changing-word active';
-                        }, 40);
-                    });
-                }, 350);
-            }, 2800);
+                    words[currentIndex].classList.remove('exit');
+                    words[currentIndex].style.transform = '';
+                    words[currentIndex].style.opacity = '';
+                }, 600);
+
+                // Переключаем активный класс
+                setTimeout(() => {
+                    words[nextIndex].classList.remove('enter');
+                    words[nextIndex].classList.add('active');
+                    words[nextIndex].style.transform = '';
+                    words[nextIndex].style.opacity = '';
+                }, 50);
+
+                currentIndex = nextIndex;
+            }
+
+            // Запускаем слайдер каждые 3 секунды
+            setInterval(slideNext, 3000);
+
+            // Инициализация: первое слово активно
+            words.forEach((w, i) => {
+                if (i === 0) {
+                    w.classList.add('active');
+                    w.style.transform = 'translateX(0)';
+                    w.style.opacity = '1';
+                } else {
+                    w.style.transform = 'translateX(-100%)';
+                    w.style.opacity = '0';
+                }
+            });
         })();
     </script>
 
@@ -1257,8 +1287,7 @@
 
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            let mouseX = null,
-                mouseY = null;
+            let mouseX = null, mouseY = null;
             canvas.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
