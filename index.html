@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="view-transition" content="same-origin">
-    <title>Никс — Фотограф | Искусство в каждом кадре</title>
-    <meta name="description" content="Фотограф Никс. Портретная съёмка и уличные зарисовки с акцентом на контрасты и эмоции. Каждый кадр — шаг к совершенству.">
+    <title>Артурик — Кадр решает</title>
+    <meta name="description" content="Фотограф Артурик. Портретная съёмка и уличные зарисовки с акцентом на контрасты и эмоции. Каждый кадр — шаг к совершенству.">
     <meta name="keywords" content="фотограф, портретная съёмка, уличная фотография, фотосессия, профессиональная съёмка">
-    <meta name="author" content="Никс">
-    <meta property="og:title" content="Никс — Фотограф | Искусство в каждом кадре">
-    <meta property="og:description" content="Фотограф Никс. Портретная съёмка и уличные зарисовки.">
+    <meta name="author" content="Артурик">
+    <meta property="og:title" content="Артурик — Кадр решает">
+    <meta property="og:description" content="Фотограф Артурик. Портретная съёмка и уличные зарисовки.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="images/niks.png">
     <link rel="canonical" href="https://niks-artphoto.ru/">
@@ -75,22 +75,43 @@
         .kumo-brand-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 800;
+            gap: 12px;
+            text-decoration: none;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .kumo-brand-logo:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+        .kumo-brand-logo .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--kumo-brand);
+            box-shadow: 0 0 20px var(--kumo-brand-glow);
+            transition: all 0.3s;
+        }
+        .kumo-brand-logo:hover .avatar {
+            border-color: #fff;
+            box-shadow: 0 0 40px var(--kumo-brand-glow);
+        }
+        .kumo-brand-logo .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .kumo-brand-logo .brand-text .name {
+            font-weight: 900;
             font-size: 1.3rem;
             letter-spacing: -0.02em;
             color: #fff;
         }
-        .kumo-brand-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--kumo-brand-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .kumo-brand-logo .brand-text .sub {
+            font-size: 0.65rem;
             color: var(--kumo-brand);
-            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
         .kumo-nav-menu {
             display: none;
@@ -872,8 +893,11 @@
         <nav class="kumo-navbar">
             <div class="container nav-container">
                 <a href="index.html" class="kumo-brand-logo">
-                    <div class="kumo-brand-icon">✦</div>
-                    <span>НИКС</span>
+                    <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar">
+                    <div class="brand-text">
+                        <span class="name">Артурик</span>
+                        <span class="sub">Кадр решает</span>
+                    </div>
                 </a>
                 <ul class="kumo-nav-menu">
                     <li><a href="index.html" class="kumo-nav-link active">Главная</a></li>
@@ -911,8 +935,8 @@
                 <div class="hero-grid">
                     <div class="hero-content">
                         <div class="kumo-badge-group">
-                            <span class="kumo-badge kumo-badge-brand">Никс — Фотограф</span>
-                            <span class="kumo-badge kumo-badge-ghost">Искусство видеть</span>
+                            <span class="kumo-badge kumo-badge-brand">Артурик — Фотограф</span>
+                            <span class="kumo-badge kumo-badge-ghost">Кадр решает</span>
                         </div>
                         <h1>
                             Фотография — это<br>
@@ -931,10 +955,10 @@
                         </div>
                     </div>
                     <div class="hero-image-card">
-                        <img src="images/niks.png" alt="Никс Фотограф" loading="eager">
+                        <img src="images/niks.png" alt="Артурик Фотограф" loading="eager">
                         <div class="card-footer">
                             <div>
-                                <div class="name">Никс</div>
+                                <div class="name">Артурик</div>
                                 <div class="role">Фотограф</div>
                             </div>
                             <span class="kumo-badge kumo-badge-brand" style="font-size:0.7rem;">Доступен</span>
@@ -976,7 +1000,7 @@
                     <div>
                         <span class="section-label">Обо мне</span>
                         <h2 class="section-title" style="margin: 8px 0 16px;">
-                            Никс — ваш фотограф
+                            Артурик — ваш фотограф
                             <span class="accent-line"></span>
                         </h2>
                         <p style="color: var(--kumo-subtle); font-size: 1rem; line-height: 1.8;">
@@ -999,7 +1023,7 @@
                         <a href="about.html" class="kumo-btn kumo-btn-secondary">Узнать больше →</a>
                     </div>
                     <div class="about-image">
-                        <img src="media/portfolio/photo_2025-12-29_08-46-03.jpg" alt="Артур Никс">
+                        <img src="media/portfolio/photo_2025-12-29_08-46-03.jpg" alt="Артур">
                     </div>
                 </div>
             </div>
@@ -1092,7 +1116,7 @@
                             <h3 style="font-size: 1rem; font-weight: 700;">Где проходят съёмки?</h3>
                         </div>
                         <div class="faq-answer">
-                            <p>Съёмки проходят в Калининграде. Локацию мы выбираем вместе — это может быть парк, центр города или интересные места по твоему вкусу</p>
+                            <p>Съёмки проходят в Калининграде. Локацию мы выбираем вместе — это может быть студия, парк, набережная или интересные городские места.</p>
                         </div>
                     </div>
                     <div class="faq-card" data-delay="300">
@@ -1101,7 +1125,7 @@
                             <h3 style="font-size: 1rem; font-weight: 700;">Когда будут готовы фото?</h3>
                         </div>
                         <div class="faq-answer">
-                            <p>Без обработки я отправляю фото в день съёмки.</p>
+                            <p>Без обработки я отправляю фото в день съёмки. Полная ретушь занимает до 3-5 дней, в зависимости от объёма.</p>
                         </div>
                     </div>
                 </div>
@@ -1130,9 +1154,12 @@
             <div class="container">
                 <div class="footer-grid">
                     <div>
-                        <a href="index.html" class="kumo-brand-logo">
-                            <div class="kumo-brand-icon">✦</div>
-                            <span>НИКС</span>
+                        <a href="index.html" class="kumo-brand-logo" style="gap: 10px; font-size: 1rem;">
+                            <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--kumo-brand);">
+                            <div>
+                                <span style="font-weight: 800; color: #fff;">Артурик</span>
+                                <span style="display: block; font-size: 0.6rem; color: var(--kumo-brand);">Кадр решает</span>
+                            </div>
                         </a>
                         <p style="color: var(--kumo-subtle); margin-top: 4px;">Фотограф</p>
                     </div>
@@ -1159,7 +1186,7 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>&copy; 2026 Никс. Все права защищены.</p>
+                    <p>&copy; 2026 Артурик. Все права защищены.</p>
                 </div>
             </div>
         </footer>
