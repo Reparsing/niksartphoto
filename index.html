@@ -200,7 +200,7 @@
         }
 
         /* ============================================
-                   ГЕРО-СЕКЦИЯ (НОВЫЙ СЛАЙДЕР)
+                   ГЕРО-СЕКЦИЯ (СЛАЙДЕР)
                    ============================================ */
         .hero-section {
             padding: 80px 0 60px;
@@ -273,8 +273,10 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             will-change: transform, opacity;
-            transition: none;
             white-space: nowrap;
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+            transform: translateX(-100%);
+            opacity: 0;
         }
         .slider-word.active {
             transform: translateX(0);
@@ -289,7 +291,6 @@
             opacity: 1;
         }
 
-        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .hero-description {
             color: var(--kumo-subtle);
             font-size: 1.1rem;
@@ -916,19 +917,19 @@
                             <span class="kumo-badge kumo-badge-ghost">Искусство видеть</span>
                         </div>
 
-                        <!-- НОВЫЙ СЛАЙДЕР СЛОВ -->
-                        <h1>
+                        <!-- СЛАЙДЕР СЛОВ -->
+                        <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 0;">
                             Фотография — это
-                            <div class="slider-container" id="wordSlider">
-                                <div class="slider-track">
-                                    <div class="slider-word active" data-index="0">Искусство</div>
-                                    <div class="slider-word" data-index="1">Свет</div>
-                                    <div class="slider-word" data-index="2">Эмоция</div>
-                                    <div class="slider-word" data-index="3">История</div>
-                                    <div class="slider-word" data-index="4">Вдохновение</div>
-                                </div>
-                            </div>
                         </h1>
+                        <div class="slider-container" id="wordSlider">
+                            <div class="slider-track">
+                                <div class="slider-word active" data-index="0">Искусство</div>
+                                <div class="slider-word" data-index="1">Свет</div>
+                                <div class="slider-word" data-index="2">Эмоция</div>
+                                <div class="slider-word" data-index="3">История</div>
+                                <div class="slider-word" data-index="4">Вдохновение</div>
+                            </div>
+                        </div>
 
                         <p class="hero-description">
                             Профессиональная портретная и уличная фотография.<br>
@@ -936,7 +937,6 @@
                         </p>
                         <div style="display: flex; gap: 14px; flex-wrap: wrap;">
                             <a href="contact.html" class="kumo-btn kumo-btn-primary kumo-btn-lg">Обсудить проект →</a>
-                            <a href="#about" class="kumo-btn kumo-btn-secondary kumo-btn-lg">Портфолио</a>
                         </div>
                     </div>
                     <div class="hero-image-card">
@@ -1178,7 +1178,7 @@
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. СЛАЙДЕР СЛОВ (выезд слева направо) -->
+    <!-- 1. СЛАЙДЕР СЛОВ -->
     <script>
         (function() {
             const words = document.querySelectorAll('.slider-word');
@@ -1187,20 +1187,37 @@
             let currentIndex = 0;
             const totalWords = words.length;
 
+            // Инициализация: первое слово видно, остальные слева
+            words.forEach((w, i) => {
+                if (i === 0) {
+                    w.classList.add('active');
+                    w.style.transform = 'translateX(0)';
+                    w.style.opacity = '1';
+                } else {
+                    w.style.transform = 'translateX(-100%)';
+                    w.style.opacity = '0';
+                }
+            });
+
             function slideNext() {
                 // Текущее слово уезжает вправо
                 words[currentIndex].classList.remove('active');
                 words[currentIndex].classList.add('exit');
+                words[currentIndex].style.transform = 'translateX(100%)';
+                words[currentIndex].style.opacity = '0';
 
-                // Следующее слово заезжает слева
+                // Следующее слово
                 const nextIndex = (currentIndex + 1) % totalWords;
+                
+                // Ставим следующее слово слева (за пределами)
                 words[nextIndex].style.transform = 'translateX(-100%)';
                 words[nextIndex].style.opacity = '0';
-                words[nextIndex].classList.remove('exit');
+                words[nextIndex].classList.remove('exit', 'enter');
                 
                 // Принудительный reflow для анимации
                 void words[nextIndex].offsetWidth;
                 
+                // Заезжает в центр
                 words[nextIndex].classList.add('enter');
                 words[nextIndex].style.transform = 'translateX(0)';
                 words[nextIndex].style.opacity = '1';
@@ -1210,7 +1227,7 @@
                     words[currentIndex].classList.remove('exit');
                     words[currentIndex].style.transform = '';
                     words[currentIndex].style.opacity = '';
-                }, 600);
+                }, 700);
 
                 // Переключаем активный класс
                 setTimeout(() => {
@@ -1225,18 +1242,6 @@
 
             // Запускаем слайдер каждые 3 секунды
             setInterval(slideNext, 3000);
-
-            // Инициализация: первое слово активно
-            words.forEach((w, i) => {
-                if (i === 0) {
-                    w.classList.add('active');
-                    w.style.transform = 'translateX(0)';
-                    w.style.opacity = '1';
-                } else {
-                    w.style.transform = 'translateX(-100%)';
-                    w.style.opacity = '0';
-                }
-            });
         })();
     </script>
 
