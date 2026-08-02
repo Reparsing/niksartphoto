@@ -3,120 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="view-transition" content="same-origin">
-    <title>Блог — Никс Фотограф</title>
-    <meta name="description" content="Заметки о фотографии, технике и вдохновении от Никса.">
+    <title>Блог — Артурик</title>
+    <meta name="description" content="Заметки о фотографии, технике и вдохновении от Артурика.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ============================================
-                   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И БАЗА
-                   ============================================ */
-        :root {
-            --kumo-brand: #fbbf24;
-            --kumo-brand-glow: rgba(251, 191, 36, 0.3);
-            --kumo-brand-subtle: rgba(251, 191, 36, 0.12);
-            --kumo-canvas: #0a0a0c;
-            --kumo-canvas-subtle: rgba(255, 255, 255, 0.02);
-            --kumo-hairline: rgba(255, 255, 255, 0.08);
-            --kumo-subtle: #a1a1aa;
-            --kumo-muted: #71717a;
-            --kumo-default: #f4f4f5;
-            --kumo-card-bg: rgba(18, 18, 22, 0.6);
-            --kumo-font: 'Inter', sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+        }
         body {
-            font-family: var(--kumo-font);
-            background: var(--kumo-canvas);
-            color: var(--kumo-default);
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0c;
+            color: #f4f4f5;
             overflow-x: hidden;
             line-height: 1.7;
             min-height: 100vh;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        a { text-decoration: none; color: inherit; transition: all 0.3s; }
-        img { display: block; max-width: 100%; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
 
-        /* ============================================
-                   СКРОЛЛБАР
-                   ============================================ */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
-        ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
+        :root {
+            --brand: #fbbf24;
+            --brand-glow: rgba(251, 191, 36, 0.3);
+            --brand-subtle: rgba(251, 191, 36, 0.12);
+            --hairline: rgba(255, 255, 255, 0.08);
+            --subtle: #a1a1aa;
+            --muted: #71717a;
+            --default: #f4f4f5;
+            --card-bg: rgba(18, 18, 22, 0.6);
+        }
 
-        /* ============================================
-                   НАВИГАЦИЯ
-                   ============================================ */
-        .kumo-navbar {
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--brand);
+            border-radius: 10px;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== НАВИГАЦИЯ ===== */
+        .navbar {
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 50;
             backdrop-filter: blur(20px);
             background: rgba(10, 10, 12, 0.7);
-            border-bottom: 1px solid var(--kumo-hairline);
-            padding: 14px 0;
+            border-bottom: 1px solid var(--hairline);
+            padding: 12px 0;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .navbar.scrolled {
+            background: rgba(10, 10, 12, 0.92);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            border-bottom-color: rgba(251, 191, 36, 0.15);
         }
         .nav-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .kumo-brand-logo {
+        .logo {
             display: flex;
             align-items: center;
             gap: 10px;
             font-weight: 800;
             font-size: 1.3rem;
-            letter-spacing: -0.02em;
             color: #fff;
+            text-decoration: none;
         }
-        .kumo-brand-icon {
+        .logo .icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: var(--kumo-brand-subtle);
+            background: var(--brand-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--kumo-brand);
+            color: var(--brand);
             font-size: 1.2rem;
         }
-        .kumo-nav-menu {
+        .logo .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .logo .brand-text .sub {
+            font-size: 0.65rem;
+            color: var(--brand);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-menu {
             display: none;
             list-style: none;
             gap: 32px;
         }
-        @media (min-width: 768px) {
-            .kumo-nav-menu { display: flex; }
+        @media(min-width:768px) {
+            .nav-menu {
+                display: flex;
+            }
         }
-        .kumo-nav-link {
-            color: var(--kumo-subtle);
+        .nav-link {
+            color: var(--subtle);
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.3s;
-            position: relative;
             padding: 4px 0;
+            position: relative;
         }
-        .kumo-nav-link:hover { color: #fff; }
-        .kumo-nav-link.active {
-            color: var(--kumo-brand);
+        .nav-link:hover {
+            color: #fff;
+        }
+        .nav-link.active {
+            color: var(--brand);
             font-weight: 600;
         }
-        .kumo-nav-link.active::after {
+        .nav-link.active::after {
             content: '';
             position: absolute;
             bottom: -4px;
             left: 0;
             width: 100%;
             height: 2px;
-            background: var(--kumo-brand);
+            background: var(--brand);
             border-radius: 2px;
-            box-shadow: 0 0 20px var(--kumo-brand-glow);
+            box-shadow: 0 0 20px var(--brand-glow);
         }
-        .kumo-mobile-toggle {
+        .mobile-toggle {
             background: none;
             border: none;
             color: #fff;
@@ -124,146 +167,133 @@
             cursor: pointer;
             padding: 4px 8px;
         }
-        @media (min-width: 768px) {
-            .kumo-mobile-toggle { display: none; }
+        @media(min-width:768px) {
+            .mobile-toggle {
+                display: none;
+            }
         }
 
-        /* ============================================
-                   ФОН: ЧАСТИЦЫ + ПАРЯЩИЕ ФИГУРЫ
-                   ============================================ */
-        #particles-canvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+            background: rgba(10, 10, 12, 0.96);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--hairline);
         }
-        .floating-shapes {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
+        .mobile-menu.open {
+            display: flex;
         }
-        .shape {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.05;
-            will-change: transform;
-            animation: floatShape 30s infinite alternate ease-in-out;
+        .mobile-menu a {
+            color: var(--subtle);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 6px 0;
         }
-        .shape:nth-child(1) {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, #fbbf24, transparent 70%);
-            top: -20%;
-            left: -15%;
-            animation-duration: 35s;
+        .mobile-menu a:hover {
+            color: #fff;
         }
-        .shape:nth-child(2) {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, #f59e0b, transparent 70%);
-            bottom: -15%;
-            right: -15%;
-            animation-duration: 40s;
-            animation-delay: -10s;
+        .mobile-menu a.active {
+            color: var(--brand);
         }
-        .shape:nth-child(3) {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #fcd34d, transparent 70%);
-            top: 40%;
-            left: 60%;
-            animation-duration: 32s;
-            animation-delay: -18s;
-        }
-        @keyframes floatShape {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            33% { transform: translate(80px, -50px) scale(1.2) rotate(30deg); }
-            66% { transform: translate(-40px, 60px) scale(0.8) rotate(-25deg); }
-            100% { transform: translate(50px, -40px) scale(1.1) rotate(20deg); }
+        @media(min-width:768px) {
+            .mobile-menu {
+                display: none !important;
+            }
         }
 
-        /* ============================================
-                   ОСНОВНОЙ КОНТЕНТ
-                   ============================================ */
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
         .main-content {
             position: relative;
             z-index: 1;
             padding: 120px 0 80px;
         }
 
-        /* ============================================
-                   ЗАГОЛОВОК
-                   ============================================ */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-fadeUp {
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-fadeScale {
+            opacity: 0;
+            animation: fadeScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
         .blog-header {
             text-align: center;
-            margin-bottom: 60px;
-            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            margin-bottom: 50px;
         }
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(40px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .blog-header .badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            background: var(--brand-subtle);
+            color: var(--brand);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
         }
         .blog-header h1 {
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             font-weight: 900;
             letter-spacing: -0.03em;
-            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            background: linear-gradient(135deg, #fff 0%, var(--brand) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 12px;
-        }
-        @media (max-width: 768px) {
-            .blog-header h1 { font-size: 2.5rem; }
-        }
-        .blog-header p {
-            color: var(--kumo-subtle);
-            font-size: 1.15rem;
-            max-width: 520px;
-            margin: 0 auto 32px;
-        }
-
-        /* ============================================
-                   ФИЛЬТРЫ (TABS)
-                   ============================================ */
-        .kumo-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
             margin-bottom: 8px;
         }
-        .kumo-tab-btn {
-            padding: 10px 24px;
-            border-radius: 60px;
-            border: 1px solid var(--kumo-hairline);
-            background: transparent;
-            color: var(--kumo-subtle);
-            font-family: var(--kumo-font);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            backdrop-filter: blur(8px);
-            background: rgba(255,255,255,0.02);
+        @media(max-width:768px) {
+            .blog-header h1 {
+                font-size: 2.4rem;
+            }
         }
-        .kumo-tab-btn:hover {
-            background: var(--kumo-brand-subtle);
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        .kumo-tab-btn.active {
-            background: var(--kumo-brand);
-            color: #0a0a0c;
-            border-color: var(--kumo-brand);
-            box-shadow: 0 0 40px var(--kumo-brand-glow);
+        .blog-header p {
+            color: var(--subtle);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        /* ============================================
-                   СЕТКА БЛОГА
-                   ============================================ */
+        /* ===== СЕТКА БЛОГА ===== */
         .blog-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -271,26 +301,27 @@
             max-width: 1100px;
             margin: 0 auto;
         }
-        @media (min-width: 768px) {
-            .blog-grid { grid-template-columns: 1fr 1fr; }
+        @media(min-width:768px) {
+            .blog-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
-        @media (min-width: 1024px) {
-            .blog-grid { grid-template-columns: 1fr 1fr 1fr; }
+        @media(min-width:1024px) {
+            .blog-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
         }
 
-        /* ============================================
-                   КАРТОЧКА СТАТЬИ (glass + анимации)
-                   ============================================ */
+        /* ===== КАРТОЧКА СТАТЬИ ===== */
         .blog-card {
-            background: var(--kumo-card-bg);
+            background: var(--card-bg);
             backdrop-filter: blur(16px);
-            border: 1px solid var(--kumo-hairline);
+            border: 1px solid var(--hairline);
             border-radius: 24px;
             overflow: hidden;
             transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             opacity: 0;
             transform: translateY(40px) scale(0.96);
-            will-change: transform, opacity;
             display: flex;
             flex-direction: column;
         }
@@ -300,39 +331,22 @@
         }
         .blog-card:hover {
             transform: translateY(-12px) scale(1.02);
-            border-color: var(--kumo-brand);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 60px rgba(251,191,36,0.05);
+            border-color: var(--brand);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.05);
         }
-
-        .blog-card-image {
-            position: relative;
-            overflow: hidden;
-            height: 220px;
-            flex-shrink: 0;
-        }
-        .blog-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .blog-card:hover .blog-card-image img {
-            transform: scale(1.08);
-        }
-
-        .blog-card-body {
-            padding: 24px 24px 20px;
+        .blog-card .card-body {
+            padding: 28px 24px 24px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-        .blog-card-body .badge-wrap {
+        .blog-card .card-body .badge-wrap {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 10px;
         }
-        .kumo-badge {
+        .blog-card .card-body .badge-wrap .badge {
             display: inline-block;
             padding: 4px 14px;
             border-radius: 40px;
@@ -340,38 +354,36 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            background: var(--kumo-brand-subtle);
-            color: var(--kumo-brand);
-            border: 1px solid rgba(251,191,36,0.15);
+            background: var(--brand-subtle);
+            color: var(--brand);
+            border: 1px solid rgba(251, 191, 36, 0.15);
         }
-        .kumo-badge-ghost {
-            background: rgba(255,255,255,0.04);
-            color: var(--kumo-subtle);
-            border: 1px solid var(--kumo-hairline);
+        .blog-card .card-body .badge-wrap .badge-ghost {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--subtle);
+            border: 1px solid var(--hairline);
         }
-
-        .blog-card-title {
+        .blog-card .card-body .title {
             font-size: 1.2rem;
             font-weight: 700;
             line-height: 1.3;
             margin-bottom: 8px;
         }
-        .blog-card-title a {
+        .blog-card .card-body .title a {
             background: linear-gradient(135deg, #fff, #fff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             transition: all 0.3s;
         }
-        .blog-card:hover .blog-card-title a {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        .blog-card:hover .card-body .title a {
+            background: linear-gradient(135deg, var(--brand), #f59e0b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .blog-card-excerpt {
-            color: var(--kumo-subtle);
+        .blog-card .card-body .excerpt {
+            color: var(--subtle);
             font-size: 0.9rem;
             line-height: 1.6;
             flex: 1;
@@ -381,133 +393,91 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        .blog-card-footer {
+        .blog-card .card-body .footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding-top: 14px;
-            border-top: 1px solid var(--kumo-hairline);
-            color: var(--kumo-muted);
+            border-top: 1px solid var(--hairline);
+            color: var(--muted);
             font-size: 0.8rem;
         }
-        .blog-card-footer .read-more {
+        .blog-card .card-body .footer .read-more {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: var(--kumo-brand);
+            color: var(--brand);
             font-weight: 600;
             transition: all 0.3s;
         }
-        .blog-card-footer .read-more:hover {
+        .blog-card .card-body .footer .read-more:hover {
             gap: 14px;
-            text-shadow: 0 0 30px var(--kumo-brand-glow);
-        }
-
-        /* ============================================
-                   КНОПКИ
-                   ============================================ */
-        .kumo-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 22px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: none;
-            cursor: pointer;
-            background: rgba(255,255,255,0.04);
-            color: #fff;
-            border: 1px solid var(--kumo-hairline);
-        }
-        .kumo-btn:hover {
-            background: rgba(255,255,255,0.12);
-            transform: scale(1.04);
+            text-shadow: 0 0 30px var(--brand-glow);
         }
 
         /* ============================================
                    ФУТЕР
                    ============================================ */
-        .kumo-footer {
+        .footer {
             position: relative;
             z-index: 1;
             padding: 48px 0 24px;
-            border-top: 1px solid var(--kumo-hairline);
+            border-top: 1px solid var(--hairline);
             background: rgba(10, 10, 12, 0.8);
             backdrop-filter: blur(12px);
-            margin-top: 40px;
+            margin-top: 60px;
         }
         .footer-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 32px;
         }
-        @media (min-width: 768px) {
-            .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+        @media(min-width:768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
         }
-        .footer-heading {
+        .footer .heading {
             color: #fff;
             font-weight: 700;
             margin-bottom: 12px;
             font-size: 1rem;
         }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 6px; }
-        .footer-links a {
-            color: var(--kumo-subtle);
+        .footer ul {
+            list-style: none;
+        }
+        .footer ul li {
+            margin-bottom: 6px;
+        }
+        .footer ul a {
+            color: var(--subtle);
             font-size: 0.9rem;
             transition: color 0.3s;
         }
-        .footer-links a:hover { color: var(--kumo-brand); }
-        .footer-bottom {
+        .footer ul a:hover {
+            color: var(--brand);
+        }
+        .footer .bottom {
             margin-top: 32px;
             padding-top: 16px;
-            border-top: 1px solid var(--kumo-hairline);
+            border-top: 1px solid var(--hairline);
             text-align: center;
-            color: var(--kumo-muted);
+            color: var(--muted);
             font-size: 0.85rem;
         }
 
-        /* ============================================
-                   МОБИЛЬНОЕ МЕНЮ
-                   ============================================ */
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px 0;
-            background: rgba(10,10,12,0.96);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--kumo-hairline);
+        @media(max-width:768px) {
+            .blog-header h1 {
+                font-size: 2rem;
+            }
         }
-        .mobile-menu.open { display: flex; }
-        .mobile-menu a {
-            color: var(--kumo-subtle);
-            font-size: 1rem;
-            font-weight: 500;
-            padding: 6px 0;
-            transition: color 0.3s;
-        }
-        .mobile-menu a:hover { color: #fff; }
-        .mobile-menu a.active { color: var(--kumo-brand); }
-        @media (min-width: 768px) {
-            .mobile-menu { display: none !important; }
-        }
-
-        /* ============================================
-                   АДАПТИВ
-                   ============================================ */
-        @media (max-width: 768px) {
-            .blog-header h1 { font-size: 2.2rem; }
-            .blog-card-image { height: 180px; }
-            .blog-card-body { padding: 18px; }
-            .blog-card-title { font-size: 1rem; }
-        }
-        @media (max-width: 480px) {
-            .blog-header h1 { font-size: 1.8rem; }
-            .kumo-tab-btn { padding: 6px 16px; font-size: 0.8rem; }
+        @media(max-width:480px) {
+            .blog-header h1 {
+                font-size: 1.8rem;
+            }
+            .blog-card .card-body .title {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -516,169 +486,147 @@
     <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
     <canvas id="particles-canvas"></canvas>
 
-    <!-- ===== ФОН: ПАРЯЩИЕ ФИГУРЫ ===== -->
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+    <!-- ===== НАВИГАЦИЯ ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <div class="icon">✦</div>
+                <div class="brand-text">
+                    <span style="font-size:1.3rem;font-weight:900;color:#fff;">Артурик</span>
+                    <span class="sub">Кадр решает</span>
+                </div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Главная</a></li>
+                <li><a href="about.html" class="nav-link">Обо мне</a></li>
+                <li><a href="blog.html" class="nav-link active">Блог</a></li>
+                <li><a href="contact.html" class="nav-link">Контакты</a></li>
+                <li><a href="booking.html" class="nav-link">📅 Запись</a></li>
+                <li><a href="first-shot.html" class="nav-link">📸 Первый кадр</a></li>
+                <li><a href="places.html" class="nav-link">🗺️ Маршруты</a></li>
+                <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
+            </ul>
+            <button class="mobile-toggle" id="mobileToggle">☰</button>
+        </div>
+    </nav>
+
+    <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="container" style="display:flex;flex-direction:column;gap:12px;">
+            <a href="index.html">Главная</a>
+            <a href="about.html">Обо мне</a>
+            <a href="blog.html" class="active">Блог</a>
+            <a href="contact.html">Контакты</a>
+            <a href="booking.html">📅 Запись</a>
+            <a href="first-shot.html">📸 Первый кадр</a>
+            <a href="places.html">🗺️ Маршруты</a>
+            <a href="my-awards.html">🏆 Мои награды</a>
+        </div>
     </div>
 
     <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
-    <div class="main-content">
-
-        <!-- ===== НАВИГАЦИЯ ===== -->
-        <nav class="kumo-navbar">
-            <div class="container nav-container">
-                <a href="index.html" class="kumo-brand-logo">
-                    <div class="kumo-brand-icon">✦</div>
-                    <span>НИКС</span>
-                </a>
-                <ul class="kumo-nav-menu">
-                    <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
-                    <li><a href="about.html" class="kumo-nav-link">Обо мне</a></li>
-                    <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
-                    <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
-                    <li><a href="blog.html" class="kumo-nav-link active">Блог</a></li>
-                    <li><a href="contact.html" class="kumo-nav-link">Контакты</a></li>
-                </ul>
-                <button class="kumo-mobile-toggle" id="mobileToggle" aria-label="Меню">☰</button>
-            </div>
-        </nav>
-
-        <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
-        <div class="mobile-menu" id="mobileMenu">
-            <div class="container" style="display:flex; flex-direction:column; gap:12px;">
-                <a href="index.html">Главная</a>
-                <a href="about.html">Обо мне</a>
-                <a href="index.html#schedule">Режим работы</a>
-                <a href="index.html#faq">FAQ</a>
-                <a href="blog.html" class="active">Блог</a>
-                <a href="contact.html">Контакты</a>
-            </div>
-        </div>
-
-        <!-- ===== ЗАГОЛОВОК БЛОГА ===== -->
-        <header class="blog-header">
-            <h1>Блог</h1>
-            <p>Заметки о фотографии, технике и вдохновении</p>
-
-            <!-- Фильтры -->
-            <div class="kumo-tabs" id="filterTabs">
-                <button class="kumo-tab-btn active" data-filter="all">Все статьи</button>
-                <button class="kumo-tab-btn" data-filter="техника">📷 Техника</button>
-                <button class="kumo-tab-btn" data-filter="личное">✨ Личное</button>
-                <button class="kumo-tab-btn" data-filter="стрит">🏙️ Стрит</button>
-            </div>
-        </header>
-
-        <!-- ===== СЕТКА СТАТЕЙ ===== -->
+    <main class="main-content">
         <div class="container">
-            <div class="blog-grid" id="blogGrid">
 
-                <!-- ПОСТ 1 -->
-                <article class="blog-card" data-category="личное" data-delay="0">
-                    <div class="blog-card-image">
-                        <img src="media/122112.png" alt="Абилимпикс 2026" loading="lazy" onerror="this.src='media/portfolio/photo_2025-12-24_07-26-43.jpg'">
-                    </div>
-                    <div class="blog-card-body">
+            <!-- ЗАГОЛОВОК БЛОГА -->
+            <header class="blog-header animate-fadeUp">
+                <span class="badge">📝 Блог</span>
+                <h1>Заметки фотографа</h1>
+                <p>Истории, мысли и полезные статьи о фотографии</p>
+            </header>
+
+            <!-- СЕТКА СТАТЕЙ -->
+            <div class="blog-grid">
+
+                <!-- СТАТЬЯ 1: Абилимпикс (без фото) -->
+                <article class="blog-card" data-delay="0">
+                    <div class="card-body">
                         <div class="badge-wrap">
-                            <span class="kumo-badge">Личное</span>
+                            <span class="badge">Личное</span>
                         </div>
-                        <h2 class="blog-card-title">
+                        <h2 class="title">
                             <a href="blog-abilimpics.html">Абилимпикс 2026: Путь от подарка до разочарования</a>
                         </h2>
-                        <p class="blog-card-excerpt">
+                        <p class="excerpt">
                             Всё началось с подаренного фотоаппарата 14 января. 3 месяца подготовки, тесная комната на соревновании и третье место, которое я не считаю победой.
                         </p>
-                        <div class="blog-card-footer">
+                        <div class="footer">
                             <span>3 апреля 2026</span>
                             <a href="blog-abilimpics.html" class="read-more">Читать →</a>
                         </div>
                     </div>
                 </article>
 
-                <!-- ПОСТ 2 -->
-                <article class="blog-card" data-category="техника" data-delay="100">
-                    <div class="blog-card-image">
-                        <img src="media/4039a59b-94f0-4fd1-9a76-047e72c2f801.webp" alt="Canon EOS 600D" loading="lazy" onerror="this.src='media/portfolio/photo_2025-12-27_15-28-48.jpg'">
-                    </div>
-                    <div class="blog-card-body">
+                <!-- СТАТЬЯ 2: Canon 600D (без фото) -->
+                <article class="blog-card" data-delay="100">
+                    <div class="card-body">
                         <div class="badge-wrap">
-                            <span class="kumo-badge">Техника</span>
+                            <span class="badge">Техника</span>
                         </div>
-                        <h2 class="blog-card-title">
+                        <h2 class="title">
                             <a href="blog-600d-review.html">Canon EOS 600D: полный обзор</a>
                         </h2>
-                        <p class="blog-card-excerpt">
+                        <p class="excerpt">
                             Характеристики, плюсы, минусы и стоит ли брать в 2025 году.
                         </p>
-                        <div class="blog-card-footer">
+                        <div class="footer">
                             <span>7 декабря 2025</span>
                             <a href="blog-600d-review.html" class="read-more">Читать →</a>
                         </div>
                     </div>
                 </article>
 
-                <!-- ПОСТ 3 -->
-                <article class="blog-card" data-category="техника" data-delay="200">
-                    <div class="blog-card-image">
-                        <img src="media/600D2.jpg" alt="Как выбрать камеру" loading="lazy" onerror="this.src='media/portfolio/photo_2025-12-28_17-52-51.jpg'">
-                    </div>
-                    <div class="blog-card-body">
+                <!-- СТАТЬЯ 3: Как выбрать камеру (без фото) -->
+                <article class="blog-card" data-delay="200">
+                    <div class="card-body">
                         <div class="badge-wrap">
-                            <span class="kumo-badge">Техника</span>
+                            <span class="badge">Техника</span>
                         </div>
-                        <h2 class="blog-card-title">
+                        <h2 class="title">
                             <a href="blog-camera.html">Как выбрать первый фотоаппарат</a>
                         </h2>
-                        <p class="blog-card-excerpt">
+                        <p class="excerpt">
                             На основе своего опыта рекомендую Canon EOS 600D — идеальный баланс цены и качества для начинающих.
                         </p>
-                        <div class="blog-card-footer">
+                        <div class="footer">
                             <span>29 декабря 2024</span>
                             <a href="blog-camera.html" class="read-more">Читать →</a>
                         </div>
                     </div>
                 </article>
 
-                <!-- ПОСТ 4 -->
-                <article class="blog-card" data-category="стрит" data-delay="300">
-                    <div class="blog-card-image">
-                        <img src="media/portfolio/photo_2025-12-28_17-52-51.jpg" alt="Уличная съемка" loading="lazy">
-                    </div>
-                    <div class="blog-card-body">
+                <!-- СТАТЬЯ 4: Уличная фотография (без фото) -->
+                <article class="blog-card" data-delay="300">
+                    <div class="card-body">
                         <div class="badge-wrap">
-                            <span class="kumo-badge">Стрит</span>
+                            <span class="badge">Стрит</span>
                         </div>
-                        <h2 class="blog-card-title">
+                        <h2 class="title">
                             <a href="blog-portrait.html">Уличная фотография: ловим момент</a>
                         </h2>
-                        <p class="blog-card-excerpt">
+                        <p class="excerpt">
                             Контрасты, эмоции и Калининград глазами фотографа.
                         </p>
-                        <div class="blog-card-footer">
+                        <div class="footer">
                             <span>15 декабря 2024</span>
                             <a href="blog-portrait.html" class="read-more">Читать →</a>
                         </div>
                     </div>
                 </article>
 
-                <!-- ПОСТ 5 -->
-                <article class="blog-card" data-category="стрит" data-delay="400">
-                    <div class="blog-card-image">
-                        <img src="media/photo_2026-03-08_16-36-34.jpg" alt="Эстетика городских улиц" loading="lazy">
-                    </div>
-                    <div class="blog-card-body">
+                <!-- СТАТЬЯ 5: Эстетика городских улиц (без фото) -->
+                <article class="blog-card" data-delay="400">
+                    <div class="card-body">
                         <div class="badge-wrap">
-                            <span class="kumo-badge">Стрит</span>
+                            <span class="badge">Стрит</span>
                         </div>
-                        <h2 class="blog-card-title">
+                        <h2 class="title">
                             <a href="blog-street.html">Эстетика городских улиц: Взгляд фотографа</a>
                         </h2>
-                        <p class="blog-card-excerpt">
+                        <p class="excerpt">
                             Атмосфера улиц Калининграда, игра света и тени, история одной прогулки с объективом.
                         </p>
-                        <div class="blog-card-footer">
+                        <div class="footer">
                             <span>10 ноября 2024</span>
                             <a href="blog-street.html" class="read-more">Читать →</a>
                         </div>
@@ -686,145 +634,118 @@
                 </article>
 
             </div>
-        </div>
 
-        <!-- ===== ФУТЕР ===== -->
-        <footer class="kumo-footer">
-            <div class="container">
-                <div class="footer-grid">
-                    <div>
-                        <a href="index.html" class="kumo-brand-logo">
-                            <div class="kumo-brand-icon">✦</div>
-                            <span>НИКС</span>
-                        </a>
-                        <p style="color: var(--kumo-subtle); margin-top: 4px;">Фотограф</p>
-                    </div>
-                    <div>
-                        <h4 class="footer-heading">Навигация</h4>
-                        <ul class="footer-links">
-                            <li><a href="index.html">Главная</a></li>
-                            <li><a href="about.html">Обо мне</a></li>
-                            <li><a href="index.html#schedule">Режим работы</a></li>
-                            <li><a href="index.html#faq">Частые вопросы</a></li>
-                            <li><a href="blog.html">Блог</a></li>
-                            <li><a href="contact.html">Контакты</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="footer-heading">Контакты</h4>
-                        <ul class="footer-links">
-                            <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
-                            <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
-                        </ul>
-                    </div>
+        </div>
+    </main>
+
+    <!-- ===== ФУТЕР ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;">
+                        <div class="icon" style="width:32px;height:32px;font-size:1rem;">✦</div>
+                        <div>
+                            <span style="font-weight:800;color:#fff;">Артурик</span>
+                            <span style="display:block;font-size:0.6rem;color:var(--brand);">Кадр решает</span>
+                        </div>
+                    </a>
+                    <p style="color:var(--subtle);margin-top:4px;">Фотограф</p>
                 </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2026 Никс. Все права защищены.</p>
+                <div>
+                    <h4 class="heading">Навигация</h4>
+                    <ul>
+                        <li><a href="index.html">Главная</a></li>
+                        <li><a href="about.html">Обо мне</a></li>
+                        <li><a href="blog.html">Блог</a></li>
+                        <li><a href="contact.html">Контакты</a></li>
+                        <li><a href="booking.html">📅 Запись</a></li>
+                        <li><a href="first-shot.html">📸 Первый кадр</a></li>
+                        <li><a href="places.html">🗺️ Маршруты</a></li>
+                        <li><a href="my-awards.html">🏆 Мои награды</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="heading">Контакты</h4>
+                    <ul>
+                        <li><a href="mailto:niksfotograf@gmail.com">niksfotograf@gmail.com</a></li>
+                        <li><a href="https://t.me/objektivniksa" target="_blank">@objektivniksa</a></li>
+                    </ul>
                 </div>
             </div>
-        </footer>
-
-    </div> <!-- /main-content -->
-
+            <div class="bottom"><p>&copy; 2026 Артурик. Все права защищены.</p></div>
+        </div>
+    </footer>
 
     <!-- ============================================
     СКРИПТЫ
     ============================================ -->
 
-    <!-- 1. ЧАСТИЦЫ (СОЗВЕЗДИЯ) -->
+    <!-- 1. ЧАСТИЦЫ -->
     <script>
         (function() {
             const canvas = document.getElementById('particles-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            let w, h;
-            const particles = [];
-            const COUNT = 100;
+            let w, h,
+                particles = [],
+                COUNT = 100;
 
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
+            function resize() { w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight; }
             window.addEventListener('resize', resize);
             resize();
 
             class Particle {
                 constructor() { this.reset(); }
-                reset() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.size = Math.random() * 2.5 + 0.5;
-                    this.speedX = (Math.random() - 0.5) * 0.5;
-                    this.speedY = (Math.random() - 0.5) * 0.5;
-                    this.opacity = Math.random() * 0.4 + 0.15;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.x < 0 || this.x > w) this.speedX *= -1;
-                    if (this.y < 0 || this.y > h) this.speedY *= -1;
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`;
-                    ctx.fill();
-                }
+                reset() { this.x = Math.random() * w, this.y = Math.random() * h, this.size = Math.random() * 2.5 + .5, this.speedX = (Math
+                        .random() - .5) * .4, this.speedY = (Math.random() - .5) * .4, this.opacity = Math.random() * .4 + .15; }
+                update() { this.x += this.speedX, this.y += this.speedY, (this.x < 0 || this.x > w) && (this.speedX *= -1), (this
+                        .y < 0 || this.y > h) && (this.speedY *= -1); }
+                draw() { ctx.beginPath(), ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2), ctx.fillStyle =
+                        `rgba(251, 191, 36, ${this.opacity})`, ctx.fill(); }
             }
-
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
             let mouseX = null,
                 mouseY = null;
-            canvas.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-            canvas.addEventListener('mouseleave', () => {
-                mouseX = null;
-                mouseY = null;
-            });
+            canvas.addEventListener('mousemove', e => { mouseX = e.clientX, mouseY = e.clientY; });
+            canvas.addEventListener('mouseleave', () => { mouseX = null, mouseY = null; });
 
             function animate() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
                     if (mouseX !== null && mouseY !== null) {
-                        const dx = p.x - mouseX;
-                        const dy = p.y - mouseY;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 180) {
-                            const force = (180 - dist) / 180 * 0.03;
-                            p.x += dx * force;
-                            p.y += dy * force;
-                        }
+                        const dx = p.x - mouseX,
+                            dy = p.y - mouseY,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 180) { const force = (180 - dist) / 180 * .03;
+                            p.x += dx * force, p.y += dy * force; }
                     }
-                    p.update();
-                    p.draw();
+                    p.update(), p.draw();
                 });
-
-                // Линии между частицами
-                for (let i = 0; i < particles.length; i++) {
+                for (let i = 0; i < particles.length; i++)
                     for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 130) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(251, 191, 36, ${0.06 * (1 - dist/130)})`;
-                            ctx.lineWidth = 0.8;
-                            ctx.stroke();
-                        }
+                        const dx = particles[i].x - particles[j].x,
+                            dy = particles[i].y - particles[j].y,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) ctx.beginPath(), ctx.moveTo(particles[i].x, particles[i].y), ctx.lineTo(particles[j].x,
+                            particles[j].y), ctx.strokeStyle = `rgba(251, 191, 36, ${.06 * (1 - dist / 130)})`, ctx
+                            .lineWidth = .8, ctx.stroke();
                     }
-                }
                 requestAnimationFrame(animate);
             }
             animate();
         })();
     </script>
 
-    <!-- 2. ПОЯВЛЕНИЕ КАРТОЧЕК ПРИ СКРОЛЛЕ -->
+    <!-- 2. МОБИЛЬНОЕ МЕНЮ -->
+    <script>
+        document.getElementById('mobileToggle')?.addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        });
+    </script>
+
+    <!-- 3. ПОЯВЛЕНИЕ КАРТОЧЕК -->
     <script>
         (function() {
             const observer = new IntersectionObserver((entries) => {
@@ -837,55 +758,24 @@
                         }, delay);
                     }
                 });
-            }, {
-                threshold: 0.15,
-                rootMargin: '0px 0px -40px 0px'
-            });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-            document.querySelectorAll('.blog-card').forEach(el => {
-                observer.observe(el);
-            });
+            document.querySelectorAll('.blog-card').forEach(el => { observer.observe(el); });
         })();
     </script>
 
-    <!-- 3. ФИЛЬТРАЦИЯ СТАТЕЙ -->
+    <!-- 4. НАВИГАЦИЯ ПРИ СКРОЛЛЕ -->
     <script>
         (function() {
-            const tabs = document.querySelectorAll('.kumo-tab-btn');
-            const cards = document.querySelectorAll('.blog-card');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Активный класс для кнопок
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const filter = this.dataset.filter;
-
-                    cards.forEach(card => {
-                        const category = card.dataset.category;
-                        if (filter === 'all' || category === filter) {
-                            card.style.display = 'flex';
-                            // Заново запускаем анимацию появления
-                            card.classList.remove('visible');
-                            requestAnimationFrame(() => {
-                                card.classList.add('visible');
-                            });
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                });
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             });
         })();
-    </script>
-
-    <!-- 4. МОБИЛЬНОЕ МЕНЮ -->
-    <script>
-        document.getElementById('mobileToggle')?.addEventListener('click', function() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('open');
-        });
     </script>
 
 </body>
