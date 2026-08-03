@@ -18,6 +18,7 @@
             overflow-x: hidden;
             line-height: 1.7;
             min-height: 100vh;
+            padding-bottom: 80px; /* Отступ для нижнего меню */
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         a { text-decoration: none; color: inherit; transition: all .3s; }
@@ -83,7 +84,6 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* ===== КРЕСТИК ===== */
         .splash-close {
             position: absolute;
             top: 0;
@@ -118,7 +118,6 @@
             transform: rotate(90deg) scale(0.9);
         }
 
-        /* Заголовки */
         .splash-title {
             display: flex;
             flex-direction: column;
@@ -256,7 +255,6 @@
             transform: translateY(0);
         }
 
-        /* Анимация ухода экрана */
         .splash-screen.exit {
             animation: splashExit 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
@@ -266,7 +264,6 @@
             100% { opacity: 0; transform: scale(1.06); filter: blur(10px); }
         }
 
-        /* Частицы на экране приветствия */
         .splash-particles {
             position: absolute;
             inset: 0;
@@ -292,181 +289,204 @@
             100% { opacity: 0; transform: translateY(-80px) scale(1); }
         }
 
-        /* ===== НАВИГАЦИЯ ===== */
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 50;
+        /* ============================================
+           НИЖНЕЕ МЕНЮ (BOTTOM NAVIGATION)
+           ============================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(10, 10, 12, 0.85);
             backdrop-filter: blur(20px);
-            background: rgba(10, 10, 12, 0.7);
-            border-bottom: 1px solid var(--hairline);
-            padding: 12px 0;
-            transition: all .5s cubic-bezier(.16, 1, .3, 1);
-        }
-        .navbar.scrolled {
-            background: rgba(10, 10, 12, .92);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, .4);
-            border-bottom-color: rgba(251, 191, 36, .15);
-        }
-        .nav-container {
+            border: 1px solid var(--hairline);
+            border-radius: 60px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .logo .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--brand);
-            box-shadow: 0 0 20px var(--brand-glow);
-            transition: all 0.3s;
-        }
-        .logo:hover .avatar {
-            border-color: #fff;
-            box-shadow: 0 0 40px var(--brand-glow);
-        }
-        .logo .brand-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-        .logo .brand-text .name {
-            font-weight: 800;
-            font-size: 1.3rem;
-            letter-spacing: -0.02em;
-            color: #fff;
-        }
-        .logo .brand-text .sub {
-            font-size: 0.65rem;
-            color: var(--brand);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            gap: 8px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 95vw;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
-        .nav-menu {
+        .bottom-nav::-webkit-scrollbar {
             display: none;
-            list-style: none;
-            gap: 32px;
         }
-        @media(min-width:768px) { .nav-menu { display: flex; } }
-        .nav-link {
+
+        .bottom-nav:hover {
+            border-color: var(--brand);
+            box-shadow: 0 8px 60px rgba(251, 191, 36, 0.1);
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 40px;
             color: var(--subtle);
-            font-size: .9rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            transition: all .3s;
-            padding: 4px 0;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            text-decoration: none;
             position: relative;
+            flex-shrink: 0;
         }
-        .nav-link:hover { color: #fff; }
-        .nav-link.active { color: var(--brand); font-weight: 600; }
-        .nav-link.active::after {
+
+        .bottom-nav .nav-item:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .bottom-nav .nav-item.active {
+            color: var(--brand);
+            background: var(--brand-subtle);
+        }
+
+        .bottom-nav .nav-item.active::after {
             content: '';
             position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
             height: 2px;
             background: var(--brand);
             border-radius: 2px;
             box-shadow: 0 0 20px var(--brand-glow);
         }
-        .mobile-toggle {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 4px 8px;
-        }
-        @media(min-width:768px) { .mobile-toggle { display: none; } }
 
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px 0;
-            background: rgba(10, 10, 12, .96);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--hairline);
+        .bottom-nav .nav-item .icon {
+            font-size: 1.1rem;
+            line-height: 1;
         }
-        .mobile-menu.open { display: flex; }
-        .mobile-menu a { color: var(--subtle); font-size: 1rem; font-weight: 500; padding: 6px 0; }
-        .mobile-menu a:hover { color: #fff; }
-        .mobile-menu a.active { color: var(--brand); }
-        @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
-        .avatar-lightbox {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(20px);
-            z-index: 9999;
+        .bottom-nav .logo-mini {
             display: flex;
             align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 40px;
-        }
-        .avatar-lightbox.open {
-            opacity: 1;
-            pointer-events: auto;
+            gap: 8px;
+            padding: 4px 14px 4px 8px;
+            border-right: 1px solid var(--hairline);
+            margin-right: 4px;
+            flex-shrink: 0;
         }
 
-        .avatar-lightbox .lightbox-content {
-            position: relative;
-            transform: scale(0.1) translateX(0);
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .avatar-lightbox.open .lightbox-content {
-            transform: scale(1) translateX(0);
-        }
-
-        .avatar-lightbox .lightbox-content img {
-            max-width: 80vw;
-            max-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-            border: 3px solid var(--brand);
-            display: block;
-        }
-
-        .avatar-lightbox .close-btn {
-            position: absolute;
-            top: -16px;
-            right: -16px;
-            width: 44px;
-            height: 44px;
+        .bottom-nav .logo-mini .avatar-mini {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(24, 24, 27, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            font-size: 1.4rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            object-fit: cover;
+            border: 2px solid var(--brand);
             transition: all 0.3s;
-            backdrop-filter: blur(8px);
         }
-        .avatar-lightbox .close-btn:hover {
-            background: var(--brand);
-            color: #0a0a0c;
-            transform: scale(1.1);
+
+        .bottom-nav .logo-mini:hover .avatar-mini {
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .bottom-nav .logo-mini .brand-text {
+            line-height: 1.1;
+        }
+
+        .bottom-nav .logo-mini .brand-text .name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .bottom-nav .logo-mini .brand-text .sub {
+            font-size: 0.5rem;
+            color: var(--brand);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* Мобильная адаптация нижнего меню */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                bottom: 12px;
+                padding: 6px 12px;
+                border-radius: 40px;
+                gap: 4px;
+                max-width: 98vw;
+            }
+
+            .bottom-nav .nav-item {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                gap: 4px;
+            }
+
+            .bottom-nav .nav-item .icon {
+                font-size: 0.9rem;
+            }
+
+            .bottom-nav .logo-mini {
+                padding: 2px 10px 2px 6px;
+            }
+
+            .bottom-nav .logo-mini .avatar-mini {
+                width: 24px;
+                height: 24px;
+            }
+
+            .bottom-nav .logo-mini .brand-text .name {
+                font-size: 0.7rem;
+            }
+
+            .bottom-nav .logo-mini .brand-text .sub {
+                font-size: 0.4rem;
+            }
+
+            .bottom-nav .nav-item .label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bottom-nav {
+                bottom: 8px;
+                padding: 4px 8px;
+                border-radius: 32px;
+                gap: 2px;
+            }
+
+            .bottom-nav .nav-item {
+                padding: 6px 8px;
+                font-size: 0.65rem;
+            }
+
+            .bottom-nav .nav-item .icon {
+                font-size: 0.8rem;
+            }
+
+            .bottom-nav .logo-mini {
+                padding: 2px 6px 2px 4px;
+            }
+
+            .bottom-nav .logo-mini .avatar-mini {
+                width: 20px;
+                height: 20px;
+            }
+
+            .bottom-nav .logo-mini .brand-text .name {
+                font-size: 0.6rem;
+            }
+
+            .bottom-nav .logo-mini .brand-text .sub {
+                display: none;
+            }
         }
 
         /* ===== ГЕРО-СЕКЦИЯ ===== */
@@ -585,6 +605,68 @@
         .footer ul a:hover { color: var(--brand); }
         .footer .bottom { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--hairline); text-align: center; color: var(--muted); font-size: .85rem; }
 
+        /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
+        .avatar-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 40px;
+        }
+        .avatar-lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .avatar-lightbox .lightbox-content {
+            position: relative;
+            transform: scale(0.1) translateX(0);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .avatar-lightbox.open .lightbox-content {
+            transform: scale(1) translateX(0);
+        }
+
+        .avatar-lightbox .lightbox-content img {
+            max-width: 80vw;
+            max-height: 80vh;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            border: 3px solid var(--brand);
+            display: block;
+        }
+
+        .avatar-lightbox .close-btn {
+            position: absolute;
+            top: -16px;
+            right: -16px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(24, 24, 27, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(8px);
+        }
+        .avatar-lightbox .close-btn:hover {
+            background: var(--brand);
+            color: #0a0a0c;
+            transform: scale(1.1);
+        }
+
         @media(max-width:768px) {
             .hero h1 { font-size: 2.4rem; }
             .section-title { font-size: 2rem; }
@@ -605,24 +687,15 @@
          ЭКРАН-ПРИВЕТСТВИЕ (SPLASH SCREEN)
          ============================================ -->
     <div class="splash-screen" id="splashScreen">
-        <!-- Фоновые частицы -->
         <div class="splash-particles" id="splashParticles"></div>
-
         <div class="splash-content">
-            <!-- КРЕСТИК -->
             <button class="splash-close" id="splashClose" title="Пропустить">✕</button>
-
-            <!-- Заголовок -->
             <h1 class="splash-title">
                 <span class="splash-greeting">Привет!</span>
                 <span class="splash-name">Я — Артурик</span>
                 <span class="splash-sub">Кадр решает</span>
             </h1>
-
-            <!-- Вопрос -->
             <p class="splash-question">Откуда вы узнали обо мне?</p>
-
-            <!-- Варианты ответов -->
             <div class="splash-options">
                 <button class="splash-btn" data-source="friends">
                     <span class="splash-btn-icon">👥</span>
@@ -641,8 +714,6 @@
                     <span>Нашел объявление</span>
                 </button>
             </div>
-
-            <!-- Строка обратной связи -->
             <p class="splash-feedback" id="splashFeedback"></p>
         </div>
     </div>
@@ -650,45 +721,57 @@
     <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
     <canvas id="particles-canvas"></canvas>
 
-    <!-- ===== НАВИГАЦИЯ ===== -->
-    <nav class="navbar" id="navbar">
-        <div class="container nav-container">
-            <div class="logo" id="avatarTrigger">
-                <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" id="avatarImg">
-                <div class="brand-text">
-                    <span class="name">Артурик</span>
-                    <span class="sub">Кадр решает</span>
-                </div>
+    <!-- ============================================
+         НИЖНЕЕ МЕНЮ (BOTTOM NAVIGATION)
+         ============================================ -->
+    <nav class="bottom-nav" id="bottomNav">
+        <!-- Логотип -->
+        <div class="logo-mini" id="avatarTrigger">
+            <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar-mini">
+            <div class="brand-text">
+                <span class="name">Артурик</span>
+                <span class="sub">Кадр решает</span>
             </div>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link active">Главная</a></li>
-                <li><a href="about.html" class="nav-link">Обо мне</a></li>
-                <li><a href="blog.html" class="nav-link">Блог</a></li>
-                <li><a href="contact.html" class="nav-link">Контакты</a></li>
-                <li><a href="booking.html" class="nav-link">📅 Запись</a></li>
-                <li><a href="first-shot.html" class="nav-link">📸 Первый кадр</a></li>
-                <li><a href="places.html" class="nav-link">🗺️ Маршруты</a></li>
-                <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
-                <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
-            </ul>
-            <button class="mobile-toggle" id="mobileToggle">☰</button>
         </div>
-    </nav>
 
-    <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
-    <div class="mobile-menu" id="mobileMenu">
-        <div class="container" style="display:flex;flex-direction:column;gap:12px;">
-            <a href="index.html" class="active">Главная</a>
-            <a href="about.html">Обо мне</a>
-            <a href="blog.html">Блог</a>
-            <a href="contact.html">Контакты</a>
-            <a href="booking.html">📅 Запись</a>
-            <a href="first-shot.html">📸 Первый кадр</a>
-            <a href="places.html">🗺️ Маршруты</a>
-            <a href="my-awards.html">🏆 Мои награды</a>
-            <a href="clients-map.html">🗺️ Карта клиентов</a>
-        </div>
-    </div>
+        <!-- Пункты меню -->
+        <a href="index.html" class="nav-item active">
+            <span class="icon">🏠</span>
+            <span class="label">Главная</span>
+        </a>
+        <a href="about.html" class="nav-item">
+            <span class="icon">👤</span>
+            <span class="label">Обо мне</span>
+        </a>
+        <a href="blog.html" class="nav-item">
+            <span class="icon">📝</span>
+            <span class="label">Блог</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+            <span class="icon">📧</span>
+            <span class="label">Контакты</span>
+        </a>
+        <a href="booking.html" class="nav-item">
+            <span class="icon">📅</span>
+            <span class="label">Запись</span>
+        </a>
+        <a href="first-shot.html" class="nav-item">
+            <span class="icon">📸</span>
+            <span class="label">Первый кадр</span>
+        </a>
+        <a href="places.html" class="nav-item">
+            <span class="icon">🗺️</span>
+            <span class="label">Маршруты</span>
+        </a>
+        <a href="my-awards.html" class="nav-item">
+            <span class="icon">🏆</span>
+            <span class="label">Награды</span>
+        </a>
+        <a href="clients-map.html" class="nav-item">
+            <span class="icon">📍</span>
+            <span class="label">Карта</span>
+        </a>
+    </nav>
 
     <!-- ===== ГЕРО ===== -->
     <section class="hero">
@@ -860,8 +943,8 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;cursor:default;">
-                        <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" style="width:32px;height:32px;border:2px solid var(--brand);">
+                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;cursor:default;display:flex;align-items:center;gap:10px;text-decoration:none;">
+                        <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" style="width:32px;height:32px;border-radius:50%;border:2px solid var(--brand);object-fit:cover;">
                         <div>
                             <span style="font-weight:800;color:#fff;">Артурик</span>
                             <span style="display:block;font-size:.6rem;color:var(--brand);">Кадр решает</span>
@@ -917,7 +1000,6 @@
             const closeBtn = document.getElementById('splashClose');
             const optionBtns = document.querySelectorAll('.splash-btn');
 
-            // Функция скрытия экрана
             function hideSplashScreen() {
                 splashScreen.classList.add('exit');
                 setTimeout(() => {
@@ -927,7 +1009,6 @@
                 }, 900);
             }
 
-            // Функция показа обратной связи
             function showFeedback(message) {
                 feedback.textContent = message;
                 feedback.classList.add('show');
@@ -936,13 +1017,10 @@
                 }, 1500);
             }
 
-            // Обработка кликов по вариантам
             optionBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const label = this.querySelector('span:last-child').textContent;
                     showFeedback(`Спасибо! Вы выбрали: "${label}"`);
-                    
-                    // Визуальное выделение
                     optionBtns.forEach(b => {
                         b.style.opacity = '0.4';
                         b.style.transform = 'scale(0.96)';
@@ -954,27 +1032,23 @@
                 });
             });
 
-            // Закрытие по крестику
             closeBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 hideSplashScreen();
             });
 
-            // Закрытие по клику на фон
             splashScreen.addEventListener('click', function(e) {
                 if (e.target === splashScreen) {
                     hideSplashScreen();
                 }
             });
 
-            // Закрытие по Escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && !splashScreen.classList.contains('hidden')) {
                     hideSplashScreen();
                 }
             });
 
-            // Генерация частиц
             function createSplashParticles() {
                 const container = document.getElementById('splashParticles');
                 for (let i = 0; i < 30; i++) {
@@ -1090,28 +1164,7 @@
         })();
     </script>
 
-    <!-- 5. НАВИГАЦИЯ ПРИ СКРОЛЛЕ -->
-    <script>
-        (function() {
-            const navbar = document.getElementById('navbar');
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
-        })();
-    </script>
-
-    <!-- 6. МОБИЛЬНОЕ МЕНЮ -->
-    <script>
-        document.getElementById('mobileToggle')?.addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('open');
-        });
-    </script>
-
-    <!-- 7. ЛАЙТБОКС ДЛЯ АВАТАРКИ -->
+    <!-- 5. ЛАЙТБОКС ДЛЯ АВАТАРКИ -->
     <script>
         (function() {
             const trigger = document.getElementById('avatarTrigger');
