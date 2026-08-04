@@ -131,7 +131,7 @@
         .input-code:focus { outline: none; border-color: #fbbf24; }
         .room-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
         .room-controls .btn { padding: 8px 20px; font-size: 0.9rem; }
-        .status-text { color: #a1a1aa; font-size: 0.9rem; margin: 8px 0; }
+        .status-text { color: #a1a1aa; font-size: 0.9rem; margin: 8px 0; min-height: 1.5em; }
         .status-text strong { color: #fbbf24; }
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
@@ -166,7 +166,7 @@
                 <div class="room-controls">
                     <button class="btn btn-primary" id="createRoomBtn">🔑 Создать комнату</button>
                     <span style="color:#a1a1aa;">или</span>
-                    <input type="text" class="input-code" id="joinCodeInput" placeholder="____" maxlength="4" />
+                    <input type="text" class="input-code" id="joinCodeInput" placeholder="____" maxlength="4" inputmode="numeric" />
                     <button class="btn" id="joinRoomBtn">Войти</button>
                 </div>
                 <div class="status-text" id="roomStatus">Введите код для подключения</div>
@@ -192,7 +192,7 @@
 
     <div class="controls">
         <span style="color:#a1a1aa; font-size:0.9rem;">Игрок 1: мышь / палец</span>
-        <span style="color:#a1a1aa; font-size:0.9rem;" id="p2ControlLabel">Игрок 2: WASD / стрелки</span>
+        <span style="color:#a1a1aa; font-size:0.9rem;" id="p2ControlLabel">Игрок 2: клавиши / тач</span>
         <button class="btn" id="menuBtn">📋 Меню</button>
     </div>
 </div>
@@ -234,7 +234,6 @@
         let frameId = null;
         let frameCount = 0;
 
-        // Режимы: 'single', 'multiplayer_host', 'multiplayer_guest'
         let gameMode = 'single';
         let isMultiplayer = false;
 
@@ -250,6 +249,7 @@
 
         // ===== УПРАВЛЕНИЕ =====
         let targetY1 = player1.y;
+        let targetY2 = player2.y;
         let keys = { w: false, s: false, arrowup: false, arrowdown: false };
 
         // ===== PEERJS =====
@@ -257,7 +257,6 @@
         let conn = null;
         let roomCode = '';
         let isHost = false;
-        let peerId = '';
 
         // ===== ИНИЦИАЛИЗАЦИЯ ИГРЫ =====
         function initGame(mode) {
@@ -266,6 +265,8 @@
 
             player1.y = H/2; player1.vy = 0; player1.speed = 3.0; player1.pulsePhase = 0; player1.score = 0;
             player2.y = H/2; player2.vy = 0; player2.speed = 3.0; player2.pulsePhase = 0; player2.score = 0;
+            targetY1 = player1.y;
+            targetY2 = player2.y;
             stars = [];
             clouds = [];
             frameCount = 0;
@@ -275,10 +276,12 @@
             menuOverlay.classList.add('hidden');
             updateUI();
 
-            if (mode === 'single' || mode === 'multiplayer_guest') {
-                p2ControlLabel.textContent = 'Игрок 2: WASD / стрелки';
+            if (mode === 'single') {
+                p2ControlLabel.textContent = 'Игрок 2: клавиши WASD / стрелки';
+            } else if (mode === 'multiplayer_host') {
+                p2ControlLabel.textContent = 'Вы — хост. Игрок 2 управляет на своём устройстве';
             } else {
-                p2ControlLabel.textContent = 'Ожидание второго игрока...';
+                p2ControlLabel.textContent = 'Вы — гость. Игрок 2 управляет мышкой / пальцем';
             }
         }
 
@@ -293,12 +296,17 @@
             roomCode = generateRoomCode();
             peer = new Peer(roomCode, {
                 debug: 0,
-                config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' }
+                    ]
+                }
             });
 
             peer.on('open', (id) => {
                 isHost = true;
-                peerId = id;
                 roomStatus.innerHTML = `✅ Код: <strong>${roomCode}</strong> (жду игрока...)`;
                 joinCodeInput.value = roomCode;
                 createRoomBtn.textContent = '⏳ Ожидание...';
@@ -320,9 +328,13 @@
             });
 
             peer.on('error', (err) => {
-                roomStatus.textContent = '❌ Ошибка: ' + err.type;
+                roomStatus.textContent = '❌ Ошибка: ' + err.type + '. Попробуйте снова';
                 createRoomBtn.textContent = '🔑 Создать комнату';
                 createRoomBtn.disabled = false;
+                if (err.type === 'unavailable-id') {
+                    roomStatus.textContent = '❌ Этот код занят. Попробуйте ещё раз';
+                    createRoom();
+                }
             });
         }
 
@@ -336,13 +348,20 @@
                 return;
             }
 
+            roomStatus.textContent = '⏳ Подключение...';
+
             peer = new Peer({
                 debug: 0,
-                config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' }
+                    ]
+                }
             });
 
             peer.on('open', (id) => {
-                peerId = id;
                 conn = peer.connect(roomCode);
                 conn.on('open', () => {
                     roomStatus.textContent = '✅ Подключено!';
@@ -357,7 +376,10 @@
             });
 
             peer.on('error', (err) => {
-                roomStatus.textContent = '❌ Не удалось подключиться';
+                roomStatus.textContent = '❌ Не удалось подключиться: ' + err.type;
+                if (err.type === 'peer-unavailable') {
+                    roomStatus.textContent = '❌ Комната не найдена. Проверьте код';
+                }
             });
         }
 
@@ -466,10 +488,17 @@
             player1.pulsePhase += 0.05 * (player1.speed / MAX_SPEED + 0.3);
             if (frameCount % 60 === 0 && player1.speed < MAX_SPEED) player1.speed += 0.05;
 
-            // ---- Управление игроком 2 (клавиши) ----
+            // ---- Управление игроком 2 ----
             if (!isMultiplayer || gameMode === 'single' || gameMode === 'multiplayer_guest') {
-                if (keys.w || keys.arrowup) player2.vy += JUMP_FORCE;
-                if (keys.s || keys.arrowdown) player2.vy += GRAVITY * 0.8;
+                // В мультиплеере гостя — игрок 2 управляется мышкой/пальцем
+                if (gameMode === 'multiplayer_guest') {
+                    const diff2 = targetY2 - player2.y;
+                    player2.vy += diff2 * 0.006;
+                } else {
+                    // В одиночном режиме — клавиши
+                    if (keys.w || keys.arrowup) player2.vy += JUMP_FORCE;
+                    if (keys.s || keys.arrowdown) player2.vy += GRAVITY * 0.8;
+                }
                 player2.vy += GRAVITY;
                 player2.vy *= FRICTION;
                 player2.y += player2.vy;
@@ -700,6 +729,7 @@
         }
 
         // ===== УПРАВЛЕНИЕ =====
+        // Игрок 1 — мышь/палец
         canvas.addEventListener('mousemove', (e) => {
             if (gameState !== STATE.PLAYING) return;
             const rect = canvas.getBoundingClientRect();
@@ -715,6 +745,23 @@
             if (touch) targetY1 = (touch.clientY - rect.top) * scaleY;
         }, { passive: false });
 
+        // Игрок 2 — мышь/палец (для гостя в мультиплеере)
+        canvas.addEventListener('mousemove', (e) => {
+            if (gameState !== STATE.PLAYING || gameMode !== 'multiplayer_guest') return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleY = canvas.height / rect.height;
+            targetY2 = (e.clientY - rect.top) * scaleY;
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (gameState !== STATE.PLAYING || gameMode !== 'multiplayer_guest') return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleY = canvas.height / rect.height;
+            const touch = e.touches[0];
+            if (touch) targetY2 = (touch.clientY - rect.top) * scaleY;
+        }, { passive: false });
+
+        // Клавиши для игрока 2 (в одиночном режиме)
         document.addEventListener('keydown', (e) => {
             if (e.key === 'w' || e.key === 'W') keys.w = true;
             if (e.key === 's' || e.key === 'S') keys.s = true;
