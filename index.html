@@ -62,13 +62,11 @@
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: auto;
         }
-
         .splash-screen.hidden {
             opacity: 0;
             pointer-events: none;
             display: none;
         }
-
         .splash-content {
             max-width: 640px;
             width: 90%;
@@ -77,13 +75,10 @@
             animation: splashFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             position: relative;
         }
-
         @keyframes splashFadeIn {
             from { opacity: 0; transform: scale(0.95) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
-
-        /* ===== КРЕСТИК ===== */
         .splash-close {
             position: absolute;
             top: 0;
@@ -105,7 +100,6 @@
             line-height: 1;
             z-index: 10;
         }
-
         .splash-close:hover {
             background: var(--brand);
             color: #0a0a0c;
@@ -113,12 +107,7 @@
             transform: rotate(90deg) scale(1.1);
             box-shadow: 0 0 30px var(--brand-glow);
         }
-
-        .splash-close:active {
-            transform: rotate(90deg) scale(0.9);
-        }
-
-        /* Заголовки */
+        .splash-close:active { transform: rotate(90deg) scale(0.9); }
         .splash-title {
             display: flex;
             flex-direction: column;
@@ -148,12 +137,10 @@
             color: var(--brand);
             opacity: 0.7;
         }
-
         @keyframes textGlow {
             0% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.05)); }
             100% { filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.15)); }
         }
-
         .splash-question {
             font-size: 1.15rem;
             color: var(--subtle);
@@ -161,29 +148,18 @@
             font-weight: 400;
             letter-spacing: 0.01em;
         }
-
         .splash-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
             margin-bottom: 28px;
         }
-
         @media (max-width: 480px) {
-            .splash-options {
-                grid-template-columns: 1fr;
-            }
+            .splash-options { grid-template-columns: 1fr; }
             .splash-greeting { font-size: 1.6rem; }
             .splash-name { font-size: 3rem; }
-            .splash-close {
-                top: -8px;
-                right: -8px;
-                width: 38px;
-                height: 38px;
-                font-size: 1.2rem;
-            }
+            .splash-close { top: -8px; right: -8px; width: 38px; height: 38px; font-size: 1.2rem; }
         }
-
         .splash-btn {
             display: flex;
             align-items: center;
@@ -205,7 +181,6 @@
             overflow: hidden;
             user-select: none;
         }
-
         .splash-btn::before {
             content: '';
             position: absolute;
@@ -214,33 +189,15 @@
             opacity: 0;
             transition: opacity 0.4s;
         }
-
         .splash-btn:hover {
             transform: translateY(-4px) scale(1.03);
             border-color: var(--brand);
             box-shadow: 0 12px 40px rgba(0,0,0,0.5);
         }
-
-        .splash-btn:hover::before {
-            opacity: 1;
-        }
-
-        .splash-btn:active {
-            transform: scale(0.94);
-        }
-
-        .splash-btn-icon {
-            font-size: 1.5rem;
-            position: relative;
-            z-index: 1;
-            flex-shrink: 0;
-        }
-
-        .splash-btn span:last-child {
-            position: relative;
-            z-index: 1;
-        }
-
+        .splash-btn:hover::before { opacity: 1; }
+        .splash-btn:active { transform: scale(0.94); }
+        .splash-btn-icon { font-size: 1.5rem; position: relative; z-index: 1; flex-shrink: 0; }
+        .splash-btn span:last-child { position: relative; z-index: 1; }
         .splash-feedback {
             min-height: 2.4rem;
             font-size: 0.95rem;
@@ -250,23 +207,14 @@
             transform: translateY(10px);
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .splash-feedback.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Анимация ухода экрана */
+        .splash-feedback.show { opacity: 1; transform: translateY(0); }
         .splash-screen.exit {
             animation: splashExit 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
-
         @keyframes splashExit {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(1.06); filter: blur(10px); }
         }
-
-        /* Частицы на экране приветствия */
         .splash-particles {
             position: absolute;
             inset: 0;
@@ -274,7 +222,6 @@
             overflow: hidden;
             z-index: -1;
         }
-
         .splash-particle {
             position: absolute;
             width: 4px;
@@ -284,7 +231,6 @@
             opacity: 0;
             animation: floatParticle 8s infinite ease-in-out;
         }
-
         @keyframes floatParticle {
             0% { opacity: 0; transform: translateY(0) scale(0); }
             20% { opacity: 0.3; }
@@ -408,7 +354,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== КАМЕРА В НАВИГАЦИИ (рядом с бургер-меню) ===== */
+        /* ===== КАМЕРА С РАДУЖНЫМ ХВОСТОМ (без фона) ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -432,6 +378,42 @@
             justify-content: center;
         }
 
+        /* --- РАДУЖНЫЙ ХВОСТ (за камерой) --- */
+        .rainbow-tail {
+            position: absolute;
+            left: -40px; /* Хвост тянется влево */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, rgba(255,107,107,0.8), rgba(254,202,87,0.8), rgba(72,219,251,0.8), rgba(29,209,161,0.8), rgba(243,104,224,0.8));
+            filter: blur(2px);
+            opacity: 0;
+            transition: none;
+            animation: tailPulse 2.5s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* Добавляем свечение */
+        .rainbow-tail::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 6px;
+            background: inherit;
+            filter: blur(10px);
+            opacity: 0.6;
+        }
+
+        @keyframes tailPulse {
+            0%   { width: 0; opacity: 0; }
+            20%  { width: 60px; opacity: 1; }
+            80%  { width: 60px; opacity: 1; }
+            100% { width: 0; opacity: 0; }
+        }
+
+        /* --- КАМЕРА --- */
         .camera-nav-img {
             width: 32px;
             height: auto;
@@ -439,64 +421,48 @@
             position: relative;
             z-index: 2;
             filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.2));
-            animation: pulseCameraNav 1.8s ease-in-out infinite;
+            animation: pulseCameraNav 0.8s steps(1, end) infinite;
             user-select: none;
             -webkit-user-drag: none;
             pointer-events: none;
         }
 
         @keyframes pulseCameraNav {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.88) rotate(-1.5deg); }
-            100% { transform: scale(1); }
-        }
-
-        .rainbow-nav-trail {
-            position: absolute;
-            inset: -10px;
-            z-index: 0;
-            border-radius: 50%;
-            background: conic-gradient(
-                from 0deg,
-                #ff6b6b, #feca57, #48dbfb, #1dd1a1, #f368e0, #ff6b6b
-            );
-            opacity: 0.35;
-            filter: blur(8px);
-            animation: breatheRainbowNav 2.8s ease-in-out infinite alternate;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            mask: radial-gradient(circle, transparent 42%, black 58%);
-            -webkit-mask: radial-gradient(circle, transparent 42%, black 58%);
-        }
-
-        @keyframes breatheRainbowNav {
-            0% { opacity: 0.25; transform: scale(0.92); filter: blur(6px); }
-            100% { opacity: 0.45; transform: scale(1.08); filter: blur(10px); }
+            0%   { transform: translateY(0) scale(1); opacity: 1; }
+            5%   { transform: translateY(-8px) scale(0.85); opacity: 0.6; }
+            10%  { transform: translateY(8px) scale(1.15); opacity: 1; }
+            15%  { transform: translateY(-6px) scale(0.88); opacity: 0.7; }
+            20%  { transform: translateY(6px) scale(1.12); opacity: 1; }
+            25%  { transform: translateY(-4px) scale(0.9); opacity: 0.8; }
+            30%  { transform: translateY(4px) scale(1.1); opacity: 1; }
+            40%  { transform: translateY(-3px) scale(0.93); opacity: 0.9; }
+            50%  { transform: translateY(3px) scale(1.07); opacity: 1; }
+            60%  { transform: translateY(-2px) scale(0.96); opacity: 0.95; }
+            70%  { transform: translateY(2px) scale(1.04); opacity: 1; }
+            80%  { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
         @media (max-width: 768px) {
-            .camera-nav-container {
-                width: 34px;
-                height: 34px;
-            }
-            .camera-nav-img {
-                width: 26px;
-            }
-            .rainbow-nav-trail {
-                inset: -8px;
+            .camera-nav-container { width: 34px; height: 34px; }
+            .camera-nav-img { width: 26px; }
+            .rainbow-tail { left: -30px; height: 6px; }
+            @keyframes tailPulse {
+                0%   { width: 0; opacity: 0; }
+                20%  { width: 50px; opacity: 1; }
+                80%  { width: 50px; opacity: 1; }
+                100% { width: 0; opacity: 0; }
             }
         }
         @media (max-width: 480px) {
-            .camera-nav-container {
-                width: 28px;
-                height: 28px;
-            }
-            .camera-nav-img {
-                width: 22px;
-            }
-            .rainbow-nav-trail {
-                inset: -6px;
-                filter: blur(6px);
+            .camera-nav-container { width: 28px; height: 28px; }
+            .camera-nav-img { width: 22px; }
+            .rainbow-tail { left: -24px; height: 5px; }
+            @keyframes tailPulse {
+                0%   { width: 0; opacity: 0; }
+                20%  { width: 40px; opacity: 1; }
+                80%  { width: 40px; opacity: 1; }
+                100% { width: 0; opacity: 0; }
             }
         }
 
@@ -519,7 +485,6 @@
             opacity: 1;
             pointer-events: auto;
         }
-
         .avatar-lightbox .lightbox-content {
             position: relative;
             transform: scale(0.1) translateX(0);
@@ -528,7 +493,6 @@
         .avatar-lightbox.open .lightbox-content {
             transform: scale(1) translateX(0);
         }
-
         .avatar-lightbox .lightbox-content img {
             max-width: 80vw;
             max-height: 80vh;
@@ -537,7 +501,6 @@
             border: 3px solid var(--brand);
             display: block;
         }
-
         .avatar-lightbox .close-btn {
             position: absolute;
             top: -16px;
@@ -694,9 +657,7 @@
 </head>
 <body>
 
-    <!-- ============================================
-         ЭКРАН-ПРИВЕТСТВИЕ (SPLASH SCREEN)
-         ============================================ -->
+    <!-- ===== ЭКРАН-ПРИВЕТСТВИЕ ===== -->
     <div class="splash-screen" id="splashScreen">
         <div class="splash-particles" id="splashParticles"></div>
         <div class="splash-content">
@@ -741,11 +702,13 @@
                 <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
-            <!-- КАМЕРА С ПУЛЬСАЦИЕЙ И ШЛЕЙФОМ (рядом с бургер-меню) -->
+            <!-- КАМЕРА С РАДУЖНЫМ ХВОСТОМ (без фона) -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container">
+                    <!-- ХВОСТ -->
+                    <div class="rainbow-tail" id="rainbowTail"></div>
+                    <!-- КАМЕРА -->
                     <img src="images/camera.png" alt="Фотоаппарат" class="camera-nav-img" id="cameraNavImg">
-                    <div class="rainbow-nav-trail" id="rainbowNavTrail"></div>
                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle">☰</button>
@@ -806,9 +769,7 @@
         </div>
     </section>
 
-    <!-- ============================================
-    ОСТАЛЬНЫЕ СЕКЦИИ
-    ============================================ -->
+    <!-- ===== ОСТАЛЬНЫЕ СЕКЦИИ ===== -->
     <section class="section">
         <div class="container">
             <div style="text-align:center;margin-bottom:48px;">
@@ -972,9 +933,7 @@
         </div>
     </footer>
 
-    <!-- ============================================
-    ЛАЙТБОКС ДЛЯ АВАТАРКИ
-    ============================================ -->
+    <!-- ===== ЛАЙТБОКС ===== -->
     <div class="avatar-lightbox" id="avatarLightbox">
         <div class="lightbox-content">
             <button class="close-btn" id="avatarClose">✕</button>
@@ -982,10 +941,7 @@
         </div>
     </div>
 
-    <!-- ============================================
-    СКРИПТЫ
-    ============================================ -->
-
+    <!-- ===== СКРИПТЫ ===== -->
     <!-- 1. ЛОГИКА ЭКРАНА-ПРИВЕТСТВИЯ -->
     <script>
         (function() {
