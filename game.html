@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Небесный объектив — Мультиплеер</title>
-    <!-- Подключаем PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
@@ -253,24 +252,17 @@
         let targetY1 = player1.y;
         let keys = { w: false, s: false, arrowup: false, arrowdown: false };
 
-        // ===== PEERJS (мультиплеер) =====
+        // ===== PEERJS =====
         let peer = null;
         let conn = null;
         let roomCode = '';
         let isHost = false;
+        let peerId = '';
 
         // ===== ИНИЦИАЛИЗАЦИЯ ИГРЫ =====
         function initGame(mode) {
             gameMode = mode || 'single';
             isMultiplayer = (mode === 'multiplayer_host' || mode === 'multiplayer_guest');
-
-            // В мультиплеере позиции игроков синхронизируются
-            if (isMultiplayer) {
-                // Для гостя — меняем местами: игрок 2 становится локальным
-                if (mode === 'multiplayer_guest') {
-                    // В гостевом режиме локальный — игрок 2
-                }
-            }
 
             player1.y = H/2; player1.vy = 0; player1.speed = 3.0; player1.pulsePhase = 0; player1.score = 0;
             player2.y = H/2; player2.vy = 0; player2.speed = 3.0; player2.pulsePhase = 0; player2.score = 0;
@@ -290,7 +282,6 @@
             }
         }
 
-        // ===== ГЕНЕРАЦИЯ КОДА =====
         function generateRoomCode() {
             return String(1000 + Math.floor(Math.random() * 9000));
         }
@@ -307,6 +298,7 @@
 
             peer.on('open', (id) => {
                 isHost = true;
+                peerId = id;
                 roomStatus.innerHTML = `✅ Код: <strong>${roomCode}</strong> (жду игрока...)`;
                 joinCodeInput.value = roomCode;
                 createRoomBtn.textContent = '⏳ Ожидание...';
@@ -320,7 +312,10 @@
                         startMultiplayerGame('multiplayer_host');
                     });
                     conn.on('data', (data) => handleRemoteData(data));
-                    conn.on('close', () => { roomStatus.textContent = '❌ Игрок отключился'; leaveRoom(); });
+                    conn.on('close', () => {
+                        roomStatus.textContent = '❌ Игрок отключился';
+                        leaveRoom();
+                    });
                 });
             });
 
@@ -331,7 +326,7 @@
             });
         }
 
-        // ===== PEERJS: ПОДКЛЮЧЕНИЕ К КОМНАТЕ =====
+        // ===== PEERJS: ПОДКЛЮЧЕНИЕ =====
         function joinRoom(code) {
             if (peer) { peer.destroy(); peer = null; }
 
@@ -347,6 +342,7 @@
             });
 
             peer.on('open', (id) => {
+                peerId = id;
                 conn = peer.connect(roomCode);
                 conn.on('open', () => {
                     roomStatus.textContent = '✅ Подключено!';
@@ -354,7 +350,10 @@
                     startMultiplayerGame('multiplayer_guest');
                 });
                 conn.on('data', (data) => handleRemoteData(data));
-                conn.on('close', () => { roomStatus.textContent = '❌ Соединение разорвано'; leaveRoom(); });
+                conn.on('close', () => {
+                    roomStatus.textContent = '❌ Соединение разорвано';
+                    leaveRoom();
+                });
             });
 
             peer.on('error', (err) => {
@@ -362,28 +361,39 @@
             });
         }
 
-        // ===== ОБРАБОТКА ДАННЫХ ОТ УДАЛЁННОГО ИГРОКА =====
+        // ===== ОБРАБОТКА ДАННЫХ =====
         function handleRemoteData(data) {
             if (data.type === 'state') {
-                // Синхронизация позиции второго игрока
                 if (gameMode === 'multiplayer_host') {
-                    // Хост принимает данные от гостя (игрок 2)
+                    // Хост получает данные от гостя (игрок 2)
                     player2.x = data.p2x || player2.x;
                     player2.y = data.p2y || player2.y;
                     player2.score = data.p2score || player2.score;
                     player2.speed = data.p2speed || player2.speed;
                 } else if (gameMode === 'multiplayer_guest') {
-                    // Гость принимает данные от хоста (игрок 1)
+                    // Гость получает данные от хоста (игрок 1)
                     player1.x = data.p1x || player1.x;
                     player1.y = data.p1y || player1.y;
                     player1.score = data.p1score || player1.score;
                     player1.speed = data.p1speed || player1.speed;
                 }
-                // Синхронизация звёзд и туч (если нужно)
-                if (data.stars) stars = data.stars;
-                if (data.clouds) clouds = data.clouds;
-                if (data.frameCount) frameCount = data.frameCount;
+                // Синхронизация объектов (только если хост)
+                if (data.stars && gameMode === 'multiplayer_guest') {
+                    stars = data.stars;
+                }
+                if (data.clouds && gameMode === 'multiplayer_guest') {
+                    clouds = data.clouds;
+                }
+                if (data.frameCount && gameMode === 'multiplayer_guest') {
+                    frameCount = data.frameCount;
+                }
                 updateUI();
+            }
+            if (data.type === 'gameover') {
+                gameActive = false;
+                gameState = STATE.GAMEOVER;
+                finalScoreSpan.textContent = data.score || 0;
+                gameOverOverlay.classList.add('show');
             }
         }
 
@@ -407,18 +417,6 @@
             conn.send(data);
         }
 
-        // ===== ЗАПУСК МУЛЬТИПЛЕЕРНОЙ ИГРЫ =====
-        function startMultiplayerGame(mode) {
-            // Для гостя — локальный игрок 2
-            if (mode === 'multiplayer_guest') {
-                // Меняем местами: игрок 2 становится локальным
-                // Но для простоты оставим как есть, просто синхронизируем
-            }
-            initGame(mode);
-            // Отправляем состояние сразу
-            setTimeout(sendState, 500);
-        }
-
         // ===== ВЫХОД ИЗ КОМНАТЫ =====
         function leaveRoom() {
             if (conn) { conn.close(); conn = null; }
@@ -431,13 +429,11 @@
             roomStatus.textContent = 'Введите код для подключения';
             multiplayerBlock.style.display = 'none';
             showMultiplayerBtn.textContent = '🌐 Мультиплеер';
-            // Возвращаемся в меню
             if (gameState !== STATE.MENU) {
                 goToMenu();
             }
         }
 
-        // ===== ОБНОВЛЕНИЕ UI =====
         function updateUI() {
             score1Span.textContent = player1.score;
             score2Span.textContent = player2.score;
@@ -472,7 +468,6 @@
 
             // ---- Управление игроком 2 (клавиши) ----
             if (!isMultiplayer || gameMode === 'single' || gameMode === 'multiplayer_guest') {
-                // В одиночном или гостевом режиме — локальное управление игроком 2
                 if (keys.w || keys.arrowup) player2.vy += JUMP_FORCE;
                 if (keys.s || keys.arrowdown) player2.vy += GRAVITY * 0.8;
                 player2.vy += GRAVITY;
@@ -491,16 +486,14 @@
                 if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
             }
 
-            // ---- Сбор звёзд (для каждого игрока) ----
+            // ---- Сбор звёзд ----
             for (let i = stars.length - 1; i >= 0; i--) {
                 const star = stars[i];
-                // Для хоста — объекты двигаются, для гостя — только сбор
                 if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
                     star.x -= star.speed * (player1.speed / 3);
                 }
                 star.phase += 0.05;
 
-                // Проверка для игрока 1
                 const dx1 = player1.x - star.x, dy1 = player1.y - star.y, dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
                 if (dist1 < player1.radius + star.r) {
                     player1.score++;
@@ -508,17 +501,13 @@
                         bestScore = player1.score + player2.score;
                         localStorage.setItem('niksBestScore', bestScore);
                     }
-                    if (isMultiplayer && gameMode === 'multiplayer_host') {
-                        // Хост управляет звёздами
-                        stars.splice(i, 1);
-                    } else if (!isMultiplayer) {
+                    if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
                         stars.splice(i, 1);
                     }
                     updateUI();
                     continue;
                 }
 
-                // Проверка для игрока 2
                 const dx2 = player2.x - star.x, dy2 = player2.y - star.y, dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
                 if (dist2 < player2.radius + star.r) {
                     player2.score++;
@@ -526,10 +515,7 @@
                         bestScore = player1.score + player2.score;
                         localStorage.setItem('niksBestScore', bestScore);
                     }
-                    if (!isMultiplayer) {
-                        stars.splice(i, 1);
-                    } else if (isMultiplayer && gameMode === 'multiplayer_host') {
-                        // Хост управляет звёздами
+                    if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
                         stars.splice(i, 1);
                     }
                     updateUI();
@@ -551,7 +537,6 @@
                 }
                 cloud.phase += 0.02;
 
-                // Проверка для игрока 1
                 const dx1 = player1.x - cloud.x, dy1 = player1.y - cloud.y, dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
                 if (dist1 < player1.radius + cloud.r) {
                     gameActive = false;
@@ -559,13 +544,11 @@
                     finalScoreSpan.textContent = player1.score + player2.score;
                     gameOverOverlay.classList.add('show');
                     if (isMultiplayer && conn) {
-                        // Отправляем сигнал о проигрыше
                         conn.send({ type: 'gameover', score: player1.score + player2.score });
                     }
                     return;
                 }
 
-                // Проверка для игрока 2
                 const dx2 = player2.x - cloud.x, dy2 = player2.y - cloud.y, dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
                 if (dist2 < player2.radius + cloud.r) {
                     gameActive = false;
@@ -588,7 +571,6 @@
             if (stars.length > 20) stars.splice(0, stars.length - 20);
             if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
 
-            // ---- Отправка состояния в мультиплеере ----
             if (isMultiplayer && conn && gameActive) {
                 sendState();
             }
@@ -772,7 +754,6 @@
         function restartGame() {
             gameOverOverlay.classList.remove('show');
             if (isMultiplayer) {
-                // Перезапуск с сохранением режима
                 initGame(gameMode);
                 setTimeout(() => { if (conn) sendState(); }, 500);
             } else {
