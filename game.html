@@ -43,6 +43,11 @@
             margin-bottom: 16px;
             flex-wrap: wrap;
             gap: 8px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .game-header.show {
+            opacity: 1;
         }
         .game-header .score-wrap {
             display: flex;
@@ -79,8 +84,8 @@
         .menu-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(10, 10, 12, 0.5);
-            backdrop-filter: blur(6px);
+            background: rgba(10, 10, 12, 0.3);
+            backdrop-filter: blur(2px);
             border-radius: 32px;
             display: flex;
             flex-direction: column;
@@ -88,67 +93,66 @@
             align-items: center;
             z-index: 10;
             padding: 20px;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease;
+            pointer-events: auto;
         }
         .menu-overlay.hidden {
             opacity: 0;
             pointer-events: none;
         }
-        .menu-title {
-            color: #fff;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            text-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
-        }
-        .menu-sub {
-            color: #a1a1aa;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            text-align: center;
-            max-width: 300px;
-        }
-        .menu-controls {
-            color: #a1a1aa;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-            text-align: center;
-            line-height: 1.6;
-        }
-        .menu-controls strong {
-            color: #fbbf24;
-        }
         .btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #f4f4f5;
-            padding: 10px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1rem;
+            padding: 14px 44px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
             transition: all 0.3s;
             cursor: pointer;
             font-family: inherit;
             text-decoration: none;
             display: inline-block;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.1);
+            letter-spacing: 0.5px;
         }
         .btn:hover {
             background: #fbbf24;
             color: #0a0a0c;
             border-color: #fbbf24;
-            transform: scale(1.02);
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.3);
         }
         .btn-primary {
             background: #fbbf24;
             color: #0a0a0c;
             border-color: #fbbf24;
         }
+        .btn-primary:hover {
+            background: #fcd34d;
+            transform: scale(1.05);
+        }
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .game-controls.show {
+            opacity: 1;
+        }
         .btn-up {
             background: rgba(251, 191, 36, 0.15);
             border-color: rgba(251, 191, 36, 0.2);
             color: #fbbf24;
-            padding: 8px 16px;
+            padding: 8px 20px;
             min-width: 60px;
+            font-size: 1.2rem;
         }
         .btn-up:hover {
             background: #fbbf24;
@@ -158,36 +162,23 @@
             background: rgba(251, 191, 36, 0.15);
             border-color: rgba(251, 191, 36, 0.2);
             color: #fbbf24;
-            padding: 8px 16px;
+            padding: 8px 20px;
             min-width: 60px;
+            font-size: 1.2rem;
         }
         .btn-down:hover {
             background: #fbbf24;
             color: #0a0a0c;
         }
-        .game-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 16px;
-            align-items: center;
-        }
-        .game-description {
-            color: #a1a1aa;
-            text-align: center;
+        .btn-sm {
+            padding: 8px 18px;
             font-size: 0.9rem;
-            margin: 12px 0 8px;
-            letter-spacing: 0.3px;
-        }
-        .game-description strong {
-            color: #fbbf24;
         }
         .overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
             border-radius: 32px;
             display: none;
             justify-content: center;
@@ -207,35 +198,46 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             max-width: 320px;
             animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
         @keyframes popIn {
             0% {
-                transform: scale(0.8);
+                transform: scale(0.8) translateY(20px);
                 opacity: 0;
             }
             100% {
-                transform: scale(1);
+                transform: scale(1) translateY(0);
                 opacity: 1;
             }
         }
         .overlay-box h2 {
             color: #f87171;
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 6px;
+            font-weight: 800;
         }
         .overlay-box p {
             color: #a1a1aa;
-            font-size: 1rem;
+            font-size: 1.1rem;
             margin-bottom: 20px;
+        }
+        .overlay-box p strong {
+            color: #fbbf24;
+            font-size: 1.4rem;
         }
         .overlay-box .btn {
             background: #f87171;
             border-color: #f87171;
             color: #0a0a0c;
+            padding: 12px 36px;
         }
         .overlay-box .btn:hover {
             background: #fca5a5;
             border-color: #fca5a5;
+            transform: scale(1.05);
+        }
+        .menu-btn-home {
+            margin-top: 12px;
         }
 
         @media (max-width: 500px) {
@@ -249,25 +251,26 @@
                 font-size: 1rem;
             }
             .btn {
-                padding: 8px 16px;
-                font-size: 0.8rem;
+                padding: 10px 24px;
+                font-size: 1rem;
             }
             .btn-up,
             .btn-down {
-                padding: 6px 12px;
+                padding: 6px 14px;
                 min-width: 44px;
+                font-size: 1rem;
             }
-            .game-controls {
-                gap: 6px;
+            .overlay-box {
+                padding: 30px 24px;
             }
-            .menu-title {
-                font-size: 1.6rem;
+            .overlay-box h2 {
+                font-size: 1.8rem;
             }
         }
         @media (max-width: 400px) {
             .btn {
-                padding: 6px 12px;
-                font-size: 0.7rem;
+                padding: 8px 16px;
+                font-size: 0.8rem;
             }
             .btn-up,
             .btn-down {
@@ -275,12 +278,18 @@
                 min-width: 36px;
                 font-size: 0.8rem;
             }
+            .overlay-box {
+                padding: 24px 16px;
+            }
+            .overlay-box h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="game-wrapper">
-        <div class="game-header">
+        <div class="game-header" id="gameHeader">
             <div class="score-wrap">
                 <div>📸 <span id="scoreDisplay">0</span></div>
                 <div class="speed-indicator">⚡ <strong id="speedDisplay">0</strong> км/ч</div>
@@ -289,26 +298,33 @@
         </div>
         <div style="position: relative;">
             <canvas id="gameCanvas" width="600" height="500"></canvas>
+
+            <!-- МЕНЮ -->
             <div class="menu-overlay" id="menuOverlay">
                 <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
-                    <h1 class="menu-title">Небесный объектив</h1>
-                    <p class="menu-sub">Давай поиграем!</p>
-                    <div class="menu-controls">
-                        Управляй кнопками <strong>▲</strong> и <strong>▼</strong><br />
-                        Собирай <strong>звёзды</strong>, уворачивайся от <strong>туч</strong>
-                    </div>
-                    <button class="btn btn-primary" id="startGameBtn" style="font-size: 1.2rem; padding: 14px 44px;">🚀 Играть</button>
-                    <a href="https://reparsing.github.io/niksartphoto/" class="btn" style="font-size: 1.2rem; padding: 14px 44px; margin-top: 10px;">🏠 На главную</a>
+                    <button class="btn btn-primary" id="startGameBtn" style="font-size: 1.4rem; padding: 16px 56px;">🚀 Играть</button>
+                    <a href="https://reparsing.github.io/niksartphoto/" class="btn menu-btn-home" style="font-size: 1rem; padding: 10px 32px;">🏠 На главную</a>
+                </div>
+            </div>
+
+            <!-- ОКНО ПРОИГРЫША -->
+            <div class="overlay" id="gameOverOverlay">
+                <div class="overlay-box">
+                    <h2>💥 Игра окончена</h2>
+                    <p>Счёт: <strong id="finalScore">0</strong></p>
+                    <button class="btn" id="restartFromOverlayBtn">🔄 Играть снова</button>
                 </div>
             </div>
         </div>
+
         <div class="game-controls" id="gameControls">
-            <button class="btn btn-up" id="upBtnGame">▲</button>
-            <button class="btn btn-primary" id="restartBtn">🔄 Играть снова</button>
-            <button class="btn" id="menuBtn" style="display: none;">📋 В меню</button>
-            <button class="btn btn-down" id="downBtnGame">▼</button>
+            <button class="btn btn-up" id="upBtn">▲</button>
+            <button class="btn btn-primary btn-sm" id="restartBtn">🔄 Заново</button>
+            <button class="btn btn-sm" id="menuBtn" style="display: none;">📋 Меню</button>
+            <button class="btn btn-down" id="downBtn">▼</button>
         </div>
     </div>
+
     <script>
         (function() {
             const canvas = document.getElementById('gameCanvas');
@@ -320,25 +336,23 @@
             const menuOverlay = document.getElementById('menuOverlay');
             const startBtn = document.getElementById('startGameBtn');
             const restartBtn = document.getElementById('restartBtn');
+            const restartOverlayBtn = document.getElementById('restartFromOverlayBtn');
             const menuBtn = document.getElementById('menuBtn');
-            const overlay = document.querySelector('.overlay');
+            const overlay = document.getElementById('gameOverOverlay');
+            const gameHeader = document.getElementById('gameHeader');
+            const gameControls = document.getElementById('gameControls');
+
             const W = 600,
                 H = 500;
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
+
             const STATE = { MENU: 0, TRANSITION: 1, PLAYING: 2, GAMEOVER: 3 };
             let gameState = STATE.MENU;
-            let player = {
-                x: W / 2,
-                y: H / 2,
-                vy: 0,
-                radius: 28,
-                pulsePhase: 0,
-                speed: 3.0,
-            };
-            let stars = [];
-            let clouds = [];
+            let player = { x: W / 2, y: H / 2, vy: 0, radius: 28, pulsePhase: 0, speed: 3.0 };
+            let stars = [],
+                clouds = [];
             let score = 0;
             let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
             let gameActive = false;
@@ -346,10 +360,10 @@
             let frameCount = 0;
             let transitionProgress = 0;
             const TRANSITION_DURATION = 60;
-            const GRAVITY = 0.15;
-            const JUMP_FORCE = -0.5;
-            const MAX_SPEED = 8.0;
-            const FRICTION = 0.98;
+            const GRAVITY = 0.15,
+                JUMP_FORCE = -0.5,
+                MAX_SPEED = 8.0,
+                FRICTION = 0.98;
 
             function initGame() {
                 player.y = H / 2;
@@ -361,9 +375,12 @@
                 frameCount = 0;
                 stars = [];
                 clouds = [];
-                updateUI();
-                menuBtn.style.display = 'inline-block';
                 gameState = STATE.PLAYING;
+                overlay.classList.remove('show');
+                gameHeader.classList.add('show');
+                gameControls.classList.add('show');
+                menuBtn.style.display = 'inline-block';
+                updateUI();
             }
 
             function spawnStar() {
@@ -388,12 +405,11 @@
                 downPressed = false;
 
             function setupButtons() {
-                const btnIds = ['upBtnGame', 'downBtnGame'];
-                btnIds.forEach(id => {
+                ['upBtn', 'downBtn'].forEach(id => {
                     const btn = document.getElementById(id);
                     if (!btn) return;
-                    const start = (e) => { e.preventDefault();
-                        upPressed = (id === 'upBtnGame'); if (id === 'downBtnGame') downPressed = true; };
+                    const start = (e) => { e.preventDefault(); if (id === 'upBtn') upPressed = true;
+                        else downPressed = true; };
                     const end = (e) => { e.preventDefault();
                         upPressed = false;
                         downPressed = false; };
@@ -413,9 +429,8 @@
                     const t = transitionProgress / TRANSITION_DURATION;
                     const ease = 1 - Math.pow(1 - t, 3);
                     player.x = W / 2 + (80 - W / 2) * ease;
-                    player.y = H / 2 + (H / 2 - H / 2) * ease;
+                    player.y = H / 2;
                     if (transitionProgress >= TRANSITION_DURATION) {
-                        gameState = STATE.PLAYING;
                         player.x = 80;
                         initGame();
                     }
@@ -438,6 +453,7 @@
                 if (frameCount % 35 === 0) spawnStar();
                 if (frameCount % 55 === 0) spawnCloud();
                 if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
+
                 for (let i = stars.length - 1; i >= 0; i--) {
                     const star = stars[i];
                     star.x -= star.speed * (player.speed / 3);
@@ -455,6 +471,7 @@
                     }
                     if (star.x < -20) stars.splice(i, 1);
                 }
+
                 for (let i = clouds.length - 1; i >= 0; i--) {
                     const cloud = clouds[i];
                     cloud.x -= cloud.speed * (player.speed / 3);
@@ -466,7 +483,8 @@
                         gameActive = false;
                         gameState = STATE.GAMEOVER;
                         finalScoreSpan.textContent = score;
-                        document.querySelector('.overlay').classList.add('show');
+                        overlay.classList.add('show');
+                        gameControls.classList.remove('show');
                         return;
                     }
                     if (cloud.x < -40) clouds.splice(i, 1);
@@ -477,6 +495,8 @@
 
             function draw() {
                 ctx.clearRect(0, 0, W, H);
+
+                // Шлейф
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER || gameState === STATE.TRANSITION) {
                     const trailLen = 18;
                     for (let i = 1; i < trailLen; i++) {
@@ -491,6 +511,8 @@
                         ctx.fill();
                     }
                 }
+
+                // Звёзды и тучи
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
                     for (let star of stars) {
                         const pulse = 1 + 0.15 * Math.sin(star.phase);
@@ -532,17 +554,19 @@
                         }
                     }
                 }
+
+                // Камера
                 const pulse = 1 + 0.06 * Math.sin(player.pulsePhase);
                 const scaleX = pulse,
                     scaleY = 1 / pulse;
                 let drawX = player.x,
                     drawY = player.y;
                 if (gameState === STATE.MENU) { drawX = W / 2;
-                    drawY = H / 2 - 10; }
+                    drawY = H / 2; }
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(drawX, drawY);
-                    const baseSize = 70;
+                    const baseSize = gameState === STATE.MENU ? 100 : 70;
                     const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.05);
                     const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.05);
                     ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
@@ -561,33 +585,36 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', drawX, drawY + 2);
                 }
+
+                // Эффекты меню
                 if (gameState === STATE.MENU) {
                     const time = Date.now() * 0.001;
-                    for (let i = 0; i < 12; i++) {
-                        const angle = i * (Math.PI / 6) + time * 0.3;
-                        const radius = 80 + 15 * Math.sin(time * 0.5 + i);
-                        const x = W / 2 + Math.cos(angle) * radius,
-                            y = H / 2 - 10 + Math.sin(angle) * radius * 0.6;
-                        const alpha = 0.2 + 0.15 * Math.sin(time + i);
+                    for (let i = 0; i < 16; i++) {
+                        const angle = i * (Math.PI / 8) + time * 0.3;
+                        const radius = 100 + 20 * Math.sin(time * 0.5 + i);
+                        const x = W / 2 + Math.cos(angle) * radius;
+                        const y = H / 2 + Math.sin(angle) * radius * 0.5;
+                        const alpha = 0.15 + 0.1 * Math.sin(time + i);
                         ctx.beginPath();
-                        ctx.arc(x, y, 4 + 3 * Math.sin(time * 0.7 + i), 0, Math.PI * 2);
+                        ctx.arc(x, y, 3 + 2 * Math.sin(time * 0.7 + i), 0, Math.PI * 2);
                         ctx.fillStyle = `rgba(251, 191, 36, ${alpha})`;
                         ctx.fill();
                     }
-                    for (let i = 0; i < 8; i++) {
-                        const angle = i * (Math.PI / 4) + time * 0.2;
-                        const x1 = W / 2 + Math.cos(angle) * 60,
-                            y1 = H / 2 - 10 + Math.sin(angle) * 40;
-                        const x2 = W / 2 + Math.cos(angle + 0.1) * 110,
-                            y2 = H / 2 - 10 + Math.sin(angle + 0.1) * 70;
+                    for (let i = 0; i < 10; i++) {
+                        const angle = i * (Math.PI / 5) + time * 0.2;
+                        const x1 = W / 2 + Math.cos(angle) * 70;
+                        const y1 = H / 2 + Math.sin(angle) * 35;
+                        const x2 = W / 2 + Math.cos(angle + 0.15) * 130;
+                        const y2 = H / 2 + Math.sin(angle + 0.15) * 65;
                         ctx.beginPath();
                         ctx.moveTo(x1, y1);
                         ctx.lineTo(x2, y2);
-                        ctx.strokeStyle = `rgba(251, 191, 36, ${0.08 + 0.06 * Math.sin(time + i)})`;
+                        ctx.strokeStyle = `rgba(251, 191, 36, ${0.06 + 0.04 * Math.sin(time + i)})`;
                         ctx.lineWidth = 2;
                         ctx.stroke();
                     }
                 }
+
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
                     ctx.fillStyle = 'rgba(255,255,255,0.15)';
                     ctx.font = '12px monospace';
@@ -604,8 +631,7 @@
             }
 
             function startGame() {
-                menuOverlay.style.opacity = '0';
-                setTimeout(() => { menuOverlay.style.display = 'none'; }, 500);
+                menuOverlay.classList.add('hidden');
                 gameState = STATE.TRANSITION;
                 transitionProgress = 0;
                 player.x = W / 2;
@@ -614,21 +640,23 @@
                 player.speed = 3.0;
                 player.pulsePhase = 0;
                 gameActive = true;
-                menuBtn.style.display = 'inline-block';
                 stars = [];
                 clouds = [];
                 score = 0;
                 updateUI();
+                gameHeader.classList.add('show');
+                gameControls.classList.add('show');
+                menuBtn.style.display = 'inline-block';
             }
-            startBtn.addEventListener('click', startGame);
 
             function goToMenu() {
                 gameState = STATE.MENU;
                 gameActive = false;
-                menuOverlay.style.display = 'flex';
-                setTimeout(() => { menuOverlay.style.opacity = '1'; }, 50);
+                overlay.classList.remove('show');
+                menuOverlay.classList.remove('hidden');
+                gameHeader.classList.remove('show');
+                gameControls.classList.remove('show');
                 menuBtn.style.display = 'none';
-                document.querySelector('.overlay').classList.remove('show');
                 stars = [];
                 clouds = [];
                 player.x = W / 2;
@@ -638,10 +666,9 @@
                 score = 0;
                 updateUI();
             }
-            menuBtn.addEventListener('click', goToMenu);
 
             function restartGame() {
-                document.querySelector('.overlay').classList.remove('show');
+                overlay.classList.remove('show');
                 gameState = STATE.PLAYING;
                 gameActive = true;
                 player.x = 80;
@@ -653,9 +680,14 @@
                 stars = [];
                 clouds = [];
                 frameCount = 0;
+                gameControls.classList.add('show');
                 updateUI();
             }
+
+            startBtn.addEventListener('click', startGame);
             restartBtn.addEventListener('click', restartGame);
+            restartOverlayBtn.addEventListener('click', restartGame);
+            menuBtn.addEventListener('click', goToMenu);
 
             gameState = STATE.MENU;
             player.x = W / 2;
