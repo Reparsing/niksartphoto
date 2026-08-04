@@ -45,9 +45,7 @@
             z-index: 0;
         }
 
-        /* ============================================
-           ЭКРАН-ПРИВЕТСТВИЕ (Splash Screen)
-           ============================================ */
+        /* ===== ЭКРАН-ПРИВЕТСТВИЕ ===== */
         .splash-screen {
             position: fixed;
             inset: 0;
@@ -62,11 +60,7 @@
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: auto;
         }
-        .splash-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-            display: none;
-        }
+        .splash-screen.hidden { opacity: 0; pointer-events: none; display: none; }
         .splash-content {
             max-width: 640px;
             width: 90%;
@@ -354,7 +348,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== КАМЕРА С РАДУЖНЫМ ХВОСТОМ (без фона) ===== */
+        /* ===== КАМЕРА С ПЛАВНОЙ ПУЛЬСАЦИЕЙ И РАДУЖНЫМ ШЛЕЙФОМ ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -378,42 +372,32 @@
             justify-content: center;
         }
 
-        /* --- РАДУЖНЫЙ ХВОСТ (за камерой) --- */
-        .rainbow-tail {
+        /* --- РАДУЖНЫЙ ШЛЕЙФ (ореол) --- */
+        .rainbow-trail-nav {
             position: absolute;
-            left: -40px; /* Хвост тянется влево */
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 8px;
-            border-radius: 4px;
-            background: linear-gradient(to right, rgba(255,107,107,0.8), rgba(254,202,87,0.8), rgba(72,219,251,0.8), rgba(29,209,161,0.8), rgba(243,104,224,0.8));
-            filter: blur(2px);
-            opacity: 0;
-            transition: none;
-            animation: tailPulse 2.5s ease-in-out infinite;
+            inset: -14px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff6b6b, #feca57, #48dbfb, #1dd1a1, #f368e0, #ff6b6b
+            );
+            opacity: 0.5;
+            filter: blur(6px);
+            animation: rotateRainbow 4s linear infinite;
+            mix-blend-mode: screen;
             pointer-events: none;
-            z-index: 1;
-        }
-        /* Добавляем свечение */
-        .rainbow-tail::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 6px;
-            background: inherit;
-            filter: blur(10px);
-            opacity: 0.6;
+            z-index: 0;
+            mask: radial-gradient(circle, transparent 48%, black 65%);
+            -webkit-mask: radial-gradient(circle, transparent 48%, black 65%);
         }
 
-        @keyframes tailPulse {
-            0%   { width: 0; opacity: 0; }
-            20%  { width: 60px; opacity: 1; }
-            80%  { width: 60px; opacity: 1; }
-            100% { width: 0; opacity: 0; }
+        @keyframes rotateRainbow {
+            0%   { transform: rotate(0deg) scale(1); }
+            50%  { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
         }
 
-        /* --- КАМЕРА --- */
+        /* --- КАМЕРА (плавная пульсация вверх-вниз) --- */
         .camera-nav-img {
             width: 32px;
             height: auto;
@@ -421,49 +405,27 @@
             position: relative;
             z-index: 2;
             filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.2));
-            animation: pulseCameraNav 0.8s steps(1, end) infinite;
+            animation: pulseCameraNav 1.8s ease-in-out infinite;
             user-select: none;
             -webkit-user-drag: none;
             pointer-events: none;
         }
 
         @keyframes pulseCameraNav {
-            0%   { transform: translateY(0) scale(1); opacity: 1; }
-            5%   { transform: translateY(-8px) scale(0.85); opacity: 0.6; }
-            10%  { transform: translateY(8px) scale(1.15); opacity: 1; }
-            15%  { transform: translateY(-6px) scale(0.88); opacity: 0.7; }
-            20%  { transform: translateY(6px) scale(1.12); opacity: 1; }
-            25%  { transform: translateY(-4px) scale(0.9); opacity: 0.8; }
-            30%  { transform: translateY(4px) scale(1.1); opacity: 1; }
-            40%  { transform: translateY(-3px) scale(0.93); opacity: 0.9; }
-            50%  { transform: translateY(3px) scale(1.07); opacity: 1; }
-            60%  { transform: translateY(-2px) scale(0.96); opacity: 0.95; }
-            70%  { transform: translateY(2px) scale(1.04); opacity: 1; }
-            80%  { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
+            0%   { transform: translateY(0) scale(1); }
+            50%  { transform: translateY(-6px) scale(1.02); }
+            100% { transform: translateY(0) scale(1); }
         }
 
         @media (max-width: 768px) {
             .camera-nav-container { width: 34px; height: 34px; }
             .camera-nav-img { width: 26px; }
-            .rainbow-tail { left: -30px; height: 6px; }
-            @keyframes tailPulse {
-                0%   { width: 0; opacity: 0; }
-                20%  { width: 50px; opacity: 1; }
-                80%  { width: 50px; opacity: 1; }
-                100% { width: 0; opacity: 0; }
-            }
+            .rainbow-trail-nav { inset: -10px; }
         }
         @media (max-width: 480px) {
             .camera-nav-container { width: 28px; height: 28px; }
             .camera-nav-img { width: 22px; }
-            .rainbow-tail { left: -24px; height: 5px; }
-            @keyframes tailPulse {
-                0%   { width: 0; opacity: 0; }
-                20%  { width: 40px; opacity: 1; }
-                80%  { width: 40px; opacity: 1; }
-                100% { width: 0; opacity: 0; }
-            }
+            .rainbow-trail-nav { inset: -8px; }
         }
 
         /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
@@ -702,12 +664,10 @@
                 <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
-            <!-- КАМЕРА С РАДУЖНЫМ ХВОСТОМ (без фона) -->
+            <!-- КАМЕРА С РАДУЖНЫМ ШЛЕЙФОМ -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container">
-                    <!-- ХВОСТ -->
-                    <div class="rainbow-tail" id="rainbowTail"></div>
-                    <!-- КАМЕРА -->
+                    <div class="rainbow-trail-nav"></div>
                     <img src="images/camera.png" alt="Фотоаппарат" class="camera-nav-img" id="cameraNavImg">
                 </div>
             </div>
@@ -1053,8 +1013,7 @@
             const canvas = document.getElementById('particles-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            let w, h, particles = [],
-                COUNT = 100;
+            let w, h, particles = [], COUNT = 100;
 
             function resize() { w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight; }
             window.addEventListener('resize', resize);
@@ -1062,17 +1021,13 @@
 
             class Particle {
                 constructor() { this.reset(); }
-                reset() { this.x = Math.random() * w, this.y = Math.random() * h, this.size = Math.random() * 2.5 + .5, this.speedX = (Math
-                        .random() - .5) * .4, this.speedY = (Math.random() - .5) * .4, this.opacity = Math.random() * .4 + .15; }
-                update() { this.x += this.speedX, this.y += this.speedY, (this.x < 0 || this.x > w) && (this.speedX *= -1), (this
-                        .y < 0 || this.y > h) && (this.speedY *= -1); }
-                draw() { ctx.beginPath(), ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2), ctx.fillStyle =
-                        `rgba(251, 191, 36, ${this.opacity})`, ctx.fill(); }
+                reset() { this.x = Math.random() * w, this.y = Math.random() * h, this.size = Math.random() * 2.5 + .5, this.speedX = (Math.random() - .5) * .4, this.speedY = (Math.random() - .5) * .4, this.opacity = Math.random() * .4 + .15; }
+                update() { this.x += this.speedX, this.y += this.speedY, (this.x < 0 || this.x > w) && (this.speedX *= -1), (this.y < 0 || this.y > h) && (this.speedY *= -1); }
+                draw() { ctx.beginPath(), ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2), ctx.fillStyle = `rgba(251, 191, 36, ${this.opacity})`, ctx.fill(); }
             }
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            let mouseX = null,
-                mouseY = null;
+            let mouseX = null, mouseY = null;
             canvas.addEventListener('mousemove', e => { mouseX = e.clientX, mouseY = e.clientY; });
             canvas.addEventListener('mouseleave', () => { mouseX = null, mouseY = null; });
 
@@ -1080,22 +1035,15 @@
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
                     if (mouseX !== null && mouseY !== null) {
-                        const dx = p.x - mouseX,
-                            dy = p.y - mouseY,
-                            dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 180) { const force = (180 - dist) / 180 * .03;
-                            p.x += dx * force, p.y += dy * force; }
+                        const dx = p.x - mouseX, dy = p.y - mouseY, dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 180) { const force = (180 - dist) / 180 * .03; p.x += dx * force; p.y += dy * force; }
                     }
                     p.update(), p.draw();
                 });
                 for (let i = 0; i < particles.length; i++)
                     for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x,
-                            dy = particles[i].y - particles[j].y,
-                            dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 130) ctx.beginPath(), ctx.moveTo(particles[i].x, particles[i].y), ctx.lineTo(particles[j].x,
-                            particles[j].y), ctx.strokeStyle = `rgba(251, 191, 36, ${.06 * (1 - dist / 130)})`, ctx
-                            .lineWidth = .8, ctx.stroke();
+                        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) ctx.beginPath(), ctx.moveTo(particles[i].x, particles[i].y), ctx.lineTo(particles[j].x, particles[j].y), ctx.strokeStyle = `rgba(251, 191, 36, ${.06 * (1 - dist / 130)})`, ctx.lineWidth = .8, ctx.stroke();
                     }
                 requestAnimationFrame(animate);
             }
@@ -1106,10 +1054,7 @@
     <!-- 4. ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ -->
     <script>
         (function() {
-            const observer = new IntersectionObserver(e => e.forEach(el => { if (el.isIntersecting) { const t = parseInt(el
-                        .target.getAttribute('data-delay')) || 0;
-                    setTimeout(() => { el.target.classList.add('visible'); }, t); } }), { threshold: .15,
-                rootMargin: '0px 0px -40px 0px' });
+            const observer = new IntersectionObserver(e => e.forEach(el => { if (el.isIntersecting) { const t = parseInt(el.target.getAttribute('data-delay')) || 0; setTimeout(() => { el.target.classList.add('visible'); }, t); } }), { threshold: .15, rootMargin: '0px 0px -40px 0px' });
             document.querySelectorAll('.card, .faq-card, .award-card').forEach(el => { observer.observe(el); });
         })();
     </script>
