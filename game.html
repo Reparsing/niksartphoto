@@ -41,6 +41,8 @@
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .game-header .score-wrap {
             display: flex;
@@ -51,14 +53,18 @@
             color: #fbbf24;
         }
         .speed-indicator {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             background: rgba(255, 255, 255, 0.06);
             padding: 4px 14px;
             border-radius: 30px;
             color: #a1a1aa;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
         }
         .speed-indicator strong {
             color: #fbbf24;
+            font-size: 1.2rem;
         }
         #gameCanvas {
             width: 100%;
@@ -70,38 +76,76 @@
             touch-action: none;
             position: relative;
         }
-        .game-controls {
+        /* ===== КНОПКИ УПРАВЛЕНИЯ (поверх канваса) ===== */
+        .controls-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+        .dpad {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px 60px;
+            gap: 6px;
+            pointer-events: auto;
+        }
+        .dpad-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            color: #fff;
+            font-size: 1.6rem;
+            display: flex;
             justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-        .btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f4f4f5;
-            padding: 10px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s;
+            align-items: center;
             cursor: pointer;
-            font-family: inherit;
-            text-decoration: none;
-            display: inline-block;
+            transition: all 0.15s;
+            touch-action: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn:hover {
-            background: #fbbf24;
-            color: #0a0a0c;
-            border-color: #fbbf24;
-            transform: scale(1.02);
-        }
-        .btn-primary {
-            background: #fbbf24;
-            color: #0a0a0c;
+        .dpad-btn:active {
+            background: rgba(251, 191, 36, 0.4);
+            transform: scale(0.92);
             border-color: #fbbf24;
         }
+        .dpad-empty {
+            visibility: hidden;
+        }
+        .dpad-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .dpad-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .dpad-center {
+            grid-column: 2;
+            grid-row: 2;
+            background: rgba(251, 191, 36, 0.15);
+            border-color: rgba(251, 191, 36, 0.2);
+            font-size: 0.7rem;
+            color: #fbbf24;
+            font-weight: 700;
+            pointer-events: none;
+        }
+        .dpad-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        .dpad-down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
         .game-description {
             color: #a1a1aa;
             text-align: center;
@@ -123,7 +167,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 10;
+            z-index: 20;
             flex-direction: column;
             padding: 20px;
         }
@@ -159,6 +203,31 @@
             font-size: 1rem;
             margin-bottom: 20px;
         }
+        .btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f4f4f5;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #fbbf24;
+            color: #0a0a0c;
+            border-color: #fbbf24;
+            transform: scale(1.02);
+        }
+        .btn-primary {
+            background: #fbbf24;
+            color: #0a0a0c;
+            border-color: #fbbf24;
+        }
         .overlay-box .btn {
             background: #f87171;
             border-color: #f87171;
@@ -167,6 +236,13 @@
         .overlay-box .btn:hover {
             background: #fca5a5;
             border-color: #fca5a5;
+        }
+        .game-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 16px;
         }
 
         @media (max-width: 500px) {
@@ -178,6 +254,31 @@
             }
             .game-header {
                 font-size: 1rem;
+            }
+            .dpad {
+                grid-template-columns: 50px 50px 50px;
+                grid-template-rows: 50px 50px 50px;
+                gap: 4px;
+            }
+            .dpad-btn {
+                font-size: 1.2rem;
+                border-radius: 12px;
+            }
+            .controls-overlay {
+                bottom: 12px;
+                left: 12px;
+                right: 12px;
+            }
+        }
+        @media (max-width: 400px) {
+            .dpad {
+                grid-template-columns: 44px 44px 44px;
+                grid-template-rows: 44px 44px 44px;
+                gap: 4px;
+            }
+            .dpad-btn {
+                font-size: 1rem;
+                border-radius: 10px;
             }
         }
     </style>
@@ -197,15 +298,28 @@
         <div class="game-header">
             <div class="score-wrap">
                 <div>📸 <span id="scoreDisplay">0</span></div>
-                <div class="speed-indicator">⚡ <strong id="speedDisplay">1.0</strong>x</div>
+                <div class="speed-indicator">⚡ <strong id="speedDisplay">0</strong> км/ч</div>
             </div>
             <div>🏆 <span id="bestDisplay">0</span></div>
         </div>
 
-        <canvas id="gameCanvas" width="600" height="500"></canvas>
+        <div style="position: relative;">
+            <canvas id="gameCanvas" width="600" height="500"></canvas>
+
+            <!-- КНОПКИ УПРАВЛЕНИЯ -->
+            <div class="controls-overlay" id="controlsOverlay">
+                <div class="dpad">
+                    <div class="dpad-btn dpad-up" data-dir="up">▲</div>
+                    <div class="dpad-btn dpad-left" data-dir="left">◀</div>
+                    <div class="dpad-btn dpad-center">★</div>
+                    <div class="dpad-btn dpad-right" data-dir="right">▶</div>
+                    <div class="dpad-btn dpad-down" data-dir="down">▼</div>
+                </div>
+            </div>
+        </div>
 
         <div class="game-description">
-            🎯 Управляй камерой мышкой или пальцем. Собирай <strong>звёзды</strong> (+1) — они ускоряют тебя. Избегай <strong>туч</strong>!
+            🎯 Управляй камерой кнопками или мышкой. Собирай <strong>звёзды</strong> (+1) — они ускоряют тебя. Избегай <strong>туч</strong>!
         </div>
 
         <div class="game-controls">
@@ -244,8 +358,10 @@
                 vy: 0,
                 radius: 22,
                 angle: 0,
-                speed: 1.0,
-                targetSpeed: 1.0,
+                speed: 0, // 0-8 км/ч
+                targetSpeed: 0,
+                // Для пульсации
+                pulsePhase: 0,
             };
 
             let stars = [];
@@ -255,13 +371,11 @@
             let gameActive = true;
             let frameId = null;
 
-            // Параметры генерации
             const STAR_COUNT = 5;
             const CLOUD_COUNT = 3;
             const BASE_SPEED = 3.5;
             const MAX_SPEED = 8.0;
             const FRICTION = 0.94;
-            const ACCEL_FORCE = 0.5;
 
             // ---------- ИНИЦИАЛИЗАЦИЯ ----------
             function initGame() {
@@ -270,8 +384,9 @@
                 player.vx = 0;
                 player.vy = 0;
                 player.angle = 0;
-                player.speed = 1.0;
-                player.targetSpeed = 1.0;
+                player.speed = 0;
+                player.targetSpeed = 0;
+                player.pulsePhase = 0;
                 score = 0;
                 gameActive = true;
                 overlay.classList.remove('show');
@@ -311,23 +426,55 @@
             function updateUI() {
                 scoreSpan.textContent = score;
                 bestSpan.textContent = bestScore;
-                speedSpan.textContent = player.speed.toFixed(1);
+                speedSpan.textContent = Math.round(player.speed);
             }
+
+            // ---------- УПРАВЛЕНИЕ С КНОПОК ----------
+            const keys = { up: false, down: false, left: false, right: false };
+
+            function handleKey(dir, pressed) {
+                keys[dir] = pressed;
+            }
+
+            document.querySelectorAll('.dpad-btn[data-dir]').forEach(btn => {
+                const dir = btn.dataset.dir;
+                const start = (e) => {
+                    e.preventDefault();
+                    handleKey(dir, true);
+                };
+                const end = (e) => {
+                    e.preventDefault();
+                    handleKey(dir, false);
+                };
+                btn.addEventListener('mousedown', start);
+                btn.addEventListener('mouseup', end);
+                btn.addEventListener('mouseleave', end);
+                btn.addEventListener('touchstart', start, { passive: false });
+                btn.addEventListener('touchend', end, { passive: false });
+                btn.addEventListener('touchcancel', end, { passive: false });
+            });
 
             // ---------- ОБНОВЛЕНИЕ ИГРЫ ----------
             function update() {
                 if (!gameActive) return;
 
+                // Управление с кнопок (добавляем ускорение)
+                const accel = 0.08;
+                if (keys.up) player.vy -= accel;
+                if (keys.down) player.vy += accel;
+                if (keys.left) player.vx -= accel;
+                if (keys.right) player.vx += accel;
+
                 // 1. Плавное изменение скорости
                 player.speed += (player.targetSpeed - player.speed) * 0.08;
-                player.speed = Math.min(Math.max(player.speed, 0.6), MAX_SPEED);
+                player.speed = Math.min(Math.max(player.speed, 0), MAX_SPEED);
 
                 // 2. Движение с инерцией
-                const currentSpeed = BASE_SPEED * player.speed;
+                const currentSpeed = BASE_SPEED * (player.speed / MAX_SPEED) + 0.5;
                 player.x += player.vx * currentSpeed;
                 player.y += player.vy * currentSpeed;
 
-                // 3. Трение (плавная остановка)
+                // 3. Трение
                 player.vx *= FRICTION;
                 player.vy *= FRICTION;
 
@@ -342,14 +489,21 @@
                 if (player.y > H - margin) { player.y = H - margin;
                     player.vy = 0; }
 
-                // 5. Угол поворота (по направлению движения)
+                // 5. Угол поворота
                 const angleTarget = Math.atan2(player.vy, player.vx);
                 let angleDiff = angleTarget - player.angle;
                 while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
                 while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
                 player.angle += angleDiff * 0.12;
 
-                // 6. Обновление звёзд
+                // 6. Пульсация (сжатие/разжатие)
+                if (Math.abs(player.vx) > 0.05 || Math.abs(player.vy) > 0.05) {
+                    player.pulsePhase += 0.08 * (player.speed / MAX_SPEED + 0.3);
+                } else {
+                    player.pulsePhase += 0.01;
+                }
+
+                // 7. Звёзды
                 for (let star of stars) {
                     if (star.collected) {
                         star.respawnTimer -= 0.02;
@@ -365,11 +519,10 @@
                     const dy = player.y - star.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < player.radius + star.r) {
-                        // Собрали звезду!
                         star.collected = true;
                         star.respawnTimer = 1.5 + Math.random() * 1.0;
                         score++;
-                        player.targetSpeed = Math.min(player.targetSpeed + 0.3, MAX_SPEED);
+                        player.targetSpeed = Math.min(player.targetSpeed + 0.6, MAX_SPEED);
                         if (score > bestScore) {
                             bestScore = score;
                             localStorage.setItem('niksBestScore', bestScore);
@@ -378,7 +531,7 @@
                     }
                 }
 
-                // 7. Обновление туч
+                // 8. Тучи
                 for (let cloud of clouds) {
                     cloud.x += cloud.vx * 0.8;
                     cloud.y += cloud.vy * 0.8;
@@ -389,7 +542,6 @@
                     const dy = player.y - cloud.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < player.radius + cloud.r) {
-                        // Столкновение с тучей — проигрыш
                         gameActive = false;
                         finalScoreSpan.textContent = score;
                         overlay.classList.add('show');
@@ -427,7 +579,6 @@
                         ctx.fill();
                         continue;
                     }
-                    // Сияние
                     const grad = ctx.createRadialGradient(star.x, star.y, 2, star.x, star.y, star.r * 1.8);
                     grad.addColorStop(0, '#fbbf24');
                     grad.addColorStop(0.5, 'rgba(251,191,36,0.3)');
@@ -437,7 +588,6 @@
                     ctx.arc(star.x, star.y, star.r * 1.8, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Звезда
                     ctx.fillStyle = '#fcd34d';
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 16;
@@ -456,7 +606,6 @@
                     ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-                    // Небольшие детали
                     for (let i = 0; i < 4; i++) {
                         const angle = i * 1.2 + Date.now() * 0.0005;
                         const dx = Math.cos(angle) * cloud.r * 0.6;
@@ -468,22 +617,27 @@
                     }
                 }
 
-                // --- КАМЕРА (основная картинка) ---
+                // --- КАМЕРА (с пульсацией) ---
+                const pulse = 1 + 0.04 * Math.sin(player.pulsePhase);
+                const scaleX = pulse;
+                const scaleY = 1 / pulse; // сжатие по вертикали, расширение по горизонтали
+
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(player.x, player.y);
                     ctx.rotate(player.angle);
-                    const scale = 1 + (player.speed - 1) * 0.06;
-                    const size = 52 * scale;
-                    ctx.drawImage(cameraImg, -size / 2, -size / 2, size, size);
+                    const baseSize = 52;
+                    const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.1);
+                    const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.1);
+                    ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
                     ctx.restore();
                 } else {
-                    // Заглушка, если картинка не загрузилась
+                    // Заглушка
                     ctx.fillStyle = '#fbbf24';
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 30;
                     ctx.beginPath();
-                    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+                    ctx.arc(player.x, player.y, player.radius * pulse, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
@@ -492,13 +646,6 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', player.x, player.y + 2);
                 }
-
-                // --- ИНФОРМАЦИЯ О СКОРОСТИ (подсказка) ---
-                ctx.fillStyle = 'rgba(255,255,255,0.2)';
-                ctx.font = '12px monospace';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'bottom';
-                ctx.fillText(`⚡ ${player.speed.toFixed(1)}x`, 12, H - 10);
             }
 
             // ---------- ЦИКЛ ИГРЫ ----------
@@ -514,7 +661,7 @@
                 frameId = requestAnimationFrame(gameLoop);
             }
 
-            // ---------- УПРАВЛЕНИЕ (МЫШЬ + ТАЧ) ----------
+            // ---------- УПРАВЛЕНИЕ МЫШЬЮ ----------
             function handleMove(clientX, clientY) {
                 if (!gameActive) return;
                 const rect = canvas.getBoundingClientRect();
@@ -536,7 +683,6 @@
                 player.vx += normX * force;
                 player.vy += normY * force;
 
-                // Ограничиваем максимальную скорость
                 const maxV = 1.2 + player.speed * 0.3;
                 const v = Math.sqrt(player.vx * player.vx + player.vy * player.vy);
                 if (v > maxV) {
@@ -545,7 +691,6 @@
                 }
             }
 
-            // ---------- СОБЫТИЯ ----------
             canvas.addEventListener('mousemove', (e) => {
                 e.preventDefault();
                 handleMove(e.clientX, e.clientY);
@@ -576,11 +721,8 @@
             // ---------- СТАРТ ----------
             initGame();
             frameId = requestAnimationFrame(gameLoop);
-
-            // Обновление рекорда при загрузке
             bestSpan.textContent = bestScore;
 
-            // Если картинка долго грузится — показать заглушку
             cameraImg.onerror = function() {
                 console.warn('Картинка не загрузилась, используется эмодзи');
             };
