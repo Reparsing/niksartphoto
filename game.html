@@ -156,6 +156,63 @@
         .menu-overlay p { color: #a1a1aa; margin-bottom: 16px; }
         .menu-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .menu-buttons .btn { font-size: 1rem; padding: 12px 24px; }
+        /* Настройки следа */
+        .settings-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            border-radius: 32px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            padding: 20px;
+        }
+        .settings-overlay.show { display: flex; }
+        .settings-box {
+            background: #1c1c22;
+            padding: 32px 28px;
+            border-radius: 28px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.08);
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .settings-box h2 { color: #fff; font-size: 1.8rem; margin-bottom: 16px; }
+        .settings-box .option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.04);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .settings-box .option:hover { background: rgba(255,255,255,0.08); }
+        .settings-box .option.active {
+            border-color: #fbbf24;
+            background: rgba(251,191,36,0.1);
+        }
+        .settings-box .option .label { color: #f4f4f5; font-weight: 500; }
+        .settings-box .close-settings {
+            margin-top: 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #f4f4f5;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .settings-box .close-settings:hover { background: #fbbf24; color: #0a0a0c; border-color: #fbbf24; }
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
             #gameCanvas { height: 400px; }
@@ -163,6 +220,7 @@
             .overlay-box h2 { font-size: 1.8rem; }
             .btn-scale { padding: 4px 12px; font-size: 1rem; min-width: 34px; }
             .scale-display { min-width: 30px; font-size: 0.8rem; }
+            .settings-box { padding: 24px 16px; }
         }
     </style>
 </head>
@@ -195,6 +253,30 @@
                 <button class="btn" id="restartBtn">🔄 Играть снова</button>
             </div>
         </div>
+
+        <!-- НАСТРОЙКИ СЛЕДА -->
+        <div class="settings-overlay" id="settingsOverlay">
+            <div class="settings-box">
+                <h2>🎨 Стиль следа</h2>
+                <div class="option" data-trail="rainbow">
+                    <span style="font-size:1.5rem;">🌈</span>
+                    <span class="label">Радужный</span>
+                </div>
+                <div class="option" data-trail="rocket">
+                    <span style="font-size:1.5rem;">🚀</span>
+                    <span class="label">Ракетный (огонь)</span>
+                </div>
+                <div class="option" data-trail="sparkle">
+                    <span style="font-size:1.5rem;">✨</span>
+                    <span class="label">Искристый</span>
+                </div>
+                <div class="option" data-trail="smoke">
+                    <span style="font-size:1.5rem;">💨</span>
+                    <span class="label">Дымный</span>
+                </div>
+                <button class="close-settings" id="closeSettingsBtn">Закрыть</button>
+            </div>
+        </div>
     </div>
 
     <div class="controls">
@@ -203,6 +285,7 @@
         <span class="scale-display" id="scaleDisplay">1.0</span>
         <button class="btn btn-scale" id="zoomInBtn">+</button>
         <button class="btn btn-fullscreen" id="fullscreenBtn">⛶ На весь экран</button>
+        <button class="btn btn-sm" id="settingsBtn">⚙️</button>
         <button class="btn btn-sm" id="menuBtn">📋 Меню</button>
     </div>
 </div>
@@ -217,6 +300,8 @@
         const finalScoreSpan = document.getElementById('finalScore');
         const menuOverlay = document.getElementById('menuOverlay');
         const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const settingsOverlay = document.getElementById('settingsOverlay');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
         const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
         const menuBtn = document.getElementById('menuBtn');
@@ -224,6 +309,7 @@
         const zoomOutBtn = document.getElementById('zoomOutBtn');
         const scaleDisplay = document.getElementById('scaleDisplay');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
 
         const W = 600, H = 500;
 
@@ -259,6 +345,10 @@
         // ===== УСКОРЕНИЕ =====
         let speedMultiplier = 1.0;
         const SPEED_INCREMENT = 0.03, MAX_SPEED_MULTIPLIER = 2.5;
+
+        // ===== ТИП СЛЕДА (сохраняем в localStorage) =====
+        let trailType = localStorage.getItem('niksTrailType') || 'rainbow';
+        const TRAIL_TYPES = ['rainbow', 'rocket', 'sparkle', 'smoke'];
 
         // ===== ИГРОК =====
         let player = {
@@ -488,6 +578,50 @@
             }, 600);
         }
 
+        // ===== ОТРИСОВКА СЛЕДА В ЗАВИСИМОСТИ ОТ ТИПА =====
+        function drawTrail() {
+            const trailLen = 16;
+            const baseRadius = getPlayerRadius();
+            for (let i = 1; i < trailLen; i++) {
+                const alpha = 0.3 * (1 - i/trailLen) * (player.speed/8.0 + 0.3);
+                const size = (1 - i/trailLen) * baseRadius * 0.9;
+                const xOff = -i * 4;
+                const yOff = -player.vy * i * 0.5;
+
+                let color;
+                switch (trailType) {
+                    case 'rainbow':
+                        const hue = (i * 15 + Date.now() * 0.03) % 360;
+                        color = `hsla(${hue}, 90%, 60%, ${alpha})`;
+                        break;
+                    case 'rocket':
+                        // Оранжево-красный градиент
+                        const r = 255;
+                        const g = Math.floor(150 - i * 8);
+                        const b = Math.floor(50 - i * 3);
+                        color = `rgba(${r}, ${Math.max(g,0)}, ${Math.max(b,0)}, ${alpha})`;
+                        break;
+                    case 'sparkle':
+                        // Голубой с белыми искрами
+                        const sparkle = Math.sin(i * 2 + Date.now() * 0.01) > 0.7 ? 255 : 200;
+                        color = `rgba(${sparkle}, ${220 - i*5}, ${255}, ${alpha})`;
+                        break;
+                    case 'smoke':
+                        // Серый дым
+                        const gray = 150 - i * 6;
+                        color = `rgba(${Math.max(gray,30)}, ${Math.max(gray,30)}, ${Math.max(gray,30)}, ${alpha * 0.6})`;
+                        break;
+                    default:
+                        color = `rgba(255,255,255,${alpha})`;
+                }
+
+                ctx.beginPath();
+                ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+        }
+
         // ===== ОБНОВЛЕНИЕ =====
         function update() {
             if (!gameActive) return;
@@ -528,7 +662,7 @@
             }
 
             // ---- Спавн объектов (адаптировано под 70 FPS) ----
-            const spawnRate = Math.max(18, 28 - speedMultiplier * 4); // подстроено под 70 FPS
+            const spawnRate = Math.max(18, 28 - speedMultiplier * 4);
             if (frameCount % Math.floor(spawnRate) === 0) spawnStar();
             if (frameCount % Math.floor(spawnRate * 1.6) === 0) spawnCloud();
             if (frameCount % Math.floor(spawnRate * 2.2) === 0 && frameCount > 100) spawnCloud();
@@ -606,24 +740,14 @@
             if (shieldObjects.length > 5) shieldObjects.splice(0, shieldObjects.length - 5);
         }
 
-        // ===== ОТРИСОВКА (вызывается в requestAnimationFrame) =====
+        // ===== ОТРИСОВКА =====
         function draw() {
             ctx.clearRect(0, 0, W, H);
 
-            // Шлейф
-            const trailLen = 14;
-            for (let i = 1; i < trailLen; i++) {
-                const alpha = 0.25 * (1 - i/trailLen) * (player.speed/8.0 + 0.3);
-                const hue = (i * 15 + Date.now() * 0.03) % 360;
-                const size = (1 - i/trailLen) * getPlayerRadius() * 0.9;
-                const xOff = -i * 4, yOff = -player.vy * i * 0.5;
-                ctx.beginPath();
-                ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
-                ctx.fill();
-            }
+            // ---- СЛЕД (хвост) ----
+            drawTrail();
 
-            // Звёзды
+            // ---- Звёзды ----
             for (let star of stars) {
                 const pulse = 1 + 0.15 * Math.sin(star.phase);
                 const r = star.r * pulse;
@@ -644,7 +768,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Щиты (синие)
+            // ---- Щиты (синие) ----
             for (let sh of shieldObjects) {
                 const pulse = 1 + 0.12 * Math.sin(sh.phase);
                 const r = sh.r * pulse;
@@ -670,7 +794,7 @@
                 ctx.fillText('🛡️', sh.x, sh.y + 1);
             }
 
-            // Тучи
+            // ---- Тучи ----
             for (let cloud of clouds) {
                 const pulse = 1 + 0.05 * Math.sin(cloud.phase);
                 const r = cloud.r * pulse;
@@ -691,12 +815,12 @@
                 }
             }
 
-            // Камера
+            // ---- Камера ----
             if (gameState !== STATE.GAMEOVER || cameraExplosionParticles.length > 0) {
                 drawPlayer(player, '#fbbf24');
             }
 
-            // Щит вокруг камеры
+            // ---- Щит вокруг камеры ----
             if (hasShield && gameState === STATE.PLAYING) {
                 const shieldRadius = getPlayerRadius() * 1.8 + 8 * Math.sin(Date.now() * 0.005);
                 const grad = ctx.createRadialGradient(player.x, player.y, 2, player.x, player.y, shieldRadius);
@@ -737,7 +861,7 @@
                 ctx.stroke();
             }
 
-            // Жизни
+            // ---- Жизни ----
             if (gameState === STATE.PLAYING) {
                 const heartSize = 24, spacing = 10;
                 const totalWidth = MAX_LIVES * heartSize + (MAX_LIVES - 1) * spacing;
@@ -757,10 +881,10 @@
                 }
             }
 
-            // Частицы
+            // ---- Частицы ----
             drawParticles();
 
-            // Спидометр
+            // ---- Спидометр ----
             if (gameState === STATE.PLAYING) {
                 ctx.fillStyle = 'rgba(255,255,255,0.15)';
                 ctx.font = '12px monospace';
@@ -854,6 +978,43 @@
                     document.msExitFullscreen();
                 }
             }
+        });
+
+        // ===== НАСТРОЙКИ СЛЕДА =====
+        function openSettings() {
+            settingsOverlay.classList.add('show');
+            // Подсвечиваем активный вариант
+            document.querySelectorAll('.settings-box .option').forEach(el => {
+                el.classList.toggle('active', el.dataset.trail === trailType);
+            });
+        }
+
+        function closeSettings() {
+            settingsOverlay.classList.remove('show');
+        }
+
+        settingsBtn.addEventListener('click', openSettings);
+        closeSettingsBtn.addEventListener('click', closeSettings);
+        // Клик по фону закрывает
+        settingsOverlay.addEventListener('click', (e) => {
+            if (e.target === settingsOverlay) closeSettings();
+        });
+
+        // Выбор типа следа
+        document.querySelectorAll('.settings-box .option').forEach(el => {
+            el.addEventListener('click', () => {
+                const type = el.dataset.trail;
+                if (TRAIL_TYPES.includes(type)) {
+                    trailType = type;
+                    localStorage.setItem('niksTrailType', type);
+                    // Обновить активный класс
+                    document.querySelectorAll('.settings-box .option').forEach(opt => {
+                        opt.classList.toggle('active', opt.dataset.trail === type);
+                    });
+                    // Закрываем настройки через секунду для визуального подтверждения
+                    setTimeout(closeSettings, 300);
+                }
+            });
         });
 
         // ===== КНОПКИ =====
