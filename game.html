@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Небесный объектив — игра</title>
+    <title>Небесный объектив — раннер</title>
     <style>
         * {
             margin: 0;
@@ -72,24 +72,25 @@
             background: radial-gradient(ellipse at 30% 20%, #132a44, #0a1628);
             border-radius: 20px;
             display: block;
-            cursor: crosshair;
+            cursor: none;
             touch-action: none;
             position: relative;
         }
-        /* ===== КНОПКИ УПРАВЛЕНИЯ (поверх канваса) ===== */
+        /* ===== КНОПКИ УПРАВЛЕНИЯ (только вверх/вниз) ===== */
         .controls-overlay {
             position: absolute;
             bottom: 20px;
             left: 20px;
             right: 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             pointer-events: none;
+            gap: 40px;
         }
         .dpad {
             display: grid;
-            grid-template-columns: 60px 60px 60px;
+            grid-template-columns: 60px 60px;
             grid-template-rows: 60px 60px 60px;
             gap: 6px;
             pointer-events: auto;
@@ -116,36 +117,24 @@
             transform: scale(0.92);
             border-color: #fbbf24;
         }
-        .dpad-empty {
-            visibility: hidden;
-        }
         .dpad-up {
-            grid-column: 2;
+            grid-column: 1 / 3;
             grid-row: 1;
         }
-        .dpad-left {
-            grid-column: 1;
-            grid-row: 2;
-        }
-        .dpad-center {
-            grid-column: 2;
-            grid-row: 2;
-            background: rgba(251, 191, 36, 0.15);
-            border-color: rgba(251, 191, 36, 0.2);
-            font-size: 0.7rem;
-            color: #fbbf24;
-            font-weight: 700;
-            pointer-events: none;
-        }
-        .dpad-right {
-            grid-column: 3;
-            grid-row: 2;
-        }
         .dpad-down {
-            grid-column: 2;
+            grid-column: 1 / 3;
             grid-row: 3;
         }
-
+        .dpad-center {
+            grid-column: 1 / 3;
+            grid-row: 2;
+            background: rgba(251, 191, 36, 0.08);
+            border-color: rgba(251, 191, 36, 0.1);
+            font-size: 0.7rem;
+            color: #fbbf24;
+            font-weight: 600;
+            pointer-events: none;
+        }
         .game-description {
             color: #a1a1aa;
             text-align: center;
@@ -156,8 +145,6 @@
         .game-description strong {
             color: #fbbf24;
         }
-
-        /* Окно поражения */
         .overlay {
             position: absolute;
             inset: 0;
@@ -256,7 +243,7 @@
                 font-size: 1rem;
             }
             .dpad {
-                grid-template-columns: 50px 50px 50px;
+                grid-template-columns: 50px 50px;
                 grid-template-rows: 50px 50px 50px;
                 gap: 4px;
             }
@@ -272,7 +259,7 @@
         }
         @media (max-width: 400px) {
             .dpad {
-                grid-template-columns: 44px 44px 44px;
+                grid-template-columns: 44px 44px;
                 grid-template-rows: 44px 44px 44px;
                 gap: 4px;
             }
@@ -306,20 +293,18 @@
         <div style="position: relative;">
             <canvas id="gameCanvas" width="600" height="500"></canvas>
 
-            <!-- КНОПКИ УПРАВЛЕНИЯ -->
+            <!-- КНОПКИ УПРАВЛЕНИЯ (только вверх/вниз) -->
             <div class="controls-overlay" id="controlsOverlay">
                 <div class="dpad">
                     <div class="dpad-btn dpad-up" data-dir="up">▲</div>
-                    <div class="dpad-btn dpad-left" data-dir="left">◀</div>
                     <div class="dpad-btn dpad-center">★</div>
-                    <div class="dpad-btn dpad-right" data-dir="right">▶</div>
                     <div class="dpad-btn dpad-down" data-dir="down">▼</div>
                 </div>
             </div>
         </div>
 
         <div class="game-description">
-            🎯 Управляй камерой кнопками или мышкой. Собирай <strong>звёзды</strong> (+1) — они ускоряют тебя. Избегай <strong>туч</strong>!
+            🎯 Управляй камерой вверх/вниз. Собирай <strong>звёзды</strong>, уворачивайся от <strong>туч</strong>!
         </div>
 
         <div class="game-controls">
@@ -345,22 +330,19 @@
             const W = 600,
                 H = 500;
 
-            // ---------- ЗАГРУЗКА КАРТИНКИ ----------
+            // ---------- ЗАГРУЗКА КАРТИНКИ (ТВОЯ КАМЕРА!) ----------
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
-            cameraImg.src = 'https://github.com/Reparsing/niksartphoto/blob/main/images/camera.png?raw=true';
+            cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             // ---------- ПЕРЕМЕННЫЕ ИГРЫ ----------
             let player = {
-                x: W / 2,
+                x: 80,
                 y: H / 2,
-                vx: 0,
                 vy: 0,
                 radius: 22,
                 angle: 0,
-                speed: 0, // 0-8 км/ч
-                targetSpeed: 0,
-                // Для пульсации
+                speed: 3.0,
                 pulsePhase: 0,
             };
 
@@ -370,56 +352,51 @@
             let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
             let gameActive = true;
             let frameId = null;
+            let frameCount = 0;
 
-            const STAR_COUNT = 5;
-            const CLOUD_COUNT = 3;
-            const BASE_SPEED = 3.5;
+            const GRAVITY = 0.15;
+            const JUMP_FORCE = -0.5;
             const MAX_SPEED = 8.0;
-            const FRICTION = 0.94;
+            const FRICTION = 0.98;
 
             // ---------- ИНИЦИАЛИЗАЦИЯ ----------
             function initGame() {
-                player.x = W / 2;
                 player.y = H / 2;
-                player.vx = 0;
                 player.vy = 0;
                 player.angle = 0;
-                player.speed = 0;
-                player.targetSpeed = 0;
+                player.speed = 3.0;
                 player.pulsePhase = 0;
                 score = 0;
                 gameActive = true;
+                frameCount = 0;
+                stars = [];
+                clouds = [];
                 overlay.classList.remove('show');
-                generateStars();
-                generateClouds();
                 updateUI();
             }
 
             // ---------- ГЕНЕРАЦИЯ ОБЪЕКТОВ ----------
-            function generateStars() {
-                stars = [];
-                for (let i = 0; i < STAR_COUNT; i++) {
-                    stars.push({
-                        x: Math.random() * (W - 50) + 25,
-                        y: Math.random() * (H - 50) + 25,
-                        r: 12,
-                        collected: false,
-                        respawnTimer: 0,
-                    });
-                }
+            function spawnStar() {
+                const y = 30 + Math.random() * (H - 60);
+                stars.push({
+                    x: W + 20,
+                    y: y,
+                    r: 12,
+                    speed: 1.5 + Math.random() * 0.8,
+                    phase: Math.random() * Math.PI * 2,
+                });
             }
 
-            function generateClouds() {
-                clouds = [];
-                for (let i = 0; i < CLOUD_COUNT; i++) {
-                    clouds.push({
-                        x: Math.random() * (W - 80) + 40,
-                        y: Math.random() * (H - 80) + 40,
-                        r: 28 + Math.random() * 16,
-                        vx: (Math.random() - 0.5) * 1.2,
-                        vy: (Math.random() - 0.5) * 1.2,
-                    });
-                }
+            function spawnCloud() {
+                const y = 30 + Math.random() * (H - 60);
+                const size = 28 + Math.random() * 16;
+                clouds.push({
+                    x: W + 20,
+                    y: y,
+                    r: size,
+                    speed: 2.0 + Math.random() * 1.5,
+                    phase: Math.random() * Math.PI * 2,
+                });
             }
 
             // ---------- ОБНОВЛЕНИЕ UI ----------
@@ -430,114 +407,105 @@
             }
 
             // ---------- УПРАВЛЕНИЕ С КНОПОК ----------
-            const keys = { up: false, down: false, left: false, right: false };
+            let upPressed = false;
+            let downPressed = false;
 
-            function handleKey(dir, pressed) {
-                keys[dir] = pressed;
-            }
+            document.querySelector('.dpad-up').addEventListener('mousedown', (e) => { e.preventDefault();
+                upPressed = true; });
+            document.querySelector('.dpad-up').addEventListener('mouseup', () => { upPressed = false; });
+            document.querySelector('.dpad-up').addEventListener('mouseleave', () => { upPressed = false; });
+            document.querySelector('.dpad-up').addEventListener('touchstart', (e) => { e.preventDefault();
+                upPressed = true; }, { passive: false });
+            document.querySelector('.dpad-up').addEventListener('touchend', (e) => { e.preventDefault();
+                upPressed = false; }, { passive: false });
+            document.querySelector('.dpad-up').addEventListener('touchcancel', () => { upPressed = false; });
 
-            document.querySelectorAll('.dpad-btn[data-dir]').forEach(btn => {
-                const dir = btn.dataset.dir;
-                const start = (e) => {
-                    e.preventDefault();
-                    handleKey(dir, true);
-                };
-                const end = (e) => {
-                    e.preventDefault();
-                    handleKey(dir, false);
-                };
-                btn.addEventListener('mousedown', start);
-                btn.addEventListener('mouseup', end);
-                btn.addEventListener('mouseleave', end);
-                btn.addEventListener('touchstart', start, { passive: false });
-                btn.addEventListener('touchend', end, { passive: false });
-                btn.addEventListener('touchcancel', end, { passive: false });
-            });
+            document.querySelector('.dpad-down').addEventListener('mousedown', (e) => { e.preventDefault();
+                downPressed = true; });
+            document.querySelector('.dpad-down').addEventListener('mouseup', () => { downPressed = false; });
+            document.querySelector('.dpad-down').addEventListener('mouseleave', () => { downPressed = false; });
+            document.querySelector('.dpad-down').addEventListener('touchstart', (e) => { e.preventDefault();
+                downPressed = true; }, { passive: false });
+            document.querySelector('.dpad-down').addEventListener('touchend', (e) => { e.preventDefault();
+                downPressed = false; }, { passive: false });
+            document.querySelector('.dpad-down').addEventListener('touchcancel', () => { downPressed = false; });
 
             // ---------- ОБНОВЛЕНИЕ ИГРЫ ----------
             function update() {
                 if (!gameActive) return;
 
-                // Управление с кнопок (добавляем ускорение)
-                const accel = 0.08;
-                if (keys.up) player.vy -= accel;
-                if (keys.down) player.vy += accel;
-                if (keys.left) player.vx -= accel;
-                if (keys.right) player.vx += accel;
+                frameCount++;
 
-                // 1. Плавное изменение скорости
-                player.speed += (player.targetSpeed - player.speed) * 0.08;
-                player.speed = Math.min(Math.max(player.speed, 0), MAX_SPEED);
+                // 1. Управление (вверх/вниз)
+                if (upPressed) player.vy += JUMP_FORCE;
+                if (downPressed) player.vy += GRAVITY * 0.8;
 
-                // 2. Движение с инерцией
-                const currentSpeed = BASE_SPEED * (player.speed / MAX_SPEED) + 0.5;
-                player.x += player.vx * currentSpeed;
-                player.y += player.vy * currentSpeed;
-
-                // 3. Трение
-                player.vx *= FRICTION;
+                // 2. Гравитация
+                player.vy += GRAVITY;
                 player.vy *= FRICTION;
+                player.y += player.vy;
 
-                // 4. Границы
-                const margin = 28;
-                if (player.x < margin) { player.x = margin;
-                    player.vx = 0; }
-                if (player.x > W - margin) { player.x = W - margin;
-                    player.vx = 0; }
+                // 3. Границы
+                const margin = 30;
                 if (player.y < margin) { player.y = margin;
                     player.vy = 0; }
                 if (player.y > H - margin) { player.y = H - margin;
                     player.vy = 0; }
 
-                // 5. Угол поворота
-                const angleTarget = Math.atan2(player.vy, player.vx);
+                // 4. Угол поворота (по направлению движения)
+                const angleTarget = Math.atan2(player.vy, 2);
                 let angleDiff = angleTarget - player.angle;
                 while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
                 while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-                player.angle += angleDiff * 0.12;
+                player.angle += angleDiff * 0.08;
 
-                // 6. Пульсация (сжатие/разжатие)
-                if (Math.abs(player.vx) > 0.05 || Math.abs(player.vy) > 0.05) {
-                    player.pulsePhase += 0.08 * (player.speed / MAX_SPEED + 0.3);
-                } else {
-                    player.pulsePhase += 0.01;
+                // 5. Пульсация
+                player.pulsePhase += 0.05 * (player.speed / MAX_SPEED + 0.3);
+
+                // 6. Увеличение скорости со временем
+                if (frameCount % 60 === 0 && player.speed < MAX_SPEED) {
+                    player.speed += 0.05;
                 }
 
-                // 7. Звёзды
-                for (let star of stars) {
-                    if (star.collected) {
-                        star.respawnTimer -= 0.02;
-                        if (star.respawnTimer <= 0) {
-                            star.collected = false;
-                            star.x = Math.random() * (W - 50) + 25;
-                            star.y = Math.random() * (H - 50) + 25;
-                        }
-                        continue;
-                    }
+                // 7. Спавн объектов
+                if (frameCount % 35 === 0) spawnStar();
+                if (frameCount % 55 === 0) spawnCloud();
+                if (frameCount % 80 === 0 && frameCount > 100) spawnCloud(); // больше туч со временем
 
+                // 8. Обновление звёзд
+                for (let i = stars.length - 1; i >= 0; i--) {
+                    const star = stars[i];
+                    star.x -= star.speed * (player.speed / 3);
+                    star.phase += 0.05;
+
+                    // Проверка сбора
                     const dx = player.x - star.x;
                     const dy = player.y - star.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < player.radius + star.r) {
-                        star.collected = true;
-                        star.respawnTimer = 1.5 + Math.random() * 1.0;
                         score++;
-                        player.targetSpeed = Math.min(player.targetSpeed + 0.6, MAX_SPEED);
                         if (score > bestScore) {
                             bestScore = score;
                             localStorage.setItem('niksBestScore', bestScore);
                         }
+                        stars.splice(i, 1);
                         updateUI();
+                        continue;
+                    }
+
+                    // Удаление за экраном
+                    if (star.x < -20) {
+                        stars.splice(i, 1);
                     }
                 }
 
-                // 8. Тучи
-                for (let cloud of clouds) {
-                    cloud.x += cloud.vx * 0.8;
-                    cloud.y += cloud.vy * 0.8;
-                    if (cloud.x < 20 || cloud.x > W - 20) cloud.vx *= -1;
-                    if (cloud.y < 20 || cloud.y > H - 20) cloud.vy *= -1;
+                // 9. Обновление туч
+                for (let i = clouds.length - 1; i >= 0; i--) {
+                    const cloud = clouds[i];
+                    cloud.x -= cloud.speed * (player.speed / 3);
+                    cloud.phase += 0.02;
 
+                    // Проверка столкновения
                     const dx = player.x - cloud.x;
                     const dy = player.y - cloud.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -547,95 +515,116 @@
                         overlay.classList.add('show');
                         return;
                     }
+
+                    // Удаление за экраном
+                    if (cloud.x < -40) {
+                        clouds.splice(i, 1);
+                    }
                 }
+
+                // 10. Ограничение количества объектов
+                if (stars.length > 20) stars.splice(0, stars.length - 20);
+                if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
             }
 
             // ---------- ОТРИСОВКА ----------
             function draw() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- РАДУЖНЫЙ ШЛЕЙФ ---
-                if (Math.abs(player.vx) > 0.05 || Math.abs(player.vy) > 0.05) {
-                    const trailLen = 14;
-                    for (let i = 1; i < trailLen; i++) {
-                        const alpha = 0.2 * (1 - i / trailLen) * (player.speed / MAX_SPEED);
-                        const hue = (i * 12 + Date.now() * 0.02) % 360;
-                        const size = (1 - i / trailLen) * player.radius * 0.9;
-                        const xOff = -player.vx * i * 4;
-                        const yOff = -player.vy * i * 4;
-                        ctx.beginPath();
-                        ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
-                        ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
-                        ctx.fill();
-                    }
+                // --- РАДУЖНЫЙ ШЛЕЙФ (яркий и заметный) ---
+                const trailLen = 18;
+                for (let i = 1; i < trailLen; i++) {
+                    const alpha = 0.3 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
+                    const hue = (i * 15 + Date.now() * 0.03) % 360;
+                    const size = (1 - i / trailLen) * player.radius * 0.9;
+                    const xOff = -i * 4;
+                    const yOff = -player.vy * i * 0.5;
+                    ctx.beginPath();
+                    ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
+                    ctx.fill();
                 }
 
                 // --- ЗВЁЗДЫ ---
                 for (let star of stars) {
-                    if (star.collected) {
-                        ctx.beginPath();
-                        ctx.arc(star.x, star.y, star.r * 0.3, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(255,215,0,0.2)';
-                        ctx.fill();
-                        continue;
-                    }
-                    const grad = ctx.createRadialGradient(star.x, star.y, 2, star.x, star.y, star.r * 1.8);
+                    const pulse = 1 + 0.15 * Math.sin(star.phase);
+                    const r = star.r * pulse;
+                    // Свечение
+                    const grad = ctx.createRadialGradient(star.x, star.y, 2, star.x, star.y, r * 2.5);
                     grad.addColorStop(0, '#fbbf24');
                     grad.addColorStop(0.5, 'rgba(251,191,36,0.3)');
                     grad.addColorStop(1, 'rgba(251,191,36,0)');
                     ctx.fillStyle = grad;
                     ctx.beginPath();
-                    ctx.arc(star.x, star.y, star.r * 1.8, 0, Math.PI * 2);
+                    ctx.arc(star.x, star.y, r * 2.5, 0, Math.PI * 2);
                     ctx.fill();
 
+                    // Сама звезда
                     ctx.fillStyle = '#fcd34d';
                     ctx.shadowColor = '#fbbf24';
-                    ctx.shadowBlur = 16;
+                    ctx.shadowBlur = 20;
                     ctx.beginPath();
-                    ctx.arc(star.x, star.y, star.r * 0.5, 0, Math.PI * 2);
+                    ctx.arc(star.x, star.y, r * 0.6, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
+
+                    // Лучи
+                    for (let j = 0; j < 4; j++) {
+                        const angle = j * Math.PI / 2 + star.phase;
+                        const dx = Math.cos(angle) * r * 1.4;
+                        const dy = Math.sin(angle) * r * 1.4;
+                        ctx.beginPath();
+                        ctx.moveTo(star.x + dx * 0.3, star.y + dy * 0.3);
+                        ctx.lineTo(star.x + dx, star.y + dy);
+                        ctx.strokeStyle = `rgba(251,191,36,${0.3 + 0.2 * Math.sin(star.phase)})`;
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
                 }
 
                 // --- ТУЧИ ---
                 for (let cloud of clouds) {
-                    ctx.fillStyle = 'rgba(180,190,200,0.5)';
+                    const pulse = 1 + 0.05 * Math.sin(cloud.phase);
+                    const r = cloud.r * pulse;
+                    ctx.fillStyle = 'rgba(180,190,200,0.4)';
                     ctx.shadowColor = 'rgba(180,190,200,0.1)';
-                    ctx.shadowBlur = 20;
+                    ctx.shadowBlur = 30;
                     ctx.beginPath();
-                    ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
+                    ctx.arc(cloud.x, cloud.y, r, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-                    for (let i = 0; i < 4; i++) {
-                        const angle = i * 1.2 + Date.now() * 0.0005;
-                        const dx = Math.cos(angle) * cloud.r * 0.6;
-                        const dy = Math.sin(angle) * cloud.r * 0.6;
+
+                    // Детали тучи (пузырьки)
+                    for (let j = 0; j < 5; j++) {
+                        const angle = j * 1.3 + cloud.phase;
+                        const dx = Math.cos(angle) * r * 0.6;
+                        const dy = Math.sin(angle) * r * 0.6;
                         ctx.beginPath();
-                        ctx.arc(cloud.x + dx, cloud.y + dy, cloud.r * 0.5, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(200,210,220,0.25)';
+                        ctx.arc(cloud.x + dx, cloud.y + dy, r * 0.4, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(200,210,220,0.2)';
                         ctx.fill();
                     }
                 }
 
-                // --- КАМЕРА (с пульсацией) ---
-                const pulse = 1 + 0.04 * Math.sin(player.pulsePhase);
+                // --- КАМЕРА (ТВОЯ ФОТОГРАФИЯ!) ---
+                const pulse = 1 + 0.06 * Math.sin(player.pulsePhase);
                 const scaleX = pulse;
-                const scaleY = 1 / pulse; // сжатие по вертикали, расширение по горизонтали
+                const scaleY = 1 / pulse;
 
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(player.x, player.y);
                     ctx.rotate(player.angle);
                     const baseSize = 52;
-                    const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.1);
-                    const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.1);
+                    const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.05);
+                    const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.05);
                     ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
                     ctx.restore();
                 } else {
-                    // Заглушка
+                    // Заглушка (если картинка не загрузилась)
                     ctx.fillStyle = '#fbbf24';
                     ctx.shadowColor = '#fbbf24';
-                    ctx.shadowBlur = 30;
+                    ctx.shadowBlur = 40;
                     ctx.beginPath();
                     ctx.arc(player.x, player.y, player.radius * pulse, 0, Math.PI * 2);
                     ctx.fill();
@@ -646,6 +635,13 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', player.x, player.y + 2);
                 }
+
+                // --- ИНФОРМАЦИЯ О СКОРОСТИ (подсказка) ---
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                ctx.font = '12px monospace';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
             }
 
             // ---------- ЦИКЛ ИГРЫ ----------
@@ -662,50 +658,23 @@
             }
 
             // ---------- УПРАВЛЕНИЕ МЫШЬЮ ----------
-            function handleMove(clientX, clientY) {
+            canvas.addEventListener('mousemove', (e) => {
                 if (!gameActive) return;
                 const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
                 const scaleY = canvas.height / rect.height;
-                const canvasX = (clientX - rect.left) * scaleX;
-                const canvasY = (clientY - rect.top) * scaleY;
-
-                const dx = canvasX - player.x;
-                const dy = canvasY - player.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 5) return;
-
-                const maxForce = 0.6 + (player.speed / MAX_SPEED) * 0.2;
-                const force = Math.min(dist / 80, maxForce);
-                const normX = dx / dist;
-                const normY = dy / dist;
-
-                player.vx += normX * force;
-                player.vy += normY * force;
-
-                const maxV = 1.2 + player.speed * 0.3;
-                const v = Math.sqrt(player.vx * player.vx + player.vy * player.vy);
-                if (v > maxV) {
-                    player.vx = (player.vx / v) * maxV;
-                    player.vy = (player.vy / v) * maxV;
-                }
-            }
-
-            canvas.addEventListener('mousemove', (e) => {
-                e.preventDefault();
-                handleMove(e.clientX, e.clientY);
+                const canvasY = (e.clientY - rect.top) * scaleY;
+                const diff = canvasY - player.y;
+                player.vy += diff * 0.008;
             });
 
             canvas.addEventListener('touchmove', (e) => {
                 e.preventDefault();
-                const touch = e.touches[0];
-                if (touch) handleMove(touch.clientX, touch.clientY);
-            }, { passive: false });
-
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                if (touch) handleMove(touch.clientX, touch.clientY);
+                if (!gameActive || !e.touches.length) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleY = canvas.height / rect.height;
+                const canvasY = (e.touches[0].clientY - rect.top) * scaleY;
+                const diff = canvasY - player.y;
+                player.vy += diff * 0.008;
             }, { passive: false });
 
             // ---------- ПЕРЕЗАПУСК ----------
