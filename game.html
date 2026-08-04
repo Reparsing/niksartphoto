@@ -76,32 +76,30 @@
             touch-action: none;
             position: relative;
         }
-        /* ===== КНОПКИ УПРАВЛЕНИЯ (только вверх/вниз) ===== */
-        .controls-overlay {
+        /* ===== КНОПКИ ПО БОКАМ ===== */
+        .side-controls {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             pointer-events: none;
-            gap: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-radius: 20px;
         }
-        .dpad {
-            display: grid;
-            grid-template-columns: 60px 60px;
-            grid-template-rows: 60px 60px 60px;
-            gap: 6px;
+        .side-btn {
             pointer-events: auto;
-        }
-        .dpad-btn {
-            background: rgba(255, 255, 255, 0.1);
+            width: 70px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            color: #fff;
-            font-size: 1.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 2.5rem;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -112,29 +110,18 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-        .dpad-btn:active {
-            background: rgba(251, 191, 36, 0.4);
-            transform: scale(0.92);
+        .side-btn:active {
+            background: rgba(251, 191, 36, 0.3);
+            transform: scale(0.95);
             border-color: #fbbf24;
         }
-        .dpad-up {
-            grid-column: 1 / 3;
-            grid-row: 1;
+        .side-btn-up {
+            border-radius: 20px 20px 8px 8px;
         }
-        .dpad-down {
-            grid-column: 1 / 3;
-            grid-row: 3;
+        .side-btn-down {
+            border-radius: 8px 8px 20px 20px;
         }
-        .dpad-center {
-            grid-column: 1 / 3;
-            grid-row: 2;
-            background: rgba(251, 191, 36, 0.08);
-            border-color: rgba(251, 191, 36, 0.1);
-            font-size: 0.7rem;
-            color: #fbbf24;
-            font-weight: 600;
-            pointer-events: none;
-        }
+
         .game-description {
             color: #a1a1aa;
             text-align: center;
@@ -242,30 +229,20 @@
             .game-header {
                 font-size: 1rem;
             }
-            .dpad {
-                grid-template-columns: 50px 50px;
-                grid-template-rows: 50px 50px 50px;
-                gap: 4px;
+            .side-btn {
+                width: 50px;
+                height: 90px;
+                font-size: 1.8rem;
             }
-            .dpad-btn {
-                font-size: 1.2rem;
-                border-radius: 12px;
-            }
-            .controls-overlay {
-                bottom: 12px;
-                left: 12px;
-                right: 12px;
+            .side-controls {
+                padding: 12px;
             }
         }
         @media (max-width: 400px) {
-            .dpad {
-                grid-template-columns: 44px 44px;
-                grid-template-rows: 44px 44px 44px;
-                gap: 4px;
-            }
-            .dpad-btn {
-                font-size: 1rem;
-                border-radius: 10px;
+            .side-btn {
+                width: 44px;
+                height: 70px;
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -293,18 +270,15 @@
         <div style="position: relative;">
             <canvas id="gameCanvas" width="600" height="500"></canvas>
 
-            <!-- КНОПКИ УПРАВЛЕНИЯ (только вверх/вниз) -->
-            <div class="controls-overlay" id="controlsOverlay">
-                <div class="dpad">
-                    <div class="dpad-btn dpad-up" data-dir="up">▲</div>
-                    <div class="dpad-btn dpad-center">★</div>
-                    <div class="dpad-btn dpad-down" data-dir="down">▼</div>
-                </div>
+            <!-- КНОПКИ ПО БОКАМ -->
+            <div class="side-controls">
+                <button class="side-btn side-btn-up" id="upBtn">▲</button>
+                <button class="side-btn side-btn-down" id="downBtn">▼</button>
             </div>
         </div>
 
         <div class="game-description">
-            🎯 Управляй камерой вверх/вниз. Собирай <strong>звёзды</strong>, уворачивайся от <strong>туч</strong>!
+            🎯 Управляй камерой кнопками по бокам. Собирай <strong>звёзды</strong>, уворачивайся от <strong>туч</strong>!
         </div>
 
         <div class="game-controls">
@@ -340,10 +314,9 @@
                 x: 80,
                 y: H / 2,
                 vy: 0,
-                radius: 22,
-                angle: 0,
-                speed: 3.0,
+                radius: 28, // УВЕЛИЧИЛ РАЗМЕР!
                 pulsePhase: 0,
+                speed: 3.0,
             };
 
             let stars = [];
@@ -363,7 +336,6 @@
             function initGame() {
                 player.y = H / 2;
                 player.vy = 0;
-                player.angle = 0;
                 player.speed = 3.0;
                 player.pulsePhase = 0;
                 score = 0;
@@ -375,7 +347,6 @@
                 updateUI();
             }
 
-            // ---------- ГЕНЕРАЦИЯ ОБЪЕКТОВ ----------
             function spawnStar() {
                 const y = 30 + Math.random() * (H - 60);
                 stars.push({
@@ -399,7 +370,6 @@
                 });
             }
 
-            // ---------- ОБНОВЛЕНИЕ UI ----------
             function updateUI() {
                 scoreSpan.textContent = score;
                 bestSpan.textContent = bestScore;
@@ -410,75 +380,63 @@
             let upPressed = false;
             let downPressed = false;
 
-            document.querySelector('.dpad-up').addEventListener('mousedown', (e) => { e.preventDefault();
-                upPressed = true; });
-            document.querySelector('.dpad-up').addEventListener('mouseup', () => { upPressed = false; });
-            document.querySelector('.dpad-up').addEventListener('mouseleave', () => { upPressed = false; });
-            document.querySelector('.dpad-up').addEventListener('touchstart', (e) => { e.preventDefault();
-                upPressed = true; }, { passive: false });
-            document.querySelector('.dpad-up').addEventListener('touchend', (e) => { e.preventDefault();
-                upPressed = false; }, { passive: false });
-            document.querySelector('.dpad-up').addEventListener('touchcancel', () => { upPressed = false; });
+            function setupButton(id, onStart, onEnd) {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                btn.addEventListener('mousedown', (e) => { e.preventDefault();
+                    onStart(); });
+                btn.addEventListener('mouseup', () => onEnd());
+                btn.addEventListener('mouseleave', () => onEnd());
+                btn.addEventListener('touchstart', (e) => { e.preventDefault();
+                    onStart(); }, { passive: false });
+                btn.addEventListener('touchend', (e) => { e.preventDefault();
+                    onEnd(); }, { passive: false });
+                btn.addEventListener('touchcancel', () => onEnd());
+            }
 
-            document.querySelector('.dpad-down').addEventListener('mousedown', (e) => { e.preventDefault();
-                downPressed = true; });
-            document.querySelector('.dpad-down').addEventListener('mouseup', () => { downPressed = false; });
-            document.querySelector('.dpad-down').addEventListener('mouseleave', () => { downPressed = false; });
-            document.querySelector('.dpad-down').addEventListener('touchstart', (e) => { e.preventDefault();
-                downPressed = true; }, { passive: false });
-            document.querySelector('.dpad-down').addEventListener('touchend', (e) => { e.preventDefault();
-                downPressed = false; }, { passive: false });
-            document.querySelector('.dpad-down').addEventListener('touchcancel', () => { downPressed = false; });
+            setupButton('upBtn', () => upPressed = true, () => upPressed = false);
+            setupButton('downBtn', () => downPressed = true, () => downPressed = false);
 
             // ---------- ОБНОВЛЕНИЕ ИГРЫ ----------
             function update() {
                 if (!gameActive) return;
-
                 frameCount++;
 
-                // 1. Управление (вверх/вниз)
+                // Управление
                 if (upPressed) player.vy += JUMP_FORCE;
                 if (downPressed) player.vy += GRAVITY * 0.8;
 
-                // 2. Гравитация
+                // Гравитация и трение
                 player.vy += GRAVITY;
                 player.vy *= FRICTION;
                 player.y += player.vy;
 
-                // 3. Границы
+                // Границы
                 const margin = 30;
                 if (player.y < margin) { player.y = margin;
                     player.vy = 0; }
                 if (player.y > H - margin) { player.y = H - margin;
                     player.vy = 0; }
 
-                // 4. Угол поворота (по направлению движения)
-                const angleTarget = Math.atan2(player.vy, 2);
-                let angleDiff = angleTarget - player.angle;
-                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-                while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-                player.angle += angleDiff * 0.08;
-
-                // 5. Пульсация
+                // Пульсация
                 player.pulsePhase += 0.05 * (player.speed / MAX_SPEED + 0.3);
 
-                // 6. Увеличение скорости со временем
+                // Рост скорости
                 if (frameCount % 60 === 0 && player.speed < MAX_SPEED) {
                     player.speed += 0.05;
                 }
 
-                // 7. Спавн объектов
+                // Спавн
                 if (frameCount % 35 === 0) spawnStar();
                 if (frameCount % 55 === 0) spawnCloud();
-                if (frameCount % 80 === 0 && frameCount > 100) spawnCloud(); // больше туч со временем
+                if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
 
-                // 8. Обновление звёзд
+                // Звёзды
                 for (let i = stars.length - 1; i >= 0; i--) {
                     const star = stars[i];
                     star.x -= star.speed * (player.speed / 3);
                     star.phase += 0.05;
 
-                    // Проверка сбора
                     const dx = player.x - star.x;
                     const dy = player.y - star.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -492,20 +450,15 @@
                         updateUI();
                         continue;
                     }
-
-                    // Удаление за экраном
-                    if (star.x < -20) {
-                        stars.splice(i, 1);
-                    }
+                    if (star.x < -20) stars.splice(i, 1);
                 }
 
-                // 9. Обновление туч
+                // Тучи
                 for (let i = clouds.length - 1; i >= 0; i--) {
                     const cloud = clouds[i];
                     cloud.x -= cloud.speed * (player.speed / 3);
                     cloud.phase += 0.02;
 
-                    // Проверка столкновения
                     const dx = player.x - cloud.x;
                     const dy = player.y - cloud.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -515,14 +468,9 @@
                         overlay.classList.add('show');
                         return;
                     }
-
-                    // Удаление за экраном
-                    if (cloud.x < -40) {
-                        clouds.splice(i, 1);
-                    }
+                    if (cloud.x < -40) clouds.splice(i, 1);
                 }
 
-                // 10. Ограничение количества объектов
                 if (stars.length > 20) stars.splice(0, stars.length - 20);
                 if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
             }
@@ -531,7 +479,7 @@
             function draw() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- РАДУЖНЫЙ ШЛЕЙФ (яркий и заметный) ---
+                // --- РАДУЖНЫЙ ШЛЕЙФ ---
                 const trailLen = 18;
                 for (let i = 1; i < trailLen; i++) {
                     const alpha = 0.3 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
@@ -549,7 +497,6 @@
                 for (let star of stars) {
                     const pulse = 1 + 0.15 * Math.sin(star.phase);
                     const r = star.r * pulse;
-                    // Свечение
                     const grad = ctx.createRadialGradient(star.x, star.y, 2, star.x, star.y, r * 2.5);
                     grad.addColorStop(0, '#fbbf24');
                     grad.addColorStop(0.5, 'rgba(251,191,36,0.3)');
@@ -559,7 +506,6 @@
                     ctx.arc(star.x, star.y, r * 2.5, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Сама звезда
                     ctx.fillStyle = '#fcd34d';
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 20;
@@ -567,19 +513,6 @@
                     ctx.arc(star.x, star.y, r * 0.6, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-
-                    // Лучи
-                    for (let j = 0; j < 4; j++) {
-                        const angle = j * Math.PI / 2 + star.phase;
-                        const dx = Math.cos(angle) * r * 1.4;
-                        const dy = Math.sin(angle) * r * 1.4;
-                        ctx.beginPath();
-                        ctx.moveTo(star.x + dx * 0.3, star.y + dy * 0.3);
-                        ctx.lineTo(star.x + dx, star.y + dy);
-                        ctx.strokeStyle = `rgba(251,191,36,${0.3 + 0.2 * Math.sin(star.phase)})`;
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                    }
                 }
 
                 // --- ТУЧИ ---
@@ -593,8 +526,6 @@
                     ctx.arc(cloud.x, cloud.y, r, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-
-                    // Детали тучи (пузырьки)
                     for (let j = 0; j < 5; j++) {
                         const angle = j * 1.3 + cloud.phase;
                         const dx = Math.cos(angle) * r * 0.6;
@@ -606,7 +537,7 @@
                     }
                 }
 
-                // --- КАМЕРА (ТВОЯ ФОТОГРАФИЯ!) ---
+                // --- КАМЕРА (УВЕЛИЧЕННАЯ!) ---
                 const pulse = 1 + 0.06 * Math.sin(player.pulsePhase);
                 const scaleX = pulse;
                 const scaleY = 1 / pulse;
@@ -614,14 +545,13 @@
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(player.x, player.y);
-                    ctx.rotate(player.angle);
-                    const baseSize = 52;
+                    // БЕЗ ПОВОРОТА!
+                    const baseSize = 70; // УВЕЛИЧИЛ РАЗМЕР!
                     const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.05);
                     const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.05);
                     ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
                     ctx.restore();
                 } else {
-                    // Заглушка (если картинка не загрузилась)
                     ctx.fillStyle = '#fbbf24';
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 40;
@@ -630,13 +560,12 @@
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
-                    ctx.font = '24px sans-serif';
+                    ctx.font = '32px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', player.x, player.y + 2);
                 }
 
-                // --- ИНФОРМАЦИЯ О СКОРОСТИ (подсказка) ---
                 ctx.fillStyle = 'rgba(255,255,255,0.15)';
                 ctx.font = '12px monospace';
                 ctx.textAlign = 'left';
