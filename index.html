@@ -161,7 +161,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== КАМЕРА НА CANVAS (увеличена) ===== */
+        /* ===== КАМЕРА НА CANVAS (УВЕЛИЧЕНА) ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -178,16 +178,16 @@
 
         .camera-nav-container {
             position: relative;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         #cameraNavCanvas {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             display: block;
             position: relative;
             z-index: 2;
@@ -195,12 +195,12 @@
         }
 
         @media (max-width: 768px) {
-            .camera-nav-container { width: 38px; height: 38px; }
-            #cameraNavCanvas { width: 30px; height: 30px; }
+            .camera-nav-container { width: 42px; height: 42px; }
+            #cameraNavCanvas { width: 36px; height: 36px; }
         }
         @media (max-width: 480px) {
-            .camera-nav-container { width: 34px; height: 34px; }
-            #cameraNavCanvas { width: 26px; height: 26px; }
+            .camera-nav-container { width: 38px; height: 38px; }
+            #cameraNavCanvas { width: 32px; height: 32px; }
         }
 
         /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
@@ -418,10 +418,10 @@
                 <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
-            <!-- КАМЕРА НА CANVAS (увеличена) -->
+            <!-- КАМЕРА НА CANVAS (УВЕЛИЧЕНА) -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container">
-                    <canvas id="cameraNavCanvas" width="72" height="72"></canvas>
+                    <canvas id="cameraNavCanvas" width="80" height="80"></canvas>
                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle">☰</button>
@@ -796,15 +796,15 @@
             const canvas = document.getElementById('cameraNavCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const W = canvas.width;  // 72
-            const H = canvas.height; // 72
+            const W = canvas.width;  // 80
+            const H = canvas.height; // 80
 
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             let pulsePhase = 0;
-            const baseRadius = 20; // чуть больше для размера 72
+            const baseRadius = 22; // для размера 80
 
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
@@ -836,7 +836,7 @@
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(W/2, H/2);
-                    const baseSize = 40; // увеличено для размера 72
+                    const baseSize = 45; // увеличено для размера 80
                     const sizeX = baseSize * scaleX;
                     const sizeY = baseSize * scaleY;
                     ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
@@ -846,11 +846,11 @@
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 10;
                     ctx.beginPath();
-                    ctx.ellipse(W/2, H/2, 16 * scaleX, 16 * scaleY, 0, 0, Math.PI * 2);
+                    ctx.ellipse(W/2, H/2, 18 * scaleX, 18 * scaleY, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
-                    ctx.font = '16px sans-serif';
+                    ctx.font = '18px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', W/2, H/2 + 1);
