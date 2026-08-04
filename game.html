@@ -118,17 +118,6 @@
         .menu-overlay p { color: #a1a1aa; margin-bottom: 16px; }
         .menu-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .menu-buttons .btn { font-size: 1rem; padding: 12px 24px; }
-        .control-select {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            margin: 12px 0;
-            width: 100%;
-        }
-        .control-select.show { display: flex; }
-        .control-select .btn { min-width: 140px; }
-        .control-select .btn.active { background: #fbbf24; color: #0a0a0c; border-color: #fbbf24; }
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
             #gameCanvas { height: 400px; }
@@ -149,14 +138,8 @@
         <!-- ГЛАВНОЕ МЕНЮ -->
         <div class="menu-overlay" id="menuOverlay">
             <h1>Небесный <span>объектив</span></h1>
-            <p>Выбери управление</p>
-
-            <div class="control-select show" id="controlSelect">
-                <button class="btn btn-primary" id="controlCursor">🖱️ Курсор / палец</button>
-                <button class="btn" id="controlButtons">🔘 Кнопки ▲▼</button>
-            </div>
-
-            <div class="menu-buttons" style="margin-top: 8px;">
+            <p>Управляй камерой пальцем или мышкой</p>
+            <div class="menu-buttons">
                 <button class="btn btn-primary" id="startBtn">🚀 Играть</button>
                 <a href="https://reparsing.github.io/niksartphoto/" class="btn">🏠 На главную</a>
             </div>
@@ -173,7 +156,7 @@
     </div>
 
     <div class="controls">
-        <span style="color:#a1a1aa; font-size:0.9rem;" id="controlLabel">Управление: курсор</span>
+        <span style="color:#a1a1aa; font-size:0.9rem;">Управление: мышь / палец</span>
         <button class="btn btn-sm" id="menuBtn">📋 Меню</button>
     </div>
 </div>
@@ -191,10 +174,6 @@
         const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
         const menuBtn = document.getElementById('menuBtn');
-        const controlSelect = document.getElementById('controlSelect');
-        const controlCursor = document.getElementById('controlCursor');
-        const controlButtons = document.getElementById('controlButtons');
-        const controlLabel = document.getElementById('controlLabel');
 
         const W = 600, H = 500;
 
@@ -209,9 +188,6 @@
         let gameActive = false;
         let frameId = null;
         let frameCount = 0;
-
-        // ===== ВЫБОР УПРАВЛЕНИЯ =====
-        let controlMode = 'cursor'; // 'cursor' или 'buttons'
 
         // ===== ИГРОК =====
         let player = {
@@ -229,14 +205,11 @@
         let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
 
         const GRAVITY = 0.15,
-            JUMP_FORCE = -0.5,
             MAX_SPEED = 8.0,
-            FRICTION = 0.98;
+            FRICTION = 0.92;
 
-        // ===== УПРАВЛЕНИЕ =====
+        // ===== УПРАВЛЕНИЕ (плавное) =====
         let targetY = player.y;
-        let upPressed = false,
-            downPressed = false;
 
         // ===== ФУНКЦИИ МУЗЫКИ =====
         function playMusic() {
@@ -263,13 +236,6 @@
             menuOverlay.classList.add('hidden');
             updateUI();
             playMusic();
-
-            // Обновляем подпись
-            if (controlMode === 'cursor') {
-                controlLabel.textContent = 'Управление: курсор / палец';
-            } else {
-                controlLabel.textContent = 'Управление: кнопки ▲▼';
-            }
         }
 
         function spawnStar() {
@@ -293,20 +259,10 @@
             if (!gameActive) return;
             frameCount++;
 
-            // ---- Управление ----
-            if (controlMode === 'cursor') {
-                // Плавное следование за курсором (БЕЗ ШАТАНИЯ)
-                const diff = targetY - player.y;
-                player.vy += diff * 0.008; // Очень плавно
-            } else {
-                // Кнопки
-                if (upPressed) player.vy += JUMP_FORCE * 0.6;
-                if (downPressed) player.vy += GRAVITY * 0.6;
-            }
-
-            // ---- Физика ----
-            player.vy += GRAVITY;
-            player.vy *= FRICTION;
+            // ---- ПЛАВНОЕ СЛЕДОВАНИЕ ЗА КУРСОРОМ (БЕЗ ШАТАНИЯ) ----
+            const diff = targetY - player.y;
+            player.vy += diff * 0.008; // Очень плавно
+            player.vy *= FRICTION; // Затухание
             player.y += player.vy;
 
             // ---- Границы ----
@@ -436,7 +392,7 @@
                 }
             }
 
-            // Камера (БЕЗ ПОВОРОТА И ШАТАНИЯ)
+            // Камера (ровно, без шатания)
             drawPlayer(player, '#fbbf24');
 
             // Спидометр
@@ -454,7 +410,6 @@
             if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                 ctx.save();
                 ctx.translate(p.x, p.y);
-                // НЕТ ПОВОРОТА! ТОЛЬКО ПУЛЬСАЦИЯ
                 const baseSize = 50;
                 const sizeX = baseSize * scaleX * (1 + (p.speed / MAX_SPEED) * 0.05);
                 const sizeY = baseSize * scaleY * (1 + (p.speed / MAX_SPEED) * 0.05);
@@ -482,63 +437,22 @@
             frameId = requestAnimationFrame(gameLoop);
         }
 
-        // ===== УПРАВЛЕНИЕ =====
-        // Курсор
+        // ===== УПРАВЛЕНИЕ (только курсор/палец) =====
         canvas.addEventListener('mousemove', (e) => {
-            if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
+            if (gameState !== STATE.PLAYING) return;
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
             targetY = (e.clientY - rect.top) * scaleY;
         });
+
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
+            if (gameState !== STATE.PLAYING) return;
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
             const touch = e.touches[0];
             if (touch) targetY = (touch.clientY - rect.top) * scaleY;
         }, { passive: false });
-
-        // Кнопки
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-                upPressed = true;
-                e.preventDefault();
-            }
-            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-                downPressed = true;
-                e.preventDefault();
-            }
-        });
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-                upPressed = false;
-                e.preventDefault();
-            }
-            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-                downPressed = false;
-                e.preventDefault();
-            }
-        });
-
-        // ===== ВЫБОР УПРАВЛЕНИЯ =====
-        controlCursor.addEventListener('click', () => {
-            controlMode = 'cursor';
-            controlCursor.classList.add('btn-primary');
-            controlCursor.classList.remove('btn');
-            controlButtons.classList.remove('btn-primary');
-            controlButtons.classList.add('btn');
-            controlLabel.textContent = 'Управление: курсор / палец';
-        });
-
-        controlButtons.addEventListener('click', () => {
-            controlMode = 'buttons';
-            controlButtons.classList.add('btn-primary');
-            controlButtons.classList.remove('btn');
-            controlCursor.classList.remove('btn-primary');
-            controlCursor.classList.add('btn');
-            controlLabel.textContent = 'Управление: кнопки ▲▼';
-        });
 
         // ===== КНОПКИ =====
         function startGame() {
