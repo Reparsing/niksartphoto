@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Небесный объектив — раннер</title>
+    <title>Небесный объектив</title>
     <style>
         * {
             margin: 0;
@@ -89,6 +89,12 @@
             align-items: center;
             padding: 20px;
             border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .side-controls.show {
+            opacity: 1;
+            pointer-events: auto;
         }
         .side-btn {
             pointer-events: auto;
@@ -250,15 +256,6 @@
 <body>
 
     <div class="game-wrapper">
-        <!-- Окно проигрыша -->
-        <div class="overlay" id="gameOverOverlay">
-            <div class="overlay-box">
-                <h2>💥 Ты проиграл</h2>
-                <p>Счёт: <strong id="finalScore">0</strong></p>
-                <button class="btn" id="restartFromOverlayBtn">🔄 Играть снова</button>
-            </div>
-        </div>
-
         <div class="game-header">
             <div class="score-wrap">
                 <div>📸 <span id="scoreDisplay">0</span></div>
@@ -270,10 +267,27 @@
         <div style="position: relative;">
             <canvas id="gameCanvas" width="600" height="500"></canvas>
 
-            <!-- КНОПКИ ПО БОКАМ -->
-            <div class="side-controls">
+            <!-- КНОПКИ ПО БОКАМ (появляются только в игре) -->
+            <div class="side-controls" id="sideControls">
                 <button class="side-btn side-btn-up" id="upBtn">▲</button>
                 <button class="side-btn side-btn-down" id="downBtn">▼</button>
+            </div>
+
+            <!-- МЕНЮ (поверх всего) -->
+            <div class="menu-overlay" id="menuOverlay">
+                <div style="text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 8px;">📸</div>
+                    <h1 style="color: #fff; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em;">
+                        Небесный <span style="color: #fbbf24;">объектив</span>
+                    </h1>
+                    <p style="color: #a1a1aa; margin-bottom: 30px; font-size: 1rem;">
+                        Управляй камерой, собирай звёзды, уворачивайся от туч
+                    </p>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+                        <button class="btn btn-primary" id="startGameBtn" style="font-size: 1.2rem; padding: 14px 44px;">🚀 Играть</button>
+                        <a href="https://reparsing.github.io/niksartphoto/" class="btn" style="font-size: 1.2rem; padding: 14px 44px;">🏠 На главную</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -282,8 +296,8 @@
         </div>
 
         <div class="game-controls">
+            <button class="btn" id="menuBtn" style="display: none;">📋 В меню</button>
             <button class="btn btn-primary" id="restartBtn">🔄 Играть снова</button>
-            <a href="https://reparsing.github.io/niksartphoto/" class="btn">🏠 На главную</a>
         </div>
     </div>
 
@@ -297,24 +311,31 @@
             const speedSpan = document.getElementById('speedDisplay');
             const finalScoreSpan = document.getElementById('finalScore');
 
-            const overlay = document.getElementById('gameOverOverlay');
-            const restartOverlayBtn = document.getElementById('restartFromOverlayBtn');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const startBtn = document.getElementById('startGameBtn');
             const restartBtn = document.getElementById('restartBtn');
+            const menuBtn = document.getElementById('menuBtn');
+            const sideControls = document.getElementById('sideControls');
 
             const W = 600,
                 H = 500;
 
-            // ---------- ЗАГРУЗКА КАРТИНКИ (ТВОЯ КАМЕРА!) ----------
+            // ---------- ЗАГРУЗКА КАРТИНКИ ----------
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
+            // ---------- СОСТОЯНИЯ ----------
+            const STATE = { MENU: 0, TRANSITION: 1, PLAYING: 2, GAMEOVER: 3 };
+            let gameState = STATE.MENU;
+
             // ---------- ПЕРЕМЕННЫЕ ИГРЫ ----------
             let player = {
-                x: 80,
+                x: W / 2,
                 y: H / 2,
+                targetX: W / 2,
                 vy: 0,
-                radius: 28, // УВЕЛИЧИЛ РАЗМЕР!
+                radius: 28,
                 pulsePhase: 0,
                 speed: 3.0,
             };
@@ -323,16 +344,20 @@
             let clouds = [];
             let score = 0;
             let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
-            let gameActive = true;
+            let gameActive = false;
             let frameId = null;
             let frameCount = 0;
+
+            // Для анимации перехода
+            let transitionProgress = 0;
+            const TRANSITION_DURATION = 60; // кадров
 
             const GRAVITY = 0.15;
             const JUMP_FORCE = -0.5;
             const MAX_SPEED = 8.0;
             const FRICTION = 0.98;
 
-            // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+            // ---------- ИНИЦИАЛИЗАЦИЯ ИГРЫ ----------
             function initGame() {
                 player.y = H / 2;
                 player.vy = 0;
@@ -343,8 +368,10 @@
                 frameCount = 0;
                 stars = [];
                 clouds = [];
-                overlay.classList.remove('show');
                 updateUI();
+                sideControls.classList.add('show');
+                menuBtn.style.display = 'inline-block';
+                gameState = STATE.PLAYING;
             }
 
             function spawnStar() {
@@ -376,7 +403,7 @@
                 speedSpan.textContent = Math.round(player.speed);
             }
 
-            // ---------- УПРАВЛЕНИЕ С КНОПОК ----------
+            // ---------- УПРАВЛЕНИЕ ----------
             let upPressed = false;
             let downPressed = false;
 
@@ -399,39 +426,46 @@
 
             // ---------- ОБНОВЛЕНИЕ ИГРЫ ----------
             function update() {
-                if (!gameActive) return;
+                if (gameState === STATE.TRANSITION) {
+                    transitionProgress++;
+                    const t = transitionProgress / TRANSITION_DURATION;
+                    const ease = 1 - Math.pow(1 - t, 3); // easeOutCubic
+                    player.x = W / 2 + (80 - W / 2) * ease;
+                    player.y = H / 2 + (H / 2 - H / 2) * ease;
+                    if (transitionProgress >= TRANSITION_DURATION) {
+                        gameState = STATE.PLAYING;
+                        player.x = 80;
+                        initGame();
+                    }
+                    return;
+                }
+
+                if (!gameActive || gameState !== STATE.PLAYING) return;
                 frameCount++;
 
-                // Управление
                 if (upPressed) player.vy += JUMP_FORCE;
                 if (downPressed) player.vy += GRAVITY * 0.8;
 
-                // Гравитация и трение
                 player.vy += GRAVITY;
                 player.vy *= FRICTION;
                 player.y += player.vy;
 
-                // Границы
                 const margin = 30;
                 if (player.y < margin) { player.y = margin;
                     player.vy = 0; }
                 if (player.y > H - margin) { player.y = H - margin;
                     player.vy = 0; }
 
-                // Пульсация
                 player.pulsePhase += 0.05 * (player.speed / MAX_SPEED + 0.3);
 
-                // Рост скорости
                 if (frameCount % 60 === 0 && player.speed < MAX_SPEED) {
                     player.speed += 0.05;
                 }
 
-                // Спавн
                 if (frameCount % 35 === 0) spawnStar();
                 if (frameCount % 55 === 0) spawnCloud();
                 if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
 
-                // Звёзды
                 for (let i = stars.length - 1; i >= 0; i--) {
                     const star = stars[i];
                     star.x -= star.speed * (player.speed / 3);
@@ -453,7 +487,6 @@
                     if (star.x < -20) stars.splice(i, 1);
                 }
 
-                // Тучи
                 for (let i = clouds.length - 1; i >= 0; i--) {
                     const cloud = clouds[i];
                     cloud.x -= cloud.speed * (player.speed / 3);
@@ -464,8 +497,10 @@
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < player.radius + cloud.r) {
                         gameActive = false;
+                        gameState = STATE.GAMEOVER;
                         finalScoreSpan.textContent = score;
                         overlay.classList.add('show');
+                        sideControls.classList.remove('show');
                         return;
                     }
                     if (cloud.x < -40) clouds.splice(i, 1);
@@ -479,74 +514,84 @@
             function draw() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- РАДУЖНЫЙ ШЛЕЙФ ---
-                const trailLen = 18;
-                for (let i = 1; i < trailLen; i++) {
-                    const alpha = 0.3 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
-                    const hue = (i * 15 + Date.now() * 0.03) % 360;
-                    const size = (1 - i / trailLen) * player.radius * 0.9;
-                    const xOff = -i * 4;
-                    const yOff = -player.vy * i * 0.5;
-                    ctx.beginPath();
-                    ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
-                    ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
-                    ctx.fill();
-                }
-
-                // --- ЗВЁЗДЫ ---
-                for (let star of stars) {
-                    const pulse = 1 + 0.15 * Math.sin(star.phase);
-                    const r = star.r * pulse;
-                    const grad = ctx.createRadialGradient(star.x, star.y, 2, star.x, star.y, r * 2.5);
-                    grad.addColorStop(0, '#fbbf24');
-                    grad.addColorStop(0.5, 'rgba(251,191,36,0.3)');
-                    grad.addColorStop(1, 'rgba(251,191,36,0)');
-                    ctx.fillStyle = grad;
-                    ctx.beginPath();
-                    ctx.arc(star.x, star.y, r * 2.5, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#fcd34d';
-                    ctx.shadowColor = '#fbbf24';
-                    ctx.shadowBlur = 20;
-                    ctx.beginPath();
-                    ctx.arc(star.x, star.y, r * 0.6, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                }
-
-                // --- ТУЧИ ---
-                for (let cloud of clouds) {
-                    const pulse = 1 + 0.05 * Math.sin(cloud.phase);
-                    const r = cloud.r * pulse;
-                    ctx.fillStyle = 'rgba(180,190,200,0.4)';
-                    ctx.shadowColor = 'rgba(180,190,200,0.1)';
-                    ctx.shadowBlur = 30;
-                    ctx.beginPath();
-                    ctx.arc(cloud.x, cloud.y, r, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                    for (let j = 0; j < 5; j++) {
-                        const angle = j * 1.3 + cloud.phase;
-                        const dx = Math.cos(angle) * r * 0.6;
-                        const dy = Math.sin(angle) * r * 0.6;
+                // --- РАДУЖНЫЙ ШЛЕЙФ (только в игре или переходе) ---
+                if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER || gameState === STATE.TRANSITION) {
+                    const trailLen = 18;
+                    for (let i = 1; i < trailLen; i++) {
+                        const alpha = 0.3 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
+                        const hue = (i * 15 + Date.now() * 0.03) % 360;
+                        const size = (1 - i / trailLen) * player.radius * 0.9;
+                        const xOff = -i * 4;
+                        const yOff = -player.vy * i * 0.5;
                         ctx.beginPath();
-                        ctx.arc(cloud.x + dx, cloud.y + dy, r * 0.4, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(200,210,220,0.2)';
+                        ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
+                        ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
                         ctx.fill();
                     }
                 }
 
-                // --- КАМЕРА (УВЕЛИЧЕННАЯ!) ---
+                // --- ЗВЁЗДЫ (только в игре) ---
+                if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
+                    for (let star of stars) {
+                        const pulse = 1 + 0.15 * Math.sin(star.phase);
+                        const r = star.r * pulse;
+                        const grad = ctx.createRadialGradient(star.x, star.y, 2, star.x, star.y, r * 2.5);
+                        grad.addColorStop(0, '#fbbf24');
+                        grad.addColorStop(0.5, 'rgba(251,191,36,0.3)');
+                        grad.addColorStop(1, 'rgba(251,191,36,0)');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath();
+                        ctx.arc(star.x, star.y, r * 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#fcd34d';
+                        ctx.shadowColor = '#fbbf24';
+                        ctx.shadowBlur = 20;
+                        ctx.beginPath();
+                        ctx.arc(star.x, star.y, r * 0.6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+
+                    for (let cloud of clouds) {
+                        const pulse = 1 + 0.05 * Math.sin(cloud.phase);
+                        const r = cloud.r * pulse;
+                        ctx.fillStyle = 'rgba(180,190,200,0.4)';
+                        ctx.shadowColor = 'rgba(180,190,200,0.1)';
+                        ctx.shadowBlur = 30;
+                        ctx.beginPath();
+                        ctx.arc(cloud.x, cloud.y, r, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        for (let j = 0; j < 5; j++) {
+                            const angle = j * 1.3 + cloud.phase;
+                            const dx = Math.cos(angle) * r * 0.6;
+                            const dy = Math.sin(angle) * r * 0.6;
+                            ctx.beginPath();
+                            ctx.arc(cloud.x + dx, cloud.y + dy, r * 0.4, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(200,210,220,0.2)';
+                            ctx.fill();
+                        }
+                    }
+                }
+
+                // --- КАМЕРА ---
                 const pulse = 1 + 0.06 * Math.sin(player.pulsePhase);
                 const scaleX = pulse;
                 const scaleY = 1 / pulse;
+                let drawX = player.x;
+                let drawY = player.y;
+
+                // В меню камера по центру
+                if (gameState === STATE.MENU) {
+                    drawX = W / 2;
+                    drawY = H / 2 - 20;
+                }
 
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
-                    ctx.translate(player.x, player.y);
-                    // БЕЗ ПОВОРОТА!
-                    const baseSize = 70; // УВЕЛИЧИЛ РАЗМЕР!
+                    ctx.translate(drawX, drawY);
+                    const baseSize = 70;
                     const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.05);
                     const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.05);
                     ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
@@ -556,70 +601,139 @@
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 40;
                     ctx.beginPath();
-                    ctx.arc(player.x, player.y, player.radius * pulse, 0, Math.PI * 2);
+                    ctx.arc(drawX, drawY, player.radius * pulse, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
                     ctx.font = '32px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('📷', player.x, player.y + 2);
+                    ctx.fillText('📷', drawX, drawY + 2);
                 }
 
-                ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                ctx.font = '12px monospace';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'bottom';
-                ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
+                // --- ДВИЖУЩИЕСЯ ПОЛОСКИ (только в меню) ---
+                if (gameState === STATE.MENU) {
+                    const time = Date.now() * 0.001;
+                    for (let i = 0; i < 12; i++) {
+                        const angle = i * (Math.PI / 6) + time * 0.3;
+                        const radius = 80 + 15 * Math.sin(time * 0.5 + i);
+                        const x = W / 2 + Math.cos(angle) * radius;
+                        const y = H / 2 - 20 + Math.sin(angle) * radius * 0.6;
+                        const alpha = 0.2 + 0.15 * Math.sin(time + i);
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4 + 3 * Math.sin(time * 0.7 + i), 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(251, 191, 36, ${alpha})`;
+                        ctx.fill();
+                    }
+                    for (let i = 0; i < 8; i++) {
+                        const angle = i * (Math.PI / 4) + time * 0.2;
+                        const x1 = W / 2 + Math.cos(angle) * 60;
+                        const y1 = H / 2 - 20 + Math.sin(angle) * 40;
+                        const x2 = W / 2 + Math.cos(angle + 0.1) * 110;
+                        const y2 = H / 2 - 20 + Math.sin(angle + 0.1) * 70;
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.strokeStyle = `rgba(251, 191, 36, ${0.08 + 0.06 * Math.sin(time + i)})`;
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                }
+
+                // Спидометр (только в игре)
+                if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                    ctx.font = '12px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
+                }
             }
 
             // ---------- ЦИКЛ ИГРЫ ----------
             function gameLoop() {
-                if (!gameActive) {
-                    draw();
-                    frameId = requestAnimationFrame(gameLoop);
-                    return;
-                }
                 update();
                 draw();
-                updateUI();
                 frameId = requestAnimationFrame(gameLoop);
             }
 
-            // ---------- УПРАВЛЕНИЕ МЫШЬЮ ----------
-            canvas.addEventListener('mousemove', (e) => {
-                if (!gameActive) return;
-                const rect = canvas.getBoundingClientRect();
-                const scaleY = canvas.height / rect.height;
-                const canvasY = (e.clientY - rect.top) * scaleY;
-                const diff = canvasY - player.y;
-                player.vy += diff * 0.008;
-            });
+            // ---------- ЗАПУСК ИГРЫ ИЗ МЕНЮ (С АНИМАЦИЕЙ) ----------
+            function startGame() {
+                menuOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    menuOverlay.style.display = 'none';
+                }, 500);
 
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!gameActive || !e.touches.length) return;
-                const rect = canvas.getBoundingClientRect();
-                const scaleY = canvas.height / rect.height;
-                const canvasY = (e.touches[0].clientY - rect.top) * scaleY;
-                const diff = canvasY - player.y;
-                player.vy += diff * 0.008;
-            }, { passive: false });
+                // Запускаем анимацию перехода
+                gameState = STATE.TRANSITION;
+                transitionProgress = 0;
+                player.x = W / 2;
+                player.y = H / 2;
+                player.vy = 0;
+                player.speed = 3.0;
+                player.pulsePhase = 0;
+                gameActive = true;
+                sideControls.classList.add('show');
+                menuBtn.style.display = 'inline-block';
+                // Сброс объектов
+                stars = [];
+                clouds = [];
+                score = 0;
+                updateUI();
+            }
 
-            // ---------- ПЕРЕЗАПУСК ----------
+            startBtn.addEventListener('click', startGame);
+
+            // ---------- ВОЗВРАТ В МЕНЮ ----------
+            function goToMenu() {
+                gameState = STATE.MENU;
+                gameActive = false;
+                menuOverlay.style.display = 'flex';
+                setTimeout(() => {
+                    menuOverlay.style.opacity = '1';
+                }, 50);
+                sideControls.classList.remove('show');
+                menuBtn.style.display = 'none';
+                overlay.classList.remove('show');
+                stars = [];
+                clouds = [];
+                player.x = W / 2;
+                player.y = H / 2;
+                player.vy = 0;
+                player.speed = 3.0;
+                score = 0;
+                updateUI();
+            }
+
+            menuBtn.addEventListener('click', goToMenu);
+
+            // ---------- ПЕРЕЗАПУСК ПОСЛЕ ПРОИГРЫША ----------
             function restartGame() {
-                if (frameId) cancelAnimationFrame(frameId);
-                initGame();
-                frameId = requestAnimationFrame(gameLoop);
+                overlay.classList.remove('show');
+                gameState = STATE.PLAYING;
+                gameActive = true;
+                player.x = 80;
+                player.y = H / 2;
+                player.vy = 0;
+                player.speed = 3.0;
+                player.pulsePhase = 0;
+                score = 0;
+                stars = [];
+                clouds = [];
+                frameCount = 0;
+                sideControls.classList.add('show');
+                updateUI();
             }
 
             restartBtn.addEventListener('click', restartGame);
-            restartOverlayBtn.addEventListener('click', restartGame);
+            document.getElementById('restartFromOverlayBtn')?.addEventListener('click', restartGame);
 
             // ---------- СТАРТ ----------
-            initGame();
-            frameId = requestAnimationFrame(gameLoop);
+            gameState = STATE.MENU;
+            player.x = W / 2;
+            player.y = H / 2;
             bestSpan.textContent = bestScore;
+            frameId = requestAnimationFrame(gameLoop);
 
             cameraImg.onerror = function() {
                 console.warn('Картинка не загрузилась, используется эмодзи');
