@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Небесный объектив — Щиты</title>
+    
+    <!-- ПОДКЛЮЧАЕМ АУДИО -->
+    <script>
+        const backgroundMusic = new Audio('https://raw.githubusercontent.com/Reparsing/niksartphoto/main/media/Nero_s_Day_At_Disneyland_-_Sprawling_Idiot_Effigy_(SkySound7.com).mp3');
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.4;
+    </script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
@@ -314,7 +322,10 @@
             let gameActive = false;
             let frameId = null;
             let frameCount = 0;
-            const GRAVITY = 0.15, JUMP_FORCE = -0.5, MAX_SPEED = 8.0, FRICTION = 0.98;
+            const GRAVITY = 0.12; // УМЕНЬШИЛ ГРАВИТАЦИЮ
+            const JUMP_FORCE = -0.35; // УМЕНЬШИЛ СИЛУ ПРЫЖКА
+            const MAX_SPEED = 8.0;
+            const FRICTION = 0.95; // БОЛЬШЕ ТРЕНИЯ = ПЛАВНЕЕ
 
             // ===== ЭФФЕКТ ТРЯСКИ =====
             let shakeAmount = 0;
@@ -390,7 +401,7 @@
                 btn.addEventListener('touchcancel', end);
             });
 
-            // ===== УПРАВЛЕНИЕ КУРСОРОМ =====
+            // ===== УПРАВЛЕНИЕ КУРСОРОМ (ПЛАВНОЕ) =====
             let targetY = player.y;
             canvas.addEventListener('mousemove', (e) => {
                 if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
@@ -412,13 +423,13 @@
                 if (!gameActive || gameState !== STATE.PLAYING) return;
                 frameCount++;
 
-                // Управление
+                // Управление (очень плавное)
                 if (controlMode === 'cursor') {
                     const diff = targetY - player.y;
-                    player.vy += diff * 0.006;
+                    player.vy += diff * 0.004; // ЕЩЁ МЯГЧЕ
                 } else {
-                    if (upPressed) player.vy += JUMP_FORCE;
-                    if (downPressed) player.vy += GRAVITY * 0.8;
+                    if (upPressed) player.vy += JUMP_FORCE * 0.6; // СЛАБЕЕ
+                    if (downPressed) player.vy += GRAVITY * 0.6;
                 }
 
                 // Физика
@@ -739,29 +750,7 @@
             function selectControl(mode) {
                 controlMode = mode;
                 controlSelectOverlay.classList.remove('show');
-                // Сразу запускаем игру без лишнего перехода
-                player.x = 80;
-                player.y = H / 2;
-                player.vy = 0;
-                player.speed = 3.0;
-                player.pulsePhase = 0;
-                player.hasShield = false;
-                player.shieldTimer = 0;
-                gameActive = true;
-                frameCount = 0;
-                stars = [];
-                clouds = [];
-                shields = [];
-                score = 0;
-                shakeAmount = 0;
-                gameState = STATE.PLAYING;
-                overlay.classList.remove('show');
-                gameHeader.classList.add('show');
-                gameControls.classList.add('show');
-                menuBtn.style.display = 'inline-block';
-                targetY = player.y;
-                updateUI();
-                playMusic();
+                startPlaying();
             }
 
             function goToMenu() {
@@ -790,24 +779,7 @@
 
             function restartGame() {
                 overlay.classList.remove('show');
-                gameState = STATE.PLAYING;
-                gameActive = true;
-                player.x = 80;
-                player.y = H / 2;
-                player.vy = 0;
-                player.speed = 3.0;
-                player.pulsePhase = 0;
-                player.hasShield = false;
-                player.shieldTimer = 0;
-                score = 0;
-                stars = [];
-                clouds = [];
-                shields = [];
-                frameCount = 0;
-                shakeAmount = 0;
-                gameControls.classList.add('show');
-                updateUI();
-                playMusic();
+                startPlaying();
             }
 
             // ===== ПОДКЛЮЧАЕМ КНОПКИ =====
