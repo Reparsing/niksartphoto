@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Небесный объектив — Мультиплеер</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <title>Небесный объектив</title>
+    
+    <!-- ПОДКЛЮЧАЕМ МУЗЫКУ -->
+    <script>
+        const backgroundMusic = new Audio('https://raw.githubusercontent.com/Reparsing/niksartphoto/main/media/Nero_s_Day_At_Disneyland_-_Sprawling_Idiot_Effigy_(SkySound7.com).mp3');
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.3; // Громкость 30%
+    </script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
@@ -68,9 +75,6 @@
         }
         .btn:hover { background: #fbbf24; color: #0a0a0c; border-color: #fbbf24; }
         .btn-primary { background: #fbbf24; color: #0a0a0c; border-color: #fbbf24; }
-        .btn-danger { background: #ef4444; color: #fff; border-color: #ef4444; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-sm { padding: 6px 16px; font-size: 0.8rem; }
         .overlay {
             position: absolute;
             inset: 0;
@@ -116,27 +120,9 @@
         .menu-overlay p { color: #a1a1aa; margin-bottom: 16px; }
         .menu-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .menu-buttons .btn { font-size: 1rem; padding: 12px 24px; }
-        .input-code {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 1.5rem;
-            text-align: center;
-            width: 140px;
-            font-family: inherit;
-            letter-spacing: 8px;
-        }
-        .input-code:focus { outline: none; border-color: #fbbf24; }
-        .room-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
-        .room-controls .btn { padding: 8px 20px; font-size: 0.9rem; }
-        .status-text { color: #a1a1aa; font-size: 0.9rem; margin: 8px 0; min-height: 1.5em; }
-        .status-text strong { color: #fbbf24; }
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
             #gameCanvas { height: 400px; }
-            .input-code { width: 120px; font-size: 1.2rem; letter-spacing: 4px; }
         }
     </style>
 </head>
@@ -144,7 +130,7 @@
 
 <div class="game-wrapper">
     <div class="game-header">
-        <div>📸 <span id="score1Display">0</span> / <span id="score2Display">0</span></div>
+        <div>📸 <span id="scoreDisplay">0</span></div>
         <div>🏆 <span id="bestDisplay">0</span></div>
     </div>
 
@@ -154,28 +140,9 @@
         <!-- ГЛАВНОЕ МЕНЮ -->
         <div class="menu-overlay" id="menuOverlay">
             <h1>Небесный <span>объектив</span></h1>
-            <p>Играй один или с другом по сети</p>
-
-            <div class="menu-buttons" style="margin-bottom: 12px;">
-                <button class="btn btn-primary" id="startSingleBtn">👤 1 игрок</button>
-                <button class="btn" id="showMultiplayerBtn">🌐 Мультиплеер</button>
-            </div>
-
-            <!-- Блок мультиплеера -->
-            <div id="multiplayerBlock" style="display: none; width: 100%; max-width: 380px;">
-                <div class="room-controls">
-                    <button class="btn btn-primary" id="createRoomBtn">🔑 Создать комнату</button>
-                    <span style="color:#a1a1aa;">или</span>
-                    <input type="text" class="input-code" id="joinCodeInput" placeholder="____" maxlength="4" inputmode="numeric" />
-                    <button class="btn" id="joinRoomBtn">Войти</button>
-                </div>
-                <div class="status-text" id="roomStatus">Введите код для подключения</div>
-                <div style="margin-top: 8px;">
-                    <button class="btn btn-danger btn-sm" id="leaveRoomBtn" style="display: none;">🚪 Выйти</button>
-                </div>
-            </div>
-
-            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <p>Управляй камерой, собирай звёзды, уворачивайся от туч</p>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" id="startBtn">🚀 Играть</button>
                 <a href="https://reparsing.github.io/niksartphoto/" class="btn">🏠 На главную</a>
             </div>
         </div>
@@ -191,8 +158,7 @@
     </div>
 
     <div class="controls">
-        <span style="color:#a1a1aa; font-size:0.9rem;">Игрок 1: мышь / палец</span>
-        <span style="color:#a1a1aa; font-size:0.9rem;" id="p2ControlLabel">Игрок 2: клавиши / тач</span>
+        <span style="color:#a1a1aa; font-size:0.9rem;">Управление: мышь / палец</span>
         <button class="btn" id="menuBtn">📋 Меню</button>
     </div>
 </div>
@@ -202,23 +168,14 @@
         // ===== ИНИЦИАЛИЗАЦИЯ =====
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const score1Span = document.getElementById('score1Display');
-        const score2Span = document.getElementById('score2Display');
+        const scoreSpan = document.getElementById('scoreDisplay');
         const bestSpan = document.getElementById('bestDisplay');
         const finalScoreSpan = document.getElementById('finalScore');
         const menuOverlay = document.getElementById('menuOverlay');
         const gameOverOverlay = document.getElementById('gameOverOverlay');
-        const startSingleBtn = document.getElementById('startSingleBtn');
-        const showMultiplayerBtn = document.getElementById('showMultiplayerBtn');
-        const createRoomBtn = document.getElementById('createRoomBtn');
-        const joinRoomBtn = document.getElementById('joinRoomBtn');
-        const joinCodeInput = document.getElementById('joinCodeInput');
-        const roomStatus = document.getElementById('roomStatus');
-        const leaveRoomBtn = document.getElementById('leaveRoomBtn');
-        const multiplayerBlock = document.getElementById('multiplayerBlock');
+        const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
         const menuBtn = document.getElementById('menuBtn');
-        const p2ControlLabel = document.getElementById('p2ControlLabel');
 
         const W = 600, H = 500;
 
@@ -234,39 +191,45 @@
         let frameId = null;
         let frameCount = 0;
 
-        let gameMode = 'single';
-        let isMultiplayer = false;
-
-        // ===== ИГРОКИ =====
-        let player1 = { x: 120, y: H/2, vy: 0, radius: 22, pulsePhase: 0, speed: 3.0, score: 0 };
-        let player2 = { x: 480, y: H/2, vy: 0, radius: 22, pulsePhase: 0, speed: 3.0, score: 0 };
+        // ===== ИГРОК =====
+        let player = {
+            x: 120,
+            y: H / 2,
+            vy: 0,
+            radius: 22,
+            pulsePhase: 0,
+            speed: 3.0,
+            score: 0
+        };
 
         let stars = [];
         let clouds = [];
         let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
 
-        const GRAVITY = 0.15, JUMP_FORCE = -0.5, MAX_SPEED = 8.0, FRICTION = 0.98;
+        const GRAVITY = 0.15,
+            JUMP_FORCE = -0.5,
+            MAX_SPEED = 8.0,
+            FRICTION = 0.98;
 
         // ===== УПРАВЛЕНИЕ =====
-        let targetY1 = player1.y;
-        let targetY2 = player2.y;
-        let keys = { w: false, s: false, arrowup: false, arrowdown: false };
+        let targetY = player.y;
 
-        // ===== PEERJS =====
-        let peer = null;
-        let conn = null;
-        let roomCode = '';
-        let isHost = false;
+        // ===== ФУНКЦИИ МУЗЫКИ =====
+        function playMusic() {
+            backgroundMusic.play().catch(e => console.log('Автовоспроизведение заблокировано'));
+        }
+        function stopMusic() {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+        }
 
         // ===== ИНИЦИАЛИЗАЦИЯ ИГРЫ =====
-        function initGame(mode) {
-            gameMode = mode || 'single';
-            isMultiplayer = (mode === 'multiplayer_host' || mode === 'multiplayer_guest');
-
-            player1.y = H/2; player1.vy = 0; player1.speed = 3.0; player1.pulsePhase = 0; player1.score = 0;
-            player2.y = H/2; player2.vy = 0; player2.speed = 3.0; player2.pulsePhase = 0; player2.score = 0;
-            targetY1 = player1.y;
-            targetY2 = player2.y;
+        function initGame() {
+            player.y = H / 2;
+            player.vy = 0;
+            player.speed = 3.0;
+            player.pulsePhase = 0;
+            player.score = 0;
             stars = [];
             clouds = [];
             frameCount = 0;
@@ -275,361 +238,110 @@
             gameOverOverlay.classList.remove('show');
             menuOverlay.classList.add('hidden');
             updateUI();
-
-            if (mode === 'single') {
-                p2ControlLabel.textContent = 'Игрок 2: клавиши WASD / стрелки';
-            } else if (mode === 'multiplayer_host') {
-                p2ControlLabel.textContent = 'Вы — хост. Игрок 2 управляет на своём устройстве';
-            } else {
-                p2ControlLabel.textContent = 'Вы — гость. Игрок 2 управляет мышкой / пальцем';
-            }
+            playMusic(); // Включаем музыку!
         }
 
-        function generateRoomCode() {
-            return String(1000 + Math.floor(Math.random() * 9000));
-        }
-
-        // ===== PEERJS: СОЗДАНИЕ КОМНАТЫ =====
-        function createRoom() {
-            if (peer) { peer.destroy(); peer = null; }
-
-            roomCode = generateRoomCode();
-            peer = new Peer(roomCode, {
-                debug: 0,
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            peer.on('open', (id) => {
-                isHost = true;
-                roomStatus.innerHTML = `✅ Код: <strong>${roomCode}</strong> (жду игрока...)`;
-                joinCodeInput.value = roomCode;
-                createRoomBtn.textContent = '⏳ Ожидание...';
-                createRoomBtn.disabled = true;
-                leaveRoomBtn.style.display = 'inline-block';
-
-                peer.on('connection', (connection) => {
-                    conn = connection;
-                    conn.on('open', () => {
-                        roomStatus.textContent = '🎮 Игрок подключился!';
-                        startMultiplayerGame('multiplayer_host');
-                    });
-                    conn.on('data', (data) => handleRemoteData(data));
-                    conn.on('close', () => {
-                        roomStatus.textContent = '❌ Игрок отключился';
-                        leaveRoom();
-                    });
-                });
-            });
-
-            peer.on('error', (err) => {
-                roomStatus.textContent = '❌ Ошибка: ' + err.type + '. Попробуйте снова';
-                createRoomBtn.textContent = '🔑 Создать комнату';
-                createRoomBtn.disabled = false;
-                if (err.type === 'unavailable-id') {
-                    roomStatus.textContent = '❌ Этот код занят. Попробуйте ещё раз';
-                    createRoom();
-                }
-            });
-        }
-
-        // ===== PEERJS: ПОДКЛЮЧЕНИЕ =====
-        function joinRoom(code) {
-            if (peer) { peer.destroy(); peer = null; }
-
-            roomCode = code.trim();
-            if (roomCode.length !== 4 || !/^\d+$/.test(roomCode)) {
-                roomStatus.textContent = '❌ Введите 4 цифры';
-                return;
-            }
-
-            roomStatus.textContent = '⏳ Подключение...';
-
-            peer = new Peer({
-                debug: 0,
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            peer.on('open', (id) => {
-                conn = peer.connect(roomCode);
-                conn.on('open', () => {
-                    roomStatus.textContent = '✅ Подключено!';
-                    leaveRoomBtn.style.display = 'inline-block';
-                    startMultiplayerGame('multiplayer_guest');
-                });
-                conn.on('data', (data) => handleRemoteData(data));
-                conn.on('close', () => {
-                    roomStatus.textContent = '❌ Соединение разорвано';
-                    leaveRoom();
-                });
-            });
-
-            peer.on('error', (err) => {
-                roomStatus.textContent = '❌ Не удалось подключиться: ' + err.type;
-                if (err.type === 'peer-unavailable') {
-                    roomStatus.textContent = '❌ Комната не найдена. Проверьте код';
-                }
-            });
-        }
-
-        // ===== ОБРАБОТКА ДАННЫХ =====
-        function handleRemoteData(data) {
-            if (data.type === 'state') {
-                if (gameMode === 'multiplayer_host') {
-                    // Хост получает данные от гостя (игрок 2)
-                    player2.x = data.p2x || player2.x;
-                    player2.y = data.p2y || player2.y;
-                    player2.score = data.p2score || player2.score;
-                    player2.speed = data.p2speed || player2.speed;
-                } else if (gameMode === 'multiplayer_guest') {
-                    // Гость получает данные от хоста (игрок 1)
-                    player1.x = data.p1x || player1.x;
-                    player1.y = data.p1y || player1.y;
-                    player1.score = data.p1score || player1.score;
-                    player1.speed = data.p1speed || player1.speed;
-                }
-                // Синхронизация объектов (только если хост)
-                if (data.stars && gameMode === 'multiplayer_guest') {
-                    stars = data.stars;
-                }
-                if (data.clouds && gameMode === 'multiplayer_guest') {
-                    clouds = data.clouds;
-                }
-                if (data.frameCount && gameMode === 'multiplayer_guest') {
-                    frameCount = data.frameCount;
-                }
-                updateUI();
-            }
-            if (data.type === 'gameover') {
-                gameActive = false;
-                gameState = STATE.GAMEOVER;
-                finalScoreSpan.textContent = data.score || 0;
-                gameOverOverlay.classList.add('show');
-            }
-        }
-
-        // ===== ОТПРАВКА СОСТОЯНИЯ =====
-        function sendState() {
-            if (!conn || !gameActive) return;
-            const data = {
-                type: 'state',
-                p1x: player1.x,
-                p1y: player1.y,
-                p1score: player1.score,
-                p1speed: player1.speed,
-                p2x: player2.x,
-                p2y: player2.y,
-                p2score: player2.score,
-                p2speed: player2.speed,
-                stars: stars,
-                clouds: clouds,
-                frameCount: frameCount,
-            };
-            conn.send(data);
-        }
-
-        // ===== ВЫХОД ИЗ КОМНАТЫ =====
-        function leaveRoom() {
-            if (conn) { conn.close(); conn = null; }
-            if (peer) { peer.destroy(); peer = null; }
-            isHost = false;
-            roomCode = '';
-            createRoomBtn.textContent = '🔑 Создать комнату';
-            createRoomBtn.disabled = false;
-            leaveRoomBtn.style.display = 'none';
-            roomStatus.textContent = 'Введите код для подключения';
-            multiplayerBlock.style.display = 'none';
-            showMultiplayerBtn.textContent = '🌐 Мультиплеер';
-            if (gameState !== STATE.MENU) {
-                goToMenu();
-            }
-        }
-
-        function updateUI() {
-            score1Span.textContent = player1.score;
-            score2Span.textContent = player2.score;
-            bestSpan.textContent = bestScore;
-        }
-
-        // ===== ИГРОВАЯ ЛОГИКА =====
         function spawnStar() {
             const y = 30 + Math.random() * (H - 60);
-            stars.push({ x: W + 20, y, r: 12, speed: 1.5 + Math.random()*0.8, phase: Math.random() * Math.PI * 2 });
+            stars.push({ x: W + 20, y, r: 12, speed: 1.5 + Math.random() * 0.8, phase: Math.random() * Math.PI * 2 });
         }
+
         function spawnCloud() {
             const y = 30 + Math.random() * (H - 60);
             const size = 28 + Math.random() * 16;
-            clouds.push({ x: W + 20, y, r: size, speed: 2.0 + Math.random()*1.5, phase: Math.random() * Math.PI * 2 });
+            clouds.push({ x: W + 20, y, r: size, speed: 2.0 + Math.random() * 1.5, phase: Math.random() * Math.PI * 2 });
         }
 
+        function updateUI() {
+            scoreSpan.textContent = player.score;
+            bestSpan.textContent = bestScore;
+        }
+
+        // ===== ОБНОВЛЕНИЕ ИГРЫ =====
         function update() {
             if (!gameActive) return;
             frameCount++;
 
-            // ---- Управление игроком 1 (мышь) ----
-            const diff1 = targetY1 - player1.y;
-            player1.vy += diff1 * 0.006;
-            player1.vy += GRAVITY;
-            player1.vy *= FRICTION;
-            player1.y += player1.vy;
-            if (player1.y < 30) { player1.y = 30; player1.vy = 0; }
-            if (player1.y > H - 30) { player1.y = H - 30; player1.vy = 0; }
-            player1.pulsePhase += 0.05 * (player1.speed / MAX_SPEED + 0.3);
-            if (frameCount % 60 === 0 && player1.speed < MAX_SPEED) player1.speed += 0.05;
+            // ---- Управление (мышь) ----
+            const diff = targetY - player.y;
+            player.vy += diff * 0.006;
+            player.vy += GRAVITY;
+            player.vy *= FRICTION;
+            player.y += player.vy;
+            if (player.y < 30) { player.y = 30;
+                player.vy = 0; }
+            if (player.y > H - 30) { player.y = H - 30;
+                player.vy = 0; }
+            player.pulsePhase += 0.05 * (player.speed / MAX_SPEED + 0.3);
+            if (frameCount % 60 === 0 && player.speed < MAX_SPEED) player.speed += 0.05;
 
-            // ---- Управление игроком 2 ----
-            if (!isMultiplayer || gameMode === 'single' || gameMode === 'multiplayer_guest') {
-                // В мультиплеере гостя — игрок 2 управляется мышкой/пальцем
-                if (gameMode === 'multiplayer_guest') {
-                    const diff2 = targetY2 - player2.y;
-                    player2.vy += diff2 * 0.006;
-                } else {
-                    // В одиночном режиме — клавиши
-                    if (keys.w || keys.arrowup) player2.vy += JUMP_FORCE;
-                    if (keys.s || keys.arrowdown) player2.vy += GRAVITY * 0.8;
-                }
-                player2.vy += GRAVITY;
-                player2.vy *= FRICTION;
-                player2.y += player2.vy;
-                if (player2.y < 30) { player2.y = 30; player2.vy = 0; }
-                if (player2.y > H - 30) { player2.y = H - 30; player2.vy = 0; }
-                player2.pulsePhase += 0.05 * (player2.speed / MAX_SPEED + 0.3);
-                if (frameCount % 60 === 0 && player2.speed < MAX_SPEED) player2.speed += 0.05;
-            }
-
-            // ---- Спавн объектов (только у хоста) ----
-            if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                if (frameCount % 35 === 0) spawnStar();
-                if (frameCount % 55 === 0) spawnCloud();
-                if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
-            }
+            // ---- Спавн объектов ----
+            if (frameCount % 35 === 0) spawnStar();
+            if (frameCount % 55 === 0) spawnCloud();
+            if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
 
             // ---- Сбор звёзд ----
             for (let i = stars.length - 1; i >= 0; i--) {
                 const star = stars[i];
-                if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                    star.x -= star.speed * (player1.speed / 3);
-                }
+                star.x -= star.speed * (player.speed / 3);
                 star.phase += 0.05;
 
-                const dx1 = player1.x - star.x, dy1 = player1.y - star.y, dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
-                if (dist1 < player1.radius + star.r) {
-                    player1.score++;
-                    if (player1.score + player2.score > bestScore) {
-                        bestScore = player1.score + player2.score;
+                const dx = player.x - star.x,
+                    dy = player.y - star.y,
+                    dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < player.radius + star.r) {
+                    player.score++;
+                    if (player.score > bestScore) {
+                        bestScore = player.score;
                         localStorage.setItem('niksBestScore', bestScore);
                     }
-                    if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                        stars.splice(i, 1);
-                    }
+                    stars.splice(i, 1);
                     updateUI();
                     continue;
                 }
 
-                const dx2 = player2.x - star.x, dy2 = player2.y - star.y, dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
-                if (dist2 < player2.radius + star.r) {
-                    player2.score++;
-                    if (player1.score + player2.score > bestScore) {
-                        bestScore = player1.score + player2.score;
-                        localStorage.setItem('niksBestScore', bestScore);
-                    }
-                    if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                        stars.splice(i, 1);
-                    }
-                    updateUI();
-                    continue;
-                }
-
-                if (star.x < -20) {
-                    if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                        stars.splice(i, 1);
-                    }
-                }
+                if (star.x < -20) stars.splice(i, 1);
             }
 
             // ---- Столкновение с тучей ----
             for (let i = clouds.length - 1; i >= 0; i--) {
                 const cloud = clouds[i];
-                if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                    cloud.x -= cloud.speed * (player1.speed / 3);
-                }
+                cloud.x -= cloud.speed * (player.speed / 3);
                 cloud.phase += 0.02;
 
-                const dx1 = player1.x - cloud.x, dy1 = player1.y - cloud.y, dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
-                if (dist1 < player1.radius + cloud.r) {
+                const dx = player.x - cloud.x,
+                    dy = player.y - cloud.y,
+                    dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < player.radius + cloud.r) {
                     gameActive = false;
                     gameState = STATE.GAMEOVER;
-                    finalScoreSpan.textContent = player1.score + player2.score;
+                    finalScoreSpan.textContent = player.score;
                     gameOverOverlay.classList.add('show');
-                    if (isMultiplayer && conn) {
-                        conn.send({ type: 'gameover', score: player1.score + player2.score });
-                    }
+                    stopMusic(); // Останавливаем музыку при проигрыше
                     return;
                 }
 
-                const dx2 = player2.x - cloud.x, dy2 = player2.y - cloud.y, dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
-                if (dist2 < player2.radius + cloud.r) {
-                    gameActive = false;
-                    gameState = STATE.GAMEOVER;
-                    finalScoreSpan.textContent = player1.score + player2.score;
-                    gameOverOverlay.classList.add('show');
-                    if (isMultiplayer && conn) {
-                        conn.send({ type: 'gameover', score: player1.score + player2.score });
-                    }
-                    return;
-                }
-
-                if (cloud.x < -40) {
-                    if (!isMultiplayer || gameMode === 'multiplayer_host' || gameMode === 'single') {
-                        clouds.splice(i, 1);
-                    }
-                }
+                if (cloud.x < -40) clouds.splice(i, 1);
             }
 
             if (stars.length > 20) stars.splice(0, stars.length - 20);
             if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
-
-            if (isMultiplayer && conn && gameActive) {
-                sendState();
-            }
         }
 
         // ===== ОТРИСОВКА =====
         function draw() {
             ctx.clearRect(0, 0, W, H);
 
-            // Шлейф для игрока 1
+            // Шлейф
             const trailLen = 14;
             for (let i = 1; i < trailLen; i++) {
-                const alpha = 0.25 * (1 - i/trailLen) * (player1.speed/MAX_SPEED + 0.3);
+                const alpha = 0.25 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
                 const hue = (i * 15 + Date.now() * 0.03) % 360;
-                const size = (1 - i/trailLen) * player1.radius * 0.9;
-                const xOff = -i * 4, yOff = -player1.vy * i * 0.5;
+                const size = (1 - i / trailLen) * player.radius * 0.9;
+                const xOff = -i * 4,
+                    yOff = -player.vy * i * 0.5;
                 ctx.beginPath();
-                ctx.arc(player1.x + xOff, player1.y + yOff, size, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
-                ctx.fill();
-            }
-
-            // Шлейф для игрока 2
-            for (let i = 1; i < trailLen; i++) {
-                const alpha = 0.25 * (1 - i/trailLen) * (player2.speed/MAX_SPEED + 0.3);
-                const hue = (i * 15 + Date.now() * 0.03 + 180) % 360;
-                const size = (1 - i/trailLen) * player2.radius * 0.9;
-                const xOff = -i * 4, yOff = -player2.vy * i * 0.5;
-                ctx.beginPath();
-                ctx.arc(player2.x + xOff, player2.y + yOff, size, 0, Math.PI * 2);
+                ctx.arc(player.x + xOff, player.y + yOff, size, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
                 ctx.fill();
             }
@@ -668,7 +380,8 @@
                 ctx.shadowBlur = 0;
                 for (let j = 0; j < 5; j++) {
                     const angle = j * 1.3 + cloud.phase;
-                    const dx = Math.cos(angle) * r * 0.6, dy = Math.sin(angle) * r * 0.6;
+                    const dx = Math.cos(angle) * r * 0.6,
+                        dy = Math.sin(angle) * r * 0.6;
                     ctx.beginPath();
                     ctx.arc(cloud.x + dx, cloud.y + dy, r * 0.4, 0, Math.PI * 2);
                     ctx.fillStyle = 'rgba(200,210,220,0.2)';
@@ -676,30 +389,28 @@
                 }
             }
 
-            // Игрок 1
-            drawPlayer(player1, '#fbbf24', '1');
-            // Игрок 2
-            drawPlayer(player2, '#60a5fa', '2');
+            // Камера
+            drawPlayer(player, '#fbbf24');
 
-            // Спидометры
+            // Спидометр
             ctx.fillStyle = 'rgba(255,255,255,0.15)';
             ctx.font = '12px monospace';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'bottom';
-            ctx.fillText(`P1: ${Math.round(player1.speed)} км/ч`, 12, H - 10);
-            ctx.fillText(`P2: ${Math.round(player2.speed)} км/ч`, 120, H - 10);
+            ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
         }
 
-        function drawPlayer(p, color, label) {
+        function drawPlayer(p, color) {
             const pulse = 1 + 0.06 * Math.sin(p.pulsePhase);
-            const scaleX = pulse, scaleY = 1 / pulse;
+            const scaleX = pulse,
+                scaleY = 1 / pulse;
             if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                 ctx.save();
                 ctx.translate(p.x, p.y);
                 const baseSize = 50;
-                const sizeX = baseSize * scaleX * (1 + (p.speed/MAX_SPEED)*0.05);
-                const sizeY = baseSize * scaleY * (1 + (p.speed/MAX_SPEED)*0.05);
-                ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
+                const sizeX = baseSize * scaleX * (1 + (p.speed / MAX_SPEED) * 0.05);
+                const sizeY = baseSize * scaleY * (1 + (p.speed / MAX_SPEED) * 0.05);
+                ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
                 ctx.restore();
             } else {
                 ctx.fillStyle = color;
@@ -715,11 +426,6 @@
                 ctx.textBaseline = 'middle';
                 ctx.fillText('📷', p.x, p.y + 2);
             }
-            ctx.fillStyle = color;
-            ctx.font = 'bold 14px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText(`P${label}`, p.x, p.y - 32);
         }
 
         function gameLoop() {
@@ -729,12 +435,11 @@
         }
 
         // ===== УПРАВЛЕНИЕ =====
-        // Игрок 1 — мышь/палец
         canvas.addEventListener('mousemove', (e) => {
             if (gameState !== STATE.PLAYING) return;
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
-            targetY1 = (e.clientY - rect.top) * scaleY;
+            targetY = (e.clientY - rect.top) * scaleY;
         });
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
@@ -742,71 +447,22 @@
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
             const touch = e.touches[0];
-            if (touch) targetY1 = (touch.clientY - rect.top) * scaleY;
+            if (touch) targetY = (touch.clientY - rect.top) * scaleY;
         }, { passive: false });
-
-        // Игрок 2 — мышь/палец (для гостя в мультиплеере)
-        canvas.addEventListener('mousemove', (e) => {
-            if (gameState !== STATE.PLAYING || gameMode !== 'multiplayer_guest') return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleY = canvas.height / rect.height;
-            targetY2 = (e.clientY - rect.top) * scaleY;
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (gameState !== STATE.PLAYING || gameMode !== 'multiplayer_guest') return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleY = canvas.height / rect.height;
-            const touch = e.touches[0];
-            if (touch) targetY2 = (touch.clientY - rect.top) * scaleY;
-        }, { passive: false });
-
-        // Клавиши для игрока 2 (в одиночном режиме)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'w' || e.key === 'W') keys.w = true;
-            if (e.key === 's' || e.key === 'S') keys.s = true;
-            if (e.key === 'ArrowUp') { keys.arrowup = true; e.preventDefault(); }
-            if (e.key === 'ArrowDown') { keys.arrowdown = true; e.preventDefault(); }
-        });
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'w' || e.key === 'W') keys.w = false;
-            if (e.key === 's' || e.key === 'S') keys.s = false;
-            if (e.key === 'ArrowUp') { keys.arrowup = false; e.preventDefault(); }
-            if (e.key === 'ArrowDown') { keys.arrowdown = false; e.preventDefault(); }
-        });
 
         // ===== КНОПКИ =====
-        function startSingle() {
-            multiplayerBlock.style.display = 'none';
-            showMultiplayerBtn.textContent = '🌐 Мультиплеер';
-            leaveRoom();
-            initGame('single');
+        function startGame() {
+            menuOverlay.classList.add('hidden');
+            initGame();
         }
 
-        function showMultiplayer() {
-            if (multiplayerBlock.style.display === 'none') {
-                multiplayerBlock.style.display = 'block';
-                showMultiplayerBtn.textContent = '❌ Скрыть';
-            } else {
-                multiplayerBlock.style.display = 'none';
-                showMultiplayerBtn.textContent = '🌐 Мультиплеер';
-            }
-        }
-
-        function startMultiplayerGame(mode) {
-            initGame(mode);
-            setTimeout(() => { if (conn) sendState(); }, 500);
-        }
+        startBtn.addEventListener('click', startGame);
 
         function restartGame() {
             gameOverOverlay.classList.remove('show');
-            if (isMultiplayer) {
-                initGame(gameMode);
-                setTimeout(() => { if (conn) sendState(); }, 500);
-            } else {
-                initGame('single');
-            }
+            initGame();
         }
+        restartBtn.addEventListener('click', restartGame);
 
         function goToMenu() {
             gameActive = false;
@@ -815,26 +471,10 @@
             menuOverlay.classList.remove('hidden');
             stars = [];
             clouds = [];
-            player1.score = 0;
-            player2.score = 0;
+            player.score = 0;
             updateUI();
-            if (isMultiplayer) {
-                leaveRoom();
-            }
+            stopMusic(); // Останавливаем музыку при выходе в меню
         }
-
-        // ===== ПОДКЛЮЧАЕМ КНОПКИ =====
-        startSingleBtn.addEventListener('click', startSingle);
-        showMultiplayerBtn.addEventListener('click', showMultiplayer);
-        createRoomBtn.addEventListener('click', createRoom);
-        joinRoomBtn.addEventListener('click', () => {
-            joinRoom(joinCodeInput.value);
-        });
-        joinCodeInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') joinRoom(joinCodeInput.value);
-        });
-        leaveRoomBtn.addEventListener('click', leaveRoom);
-        restartBtn.addEventListener('click', restartGame);
         menuBtn.addEventListener('click', goToMenu);
 
         // ===== ЗАПУСК =====
