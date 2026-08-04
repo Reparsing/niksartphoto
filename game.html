@@ -273,7 +273,7 @@
                 }, 600);
             }
 
-            // === ОТРИСОВКА СЛЕДА ===
+            // === ОТРИСОВКА СЛЕДА С ВОЛНОЙ ===
             function getTrailColor(i, type, alpha) {
                 const t = Date.now() * .03;
                 switch(type) {
@@ -287,10 +287,17 @@
             function drawTrail(c, x, y, speed, radius, type) {
                 const len = 16, baseR = radius || 22, spd = speed || 3;
                 type = type || trailType;
+                const time = Date.now() * 0.003;
                 for (let i = 1; i < len; i++) {
-                    const alpha = .3 * (1 - i/len) * (spd/8 + .3), size = (1 - i/len) * baseR * .9, xOff = -i * 4;
+                    const alpha = .3 * (1 - i/len) * (spd/8 + .3);
+                    const size = (1 - i/len) * baseR * .9;
+                    // Волна: смещение по Y и X
+                    const waveY = Math.sin(i * 0.8 + time) * 5;
+                    const waveX = Math.sin(i * 0.4 + time * 0.7) * 3;
+                    const xOff = -i * 4 + waveX;
+                    const yOff = waveY;
                     c.beginPath();
-                    c.arc(x + xOff, y, size, 0, Math.PI * 2);
+                    c.arc(x + xOff, y + yOff, size, 0, Math.PI * 2);
                     c.fillStyle = getTrailColor(i, type, alpha);
                     c.fill();
                 }
@@ -302,19 +309,23 @@
                 previewCtx.clearRect(0, 0, pw, ph);
                 const cx = pw/2, cy = ph/2, radius = 22 * currentScale;
                 drawTrail(previewCtx, cx, cy, 3, radius, trailType);
-                const pulse = 1 + .06 * Math.sin(Date.now() * .003), scale = pulse * currentScale;
+                const pulse = 1 + .06 * Math.sin(Date.now() * .003);
+                const scaleX = pulse * currentScale;
+                const scaleY = (1 / pulse) * currentScale;
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     previewCtx.save();
                     previewCtx.translate(cx, cy);
-                    const baseSize = 70, sz = baseSize * scale;
-                    previewCtx.drawImage(cameraImg, -sz/2, -sz/2, sz, sz);
+                    const baseSize = 70;
+                    const sizeX = baseSize * scaleX;
+                    const sizeY = baseSize * scaleY;
+                    previewCtx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
                     previewCtx.restore();
                 } else {
                     previewCtx.fillStyle = '#fbbf24';
                     previewCtx.shadowColor = '#fbbf24';
                     previewCtx.shadowBlur = 20;
                     previewCtx.beginPath();
-                    previewCtx.arc(cx, cy, 22 * scale, 0, Math.PI * 2);
+                    previewCtx.ellipse(cx, cy, 22 * scaleX, 22 * scaleY, 0, 0, Math.PI * 2);
                     previewCtx.fill();
                     previewCtx.shadowBlur = 0;
                     previewCtx.fillStyle = '#0a0a0c';
@@ -553,23 +564,25 @@
                 }
             }
 
-            // === ОТРИСОВКА ИГРОКА (плавная пульсация) ===
+            // === ОТРИСОВКА ИГРОКА ===
             function drawPlayer(p, color) {
                 const pulse = 1 + 0.06 * Math.sin(p.pulsePhase);
-                const scale = pulse * currentScale; // единый масштаб без сплющивания
+                const scaleX = pulse * currentScale;
+                const scaleY = (1 / pulse) * currentScale;
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(p.x, p.y);
                     const baseSize = 70;
-                    const size = baseSize * scale * (1 + (p.speed / 8.0) * 0.05);
-                    ctx.drawImage(cameraImg, -size / 2, -size / 2, size, size);
+                    const sizeX = baseSize * scaleX * (1 + (p.speed / 8.0) * 0.05);
+                    const sizeY = baseSize * scaleY * (1 + (p.speed / 8.0) * 0.05);
+                    ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
                     ctx.restore();
                 } else {
                     ctx.fillStyle = color;
                     ctx.shadowColor = color;
                     ctx.shadowBlur = 30;
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.baseRadius * scale, 0, Math.PI * 2);
+                    ctx.ellipse(p.x, p.y, p.baseRadius * scaleX, p.baseRadius * scaleY, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
@@ -580,7 +593,7 @@
                 }
             }
 
-            // === ЦИКЛ ОТРИСОВКИ ===
+            // === ЦИКЛ ===
             function loop() {
                 draw();
                 if (settingsOverlay.classList.contains('show')) updatePreview();
