@@ -76,15 +76,20 @@
         .overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.0);
+            backdrop-filter: blur(0px);
             border-radius: 32px;
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 10;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .overlay.show { display: flex; }
+        .overlay.show {
+            display: flex;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+        }
         .overlay-box {
             background: #1c1c22;
             padding: 40px 36px;
@@ -92,13 +97,23 @@
             text-align: center;
             max-width: 340px;
             border: 1px solid rgba(255,255,255,0.08);
-            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.8);
+            opacity: 0;
         }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .overlay-box h2 { color: #f87171; font-size: 2rem; margin-bottom: 6px; }
-        .overlay-box p { color: #a1a1aa; font-size: 1rem; margin-bottom: 20px; }
-        .overlay-box .btn { background: #f87171; border-color: #f87171; color: #0a0a0c; }
-        .overlay-box .btn:hover { background: #fca5a5; }
+        .overlay.show .overlay-box {
+            transform: scale(1);
+            opacity: 1;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .overlay-box h2 { color: #f87171; font-size: 2.2rem; margin-bottom: 6px; }
+        .overlay-box p { color: #a1a1aa; font-size: 1.1rem; margin-bottom: 20px; }
+        .overlay-box p strong { color: #fbbf24; font-size: 1.4rem; }
+        .overlay-box .btn { background: #f87171; border-color: #f87171; color: #0a0a0c; padding: 12px 32px; font-size: 1.1rem; }
+        .overlay-box .btn:hover { background: #fca5a5; border-color: #fca5a5; transform: scale(1.05); }
         .menu-overlay {
             position: absolute;
             inset: 0;
@@ -121,6 +136,8 @@
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
             #gameCanvas { height: 400px; }
+            .overlay-box { padding: 30px 24px; }
+            .overlay-box h2 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -189,6 +206,17 @@
         let frameId = null;
         let frameCount = 0;
 
+        // ===== ЖИЗНИ =====
+        let lives = 3;
+        const MAX_LIVES = 3;
+        let heartParticles = [];
+        let cameraExplosionParticles = [];
+
+        // ===== УСКОРЕНИЕ ОТ ЗВЁЗД =====
+        let speedMultiplier = 1.0;
+        const SPEED_INCREMENT = 0.03;
+        const MAX_SPEED_MULTIPLIER = 2.5;
+
         // ===== ИГРОК =====
         let player = {
             x: 120,
@@ -205,10 +233,9 @@
         let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
 
         const GRAVITY = 0.15,
-            MAX_SPEED = 8.0,
             FRICTION = 0.92;
 
-        // ===== УПРАВЛЕНИЕ (плавное) =====
+        // ===== УПРАВЛЕНИЕ =====
         let targetY = player.y;
 
         // ===== ФУНКЦИИ МУЗЫКИ =====
@@ -220,6 +247,159 @@
             backgroundMusic.currentTime = 0;
         }
 
+        // ===== АНИМАЦИЯ ВЗРЫВА КАМЕРЫ =====
+        function spawnCameraExplosion(x, y) {
+            // Создаём много осколков
+            const colors = ['#fbbf24', '#f59e0b', '#ef4444', '#f472b6', '#60a5fa', '#34d399', '#fcd34d'];
+            for (let i = 0; i < 30; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 4;
+                const size = 4 + Math.random() * 8;
+                cameraExplosionParticles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 1,
+                    size: size,
+                    life: 1.0,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.3,
+                });
+            }
+            // Добавляем несколько крупных осколков
+            for (let i = 0; i < 6; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 2;
+                cameraExplosionParticles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 0.5,
+                    size: 10 + Math.random() * 12,
+                    life: 1.0,
+                    color: '#fbbf24',
+                    rotation: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.2,
+                });
+            }
+        }
+
+        function updateExplosionParticles() {
+            // Обновляем осколки камеры
+            for (let i = cameraExplosionParticles.length - 1; i >= 0; i--) {
+                const p = cameraExplosionParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.03;
+                p.rotation += p.rotSpeed;
+                p.life -= 0.008;
+                if (p.life <= 0) {
+                    cameraExplosionParticles.splice(i, 1);
+                }
+            }
+            // Обновляем осколки сердец
+            for (let i = heartParticles.length - 1; i >= 0; i--) {
+                const p = heartParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.05;
+                p.rotation += p.rotSpeed;
+                p.life -= 0.015;
+                if (p.life <= 0) {
+                    heartParticles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawExplosionParticles() {
+            // Рисуем осколки камеры
+            for (let p of cameraExplosionParticles) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+                ctx.globalAlpha = 1.0;
+                ctx.shadowBlur = 0;
+            }
+            // Рисуем осколки сердец
+            for (let p of heartParticles) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                ctx.globalAlpha = p.life;
+                if (p.part === 'left') {
+                    ctx.fillStyle = p.color || '#ef4444';
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(-10, -10, 0, -18);
+                    ctx.quadraticCurveTo(0, -10, 0, 0);
+                    ctx.fill();
+                } else if (p.part === 'right') {
+                    ctx.fillStyle = p.color || '#ef4444';
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(10, -10, 0, -18);
+                    ctx.quadraticCurveTo(0, -10, 0, 0);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = p.color || '#ef4444';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.size * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        // ===== АНИМАЦИЯ ПОТЕРИ СЕРДЦА =====
+        function spawnHeartExplosion(x, y) {
+            const half1 = {
+                x: x, y: y,
+                vx: -2 + Math.random() * 1.5,
+                vy: -3 + Math.random() * 2,
+                size: 16,
+                life: 1.0,
+                rotation: 0,
+                rotSpeed: (Math.random() - 0.5) * 0.2,
+                part: 'left',
+                color: '#ef4444'
+            };
+            const half2 = {
+                x: x, y: y,
+                vx: 2 + Math.random() * 1.5,
+                vy: -3 + Math.random() * 2,
+                size: 16,
+                life: 1.0,
+                rotation: 0,
+                rotSpeed: (Math.random() - 0.5) * 0.2,
+                part: 'right',
+                color: '#ef4444'
+            };
+            for (let i = 0; i < 6; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 2;
+                heartParticles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 1,
+                    size: 4 + Math.random() * 4,
+                    life: 1.0,
+                    rotation: 0,
+                    rotSpeed: (Math.random() - 0.5) * 0.3,
+                    part: 'debris',
+                    color: `hsl(0, 80%, ${50 + Math.random() * 30}%)`
+                });
+            }
+            heartParticles.push(half1, half2);
+        }
+
         // ===== ИНИЦИАЛИЗАЦИЯ ИГРЫ =====
         function initGame() {
             player.y = H / 2;
@@ -227,12 +407,17 @@
             player.speed = 3.0;
             player.pulsePhase = 0;
             player.score = 0;
+            lives = MAX_LIVES;
+            speedMultiplier = 1.0;
+            heartParticles = [];
+            cameraExplosionParticles = [];
             stars = [];
             clouds = [];
             frameCount = 0;
             gameActive = true;
             gameState = STATE.PLAYING;
             gameOverOverlay.classList.remove('show');
+            gameOverOverlay.style.display = 'none';
             menuOverlay.classList.add('hidden');
             updateUI();
             playMusic();
@@ -254,15 +439,47 @@
             bestSpan.textContent = bestScore;
         }
 
+        // ===== ФУНКЦИЯ ЗАВЕРШЕНИЯ ИГРЫ =====
+        function gameOver() {
+            gameActive = false;
+            gameState = STATE.GAMEOVER;
+            finalScoreSpan.textContent = player.score;
+            // Взрываем камеру
+            spawnCameraExplosion(player.x, player.y);
+            // Взрываем все оставшиеся сердца с задержкой
+            let heartPositions = [];
+            const heartSize = 24;
+            const spacing = 10;
+            const totalWidth = MAX_LIVES * heartSize + (MAX_LIVES - 1) * spacing;
+            const startX = (W - totalWidth) / 2;
+            for (let i = 0; i < lives; i++) {
+                const x = startX + i * (heartSize + spacing);
+                const y = 20 + heartSize * 0.3;
+                heartPositions.push({ x, y, delay: i * 150 });
+            }
+            // Запускаем взрывы сердец с задержкой
+            heartPositions.forEach((pos, index) => {
+                setTimeout(() => {
+                    spawnHeartExplosion(pos.x, pos.y);
+                }, pos.delay);
+            });
+            // Показываем окно Game Over с задержкой
+            setTimeout(() => {
+                gameOverOverlay.style.display = 'flex';
+                gameOverOverlay.classList.add('show');
+                stopMusic();
+            }, 600);
+        }
+
         // ===== ОБНОВЛЕНИЕ ИГРЫ =====
         function update() {
             if (!gameActive) return;
             frameCount++;
 
-            // ---- ПЛАВНОЕ СЛЕДОВАНИЕ ЗА КУРСОРОМ (БЕЗ ШАТАНИЯ) ----
+            // ---- ПЛАВНОЕ СЛЕДОВАНИЕ ЗА КУРСОРОМ ----
             const diff = targetY - player.y;
-            player.vy += diff * 0.008; // Очень плавно
-            player.vy *= FRICTION; // Затухание
+            player.vy += diff * 0.008;
+            player.vy *= FRICTION;
             player.y += player.vy;
 
             // ---- Границы ----
@@ -273,20 +490,26 @@
                 player.vy = 0; }
 
             // ---- Пульсация ----
-            player.pulsePhase += 0.05 * (player.speed / MAX_SPEED + 0.3);
+            player.pulsePhase += 0.05 * (player.speed / 8.0 + 0.3);
 
-            // ---- Скорость ----
-            if (frameCount % 60 === 0 && player.speed < MAX_SPEED) player.speed += 0.05;
+            // ---- Скорость и ускорение от звёзд ----
+            const baseSpeed = 3.0;
+            const maxBaseSpeed = 8.0;
+            const currentMaxSpeed = Math.min(baseSpeed + (speedMultiplier - 1.0) * 2, maxBaseSpeed);
+            if (player.speed < currentMaxSpeed) {
+                player.speed += 0.02;
+            }
 
             // ---- Спавн объектов ----
-            if (frameCount % 35 === 0) spawnStar();
-            if (frameCount % 55 === 0) spawnCloud();
-            if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
+            const spawnRate = Math.max(25, 35 - speedMultiplier * 5);
+            if (frameCount % Math.floor(spawnRate) === 0) spawnStar();
+            if (frameCount % Math.floor(spawnRate * 1.6) === 0) spawnCloud();
+            if (frameCount % Math.floor(spawnRate * 2.2) === 0 && frameCount > 100) spawnCloud();
 
             // ---- Сбор звёзд ----
             for (let i = stars.length - 1; i >= 0; i--) {
                 const star = stars[i];
-                star.x -= star.speed * (player.speed / 3);
+                star.x -= star.speed * (player.speed / 3) * speedMultiplier;
                 star.phase += 0.05;
 
                 const dx = player.x - star.x,
@@ -298,6 +521,7 @@
                         bestScore = player.score;
                         localStorage.setItem('niksBestScore', bestScore);
                     }
+                    speedMultiplier = Math.min(speedMultiplier + SPEED_INCREMENT, MAX_SPEED_MULTIPLIER);
                     stars.splice(i, 1);
                     updateUI();
                     continue;
@@ -309,26 +533,34 @@
             // ---- Столкновение с тучей ----
             for (let i = clouds.length - 1; i >= 0; i--) {
                 const cloud = clouds[i];
-                cloud.x -= cloud.speed * (player.speed / 3);
+                cloud.x -= cloud.speed * (player.speed / 3) * speedMultiplier;
                 cloud.phase += 0.02;
 
                 const dx = player.x - cloud.x,
                     dy = player.y - cloud.y,
                     dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < player.radius + cloud.r) {
-                    gameActive = false;
-                    gameState = STATE.GAMEOVER;
-                    finalScoreSpan.textContent = player.score;
-                    gameOverOverlay.classList.add('show');
-                    stopMusic();
-                    return;
+                    lives--;
+                    spawnHeartExplosion(player.x, player.y - 30);
+                    clouds.splice(i, 1);
+
+                    if (lives <= 0) {
+                        gameOver();
+                        return;
+                    } else {
+                        player.vy = -2;
+                        continue;
+                    }
                 }
 
                 if (cloud.x < -40) clouds.splice(i, 1);
             }
 
-            if (stars.length > 20) stars.splice(0, stars.length - 20);
-            if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
+            // Обновление анимаций частиц
+            updateExplosionParticles();
+
+            if (stars.length > 25) stars.splice(0, stars.length - 25);
+            if (clouds.length > 18) clouds.splice(0, clouds.length - 18);
         }
 
         // ===== ОТРИСОВКА =====
@@ -338,7 +570,7 @@
             // Шлейф
             const trailLen = 14;
             for (let i = 1; i < trailLen; i++) {
-                const alpha = 0.25 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
+                const alpha = 0.25 * (1 - i / trailLen) * (player.speed / 8.0 + 0.3);
                 const hue = (i * 15 + Date.now() * 0.03) % 360;
                 const size = (1 - i / trailLen) * player.radius * 0.9;
                 const xOff = -i * 4,
@@ -392,15 +624,44 @@
                 }
             }
 
-            // Камера (ровно, без шатания)
-            drawPlayer(player, '#fbbf24');
+            // Камера (если игра ещё не закончилась или частицы ещё летают)
+            if (gameState !== STATE.GAMEOVER || cameraExplosionParticles.length > 0) {
+                drawPlayer(player, '#fbbf24');
+            }
+
+            // ---- ОТОБРАЖЕНИЕ ЖИЗНЕЙ (если игра активна) ----
+            if (gameState === STATE.PLAYING) {
+                const heartSize = 24;
+                const spacing = 10;
+                const totalWidth = MAX_LIVES * heartSize + (MAX_LIVES - 1) * spacing;
+                const startX = (W - totalWidth) / 2;
+                for (let i = 0; i < lives; i++) {
+                    const x = startX + i * (heartSize + spacing);
+                    const y = 20;
+                    ctx.fillStyle = '#ef4444';
+                    ctx.shadowColor = '#ef4444';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y + heartSize * 0.3);
+                    ctx.bezierCurveTo(x - heartSize * 0.5, y - heartSize * 0.3, x - heartSize * 0.8, y + heartSize * 0.2, x, y + heartSize * 0.7);
+                    ctx.bezierCurveTo(x + heartSize * 0.8, y + heartSize * 0.2, x + heartSize * 0.5, y - heartSize * 0.3, x, y + heartSize * 0.3);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+
+            // ---- ОТРИСОВКА ЧАСТИЦ ----
+            drawExplosionParticles();
 
             // Спидометр
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.font = '12px monospace';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
+            if (gameState === STATE.PLAYING) {
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                ctx.font = '12px monospace';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
+                ctx.fillText(`x${speedMultiplier.toFixed(1)}`, 120, H - 10);
+            }
         }
 
         function drawPlayer(p, color) {
@@ -411,8 +672,8 @@
                 ctx.save();
                 ctx.translate(p.x, p.y);
                 const baseSize = 50;
-                const sizeX = baseSize * scaleX * (1 + (p.speed / MAX_SPEED) * 0.05);
-                const sizeY = baseSize * scaleY * (1 + (p.speed / MAX_SPEED) * 0.05);
+                const sizeX = baseSize * scaleX * (1 + (p.speed / 8.0) * 0.05);
+                const sizeY = baseSize * scaleY * (1 + (p.speed / 8.0) * 0.05);
                 ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
                 ctx.restore();
             } else {
@@ -437,7 +698,7 @@
             frameId = requestAnimationFrame(gameLoop);
         }
 
-        // ===== УПРАВЛЕНИЕ (только курсор/палец) =====
+        // ===== УПРАВЛЕНИЕ =====
         canvas.addEventListener('mousemove', (e) => {
             if (gameState !== STATE.PLAYING) return;
             const rect = canvas.getBoundingClientRect();
@@ -463,8 +724,15 @@
         startBtn.addEventListener('click', startGame);
 
         function restartGame() {
+            // Плавно убираем оверлей
             gameOverOverlay.classList.remove('show');
-            initGame();
+            setTimeout(() => {
+                gameOverOverlay.style.display = 'none';
+                // Сбрасываем частицы
+                cameraExplosionParticles = [];
+                heartParticles = [];
+                initGame();
+            }, 400);
         }
         restartBtn.addEventListener('click', restartGame);
 
@@ -472,9 +740,12 @@
             gameActive = false;
             gameState = STATE.MENU;
             gameOverOverlay.classList.remove('show');
+            gameOverOverlay.style.display = 'none';
             menuOverlay.classList.remove('hidden');
             stars = [];
             clouds = [];
+            heartParticles = [];
+            cameraExplosionParticles = [];
             player.score = 0;
             updateUI();
             stopMusic();
