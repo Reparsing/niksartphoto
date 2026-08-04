@@ -9,11 +9,10 @@
     <script>
         const backgroundMusic = new Audio('https://raw.githubusercontent.com/Reparsing/niksartphoto/main/media/Nero_s_Day_At_Disneyland_-_Sprawling_Idiot_Effigy_(SkySound7.com).mp3');
         backgroundMusic.loop = true;
-        backgroundMusic.volume = 0.4; // Громкость 40%
+        backgroundMusic.volume = 0.4;
     </script>
 
     <style>
-        /* ===== СТИЛИ (ТЕ ЖЕ, ЧТО И РАНЬШЕ) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
             background: #0a0a0c;
@@ -74,7 +73,72 @@
             touch-action: none;
             position: relative;
         }
-        /* ===== МЕНЮ ===== */
+        /* ===== МЕНЮ ВЫБОРА УПРАВЛЕНИЯ ===== */
+        .control-select-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 15;
+            padding: 20px;
+        }
+        .control-select-overlay.show { display: flex; }
+        .control-select-box {
+            background: #1c1c22;
+            padding: 36px 32px;
+            border-radius: 28px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 340px;
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+        .control-select-box h2 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .control-select-box p {
+            color: #a1a1aa;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .control-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f4f4f5;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-family: inherit;
+            min-width: 120px;
+        }
+        .control-btn:hover {
+            background: rgba(251, 191, 36, 0.15);
+            border-color: #fbbf24;
+            transform: scale(1.03);
+        }
+        .control-btn.active {
+            background: #fbbf24;
+            color: #0a0a0c;
+            border-color: #fbbf24;
+        }
+        .control-btn .icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
+
         .menu-overlay {
             position: absolute;
             inset: 0;
@@ -134,7 +198,6 @@
         .btn-sm { padding: 8px 18px; font-size: 0.9rem; }
         .menu-btn-home { margin-top: 12px; }
         
-        /* ===== ОКНО ПРОИГРЫША ===== */
         .overlay {
             position: absolute;
             inset: 0;
@@ -169,19 +232,23 @@
         .overlay-box .btn { background: #f87171; border-color: #f87171; color: #0a0a0c; padding: 12px 36px; }
         .overlay-box .btn:hover { background: #fca5a5; border-color: #fca5a5; transform: scale(1.05); }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
             #gameCanvas { height: 400px; }
             .game-header { font-size: 1rem; }
             .btn { padding: 10px 24px; font-size: 1rem; }
             .btn-up, .btn-down { padding: 6px 14px; min-width: 44px; font-size: 1rem; }
+            .control-select-box { padding: 28px 20px; }
+            .control-select-box h2 { font-size: 1.5rem; }
+            .control-btn { padding: 12px 16px; font-size: 0.9rem; min-width: 100px; }
             .overlay-box { padding: 30px 24px; }
             .overlay-box h2 { font-size: 1.8rem; }
         }
         @media (max-width: 400px) {
             .btn { padding: 8px 16px; font-size: 0.8rem; }
             .btn-up, .btn-down { padding: 4px 10px; min-width: 36px; font-size: 0.8rem; }
+            .control-btn { padding: 10px 12px; font-size: 0.8rem; min-width: 80px; }
+            .control-btn .icon { font-size: 1.2rem; }
             .overlay-box { padding: 24px 16px; }
             .overlay-box h2 { font-size: 1.5rem; }
         }
@@ -200,11 +267,29 @@
         <div style="position: relative;">
             <canvas id="gameCanvas" width="600" height="500"></canvas>
 
-            <!-- МЕНЮ -->
+            <!-- ГЛАВНОЕ МЕНЮ -->
             <div class="menu-overlay" id="menuOverlay">
                 <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
                     <button class="btn btn-primary" id="startGameBtn" style="font-size: 1.4rem; padding: 16px 56px;">🚀 Играть</button>
                     <a href="https://reparsing.github.io/niksartphoto/" class="btn menu-btn-home" style="font-size: 1rem; padding: 10px 32px;">🏠 На главную</a>
+                </div>
+            </div>
+
+            <!-- ОКНО ВЫБОРА УПРАВЛЕНИЯ -->
+            <div class="control-select-overlay" id="controlSelectOverlay">
+                <div class="control-select-box">
+                    <h2>🎮 Выбери управление</h2>
+                    <p>Как ты хочешь управлять камерой?</p>
+                    <div class="control-buttons">
+                        <button class="control-btn" id="controlCursor">
+                            <span class="icon">🖱️</span>
+                            Курсор/палец
+                        </button>
+                        <button class="control-btn" id="controlButtons">
+                            <span class="icon">🔘</span>
+                            Кнопки ▲▼
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -243,6 +328,9 @@
             const overlay = document.getElementById('gameOverOverlay');
             const gameHeader = document.getElementById('gameHeader');
             const gameControls = document.getElementById('gameControls');
+            const controlSelectOverlay = document.getElementById('controlSelectOverlay');
+            const controlCursor = document.getElementById('controlCursor');
+            const controlButtons = document.getElementById('controlButtons');
 
             const W = 600, H = 500;
             const cameraImg = new Image();
@@ -250,8 +338,10 @@
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             // ===== СОСТОЯНИЯ =====
-            const STATE = { MENU: 0, TRANSITION: 1, PLAYING: 2, GAMEOVER: 3 };
+            const STATE = { MENU: 0, SELECT: 1, TRANSITION: 2, PLAYING: 3, GAMEOVER: 4 };
             let gameState = STATE.MENU;
+            let controlMode = 'cursor'; // 'cursor' или 'buttons'
+            
             let player = { x: W / 2, y: H / 2, vy: 0, radius: 28, pulsePhase: 0, speed: 3.0 };
             let stars = [], clouds = [];
             let score = 0;
@@ -289,7 +379,7 @@
                 gameControls.classList.add('show');
                 menuBtn.style.display = 'inline-block';
                 updateUI();
-                playMusic(); // Включаем музыку
+                playMusic();
             }
 
             // ===== СПАВН ОБЪЕКТОВ =====
@@ -309,7 +399,7 @@
                 speedSpan.textContent = Math.round(player.speed);
             }
 
-            // ===== УПРАВЛЕНИЕ =====
+            // ===== УПРАВЛЕНИЕ КНОПКАМИ =====
             let upPressed = false, downPressed = false;
             ['upBtn', 'downBtn'].forEach(id => {
                 const btn = document.getElementById(id);
@@ -323,6 +413,23 @@
                 btn.addEventListener('touchend', end, { passive: false });
                 btn.addEventListener('touchcancel', end);
             });
+
+            // ===== УПРАВЛЕНИЕ КУРСОРОМ/ПАЛЬЦЕМ =====
+            let targetY = player.y;
+            canvas.addEventListener('mousemove', (e) => {
+                if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleY = canvas.height / rect.height;
+                targetY = (e.clientY - rect.top) * scaleY;
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleY = canvas.height / rect.height;
+                const touch = e.touches[0];
+                if (touch) targetY = (touch.clientY - rect.top) * scaleY;
+            }, { passive: false });
 
             // ===== ОБНОВЛЕНИЕ =====
             function update() {
@@ -340,8 +447,17 @@
                 }
                 if (!gameActive || gameState !== STATE.PLAYING) return;
                 frameCount++;
-                if (upPressed) player.vy += JUMP_FORCE;
-                if (downPressed) player.vy += GRAVITY * 0.8;
+
+                // Управление: курсор или кнопки
+                if (controlMode === 'cursor') {
+                    const diff = targetY - player.y;
+                    player.vy += diff * 0.008;
+                } else {
+                    if (upPressed) player.vy += JUMP_FORCE;
+                    if (downPressed) player.vy += GRAVITY * 0.8;
+                }
+
+                // Физика
                 player.vy += GRAVITY;
                 player.vy *= FRICTION;
                 player.y += player.vy;
@@ -382,7 +498,7 @@
                         finalScoreSpan.textContent = score;
                         overlay.classList.add('show');
                         gameControls.classList.remove('show');
-                        stopMusic(); // Останавливаем музыку при проигрыше
+                        stopMusic();
                         return;
                     }
                     if (cloud.x < -40) clouds.splice(i, 1);
@@ -391,10 +507,9 @@
                 if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
             }
 
-            // ===== ОТРИСОВКА =====
+            // ===== ОТРИСОВКА (та же, что была) =====
             function draw() {
                 ctx.clearRect(0, 0, W, H);
-                // Шлейф
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER || gameState === STATE.TRANSITION) {
                     const trailLen = 18;
                     for (let i = 1; i < trailLen; i++) {
@@ -408,7 +523,6 @@
                         ctx.fill();
                     }
                 }
-                // Звёзды и тучи
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
                     for (let star of stars) {
                         const pulse = 1 + 0.15 * Math.sin(star.phase);
@@ -449,15 +563,14 @@
                         }
                     }
                 }
-                // Камера
                 const pulse = 1 + 0.06 * Math.sin(player.pulsePhase);
                 const scaleX = pulse, scaleY = 1 / pulse;
                 let drawX = player.x, drawY = player.y;
-                if (gameState === STATE.MENU) { drawX = W / 2; drawY = H / 2; }
+                if (gameState === STATE.MENU || gameState === STATE.SELECT) { drawX = W / 2; drawY = H / 2; }
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(drawX, drawY);
-                    const baseSize = gameState === STATE.MENU ? 100 : 70;
+                    const baseSize = (gameState === STATE.MENU || gameState === STATE.SELECT) ? 100 : 70;
                     const sizeX = baseSize * scaleX * (1 + (player.speed / MAX_SPEED) * 0.05);
                     const sizeY = baseSize * scaleY * (1 + (player.speed / MAX_SPEED) * 0.05);
                     ctx.drawImage(cameraImg, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
@@ -476,8 +589,7 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', drawX, drawY + 2);
                 }
-                // Эффекты меню
-                if (gameState === STATE.MENU) {
+                if (gameState === STATE.MENU || gameState === STATE.SELECT) {
                     const time = Date.now() * 0.001;
                     for (let i = 0; i < 16; i++) {
                         const angle = i * (Math.PI / 8) + time * 0.3;
@@ -522,6 +634,13 @@
             // ===== УПРАВЛЕНИЕ СОСТОЯНИЯМИ =====
             function startGame() {
                 menuOverlay.classList.add('hidden');
+                controlSelectOverlay.classList.add('show');
+                gameState = STATE.SELECT;
+            }
+
+            function selectControl(mode) {
+                controlMode = mode;
+                controlSelectOverlay.classList.remove('show');
                 gameState = STATE.TRANSITION;
                 transitionProgress = 0;
                 player.x = W / 2;
@@ -537,6 +656,12 @@
                 gameHeader.classList.add('show');
                 gameControls.classList.add('show');
                 menuBtn.style.display = 'inline-block';
+                // Подсказка для управления
+                if (mode === 'cursor') {
+                    console.log('Управление: курсор/палец');
+                } else {
+                    console.log('Управление: кнопки ▲▼');
+                }
             }
 
             function goToMenu() {
@@ -544,6 +669,7 @@
                 gameActive = false;
                 overlay.classList.remove('show');
                 menuOverlay.classList.remove('hidden');
+                controlSelectOverlay.classList.remove('show');
                 gameHeader.classList.remove('show');
                 gameControls.classList.remove('show');
                 menuBtn.style.display = 'none';
@@ -555,7 +681,7 @@
                 player.speed = 3.0;
                 score = 0;
                 updateUI();
-                stopMusic(); // Останавливаем музыку при возврате в меню
+                stopMusic();
             }
 
             function restartGame() {
@@ -573,11 +699,13 @@
                 frameCount = 0;
                 gameControls.classList.add('show');
                 updateUI();
-                playMusic(); // Включаем музыку заново
+                playMusic();
             }
 
             // ===== ПОДКЛЮЧАЕМ КНОПКИ =====
             startBtn.addEventListener('click', startGame);
+            controlCursor.addEventListener('click', () => selectControl('cursor'));
+            controlButtons.addEventListener('click', () => selectControl('buttons'));
             restartBtn.addEventListener('click', restartGame);
             restartOverlayBtn.addEventListener('click', restartGame);
             menuBtn.addEventListener('click', goToMenu);
@@ -592,4 +720,4 @@
         })();
     </script>
 </body>
-</html>
+</html>1
