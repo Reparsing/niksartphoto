@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru" data-mode="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="view-transition" content="same-origin">
-    <title>Обо мне — Никс Фотограф</title>
-    <meta name="description" content="Биография и история Никса — фотографа из Калининграда.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="view-transition" content="same-origin" />
+    <title>О нас — Никс Фотограф</title>
+    <meta name="description" content="Команда проекта «Кадр решает Артурик» — Артур, Артём и Ульяна. История и вклад каждого." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        /* ============================================
-                   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-                   ============================================ */
+        /* ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
         :root {
             --kumo-brand: #fbbf24;
             --kumo-brand-glow: rgba(251, 191, 36, 0.3);
@@ -25,8 +23,14 @@
             --kumo-card-bg: rgba(18, 18, 22, 0.6);
             --kumo-font: 'Inter', sans-serif;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: var(--kumo-font);
             background: var(--kumo-canvas);
@@ -35,20 +39,34 @@
             line-height: 1.7;
             min-height: 100vh;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        a { text-decoration: none; color: inherit; transition: all 0.3s; }
-        img { display: block; max-width: 100%; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
 
-        /* ============================================
-                   СКРОЛЛБАР
-                   ============================================ */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--kumo-canvas); }
-        ::-webkit-scrollbar-thumb { background: var(--kumo-brand); border-radius: 10px; }
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--kumo-canvas);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--kumo-brand);
+            border-radius: 10px;
+        }
 
-        /* ============================================
-                   ФОН: ЧАСТИЦЫ + ПАРЯЩИЕ ФИГУРЫ
-                   ============================================ */
+        /* ===== ФОН: ЧАСТИЦЫ + ФИГУРЫ ===== */
         #particles-canvas {
             position: fixed;
             inset: 0;
@@ -96,15 +114,21 @@
             animation-delay: -18s;
         }
         @keyframes floatShape {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            33% { transform: translate(80px, -50px) scale(1.2) rotate(30deg); }
-            66% { transform: translate(-40px, 60px) scale(0.8) rotate(-25deg); }
-            100% { transform: translate(50px, -40px) scale(1.1) rotate(20deg); }
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            33% {
+                transform: translate(80px, -50px) scale(1.2) rotate(30deg);
+            }
+            66% {
+                transform: translate(-40px, 60px) scale(0.8) rotate(-25deg);
+            }
+            100% {
+                transform: translate(50px, -40px) scale(1.1) rotate(20deg);
+            }
         }
 
-        /* ============================================
-                   НАВИГАЦИЯ
-                   ============================================ */
+        /* ===== НАВИГАЦИЯ ===== */
         .kumo-navbar {
             position: sticky;
             top: 0;
@@ -145,7 +169,9 @@
             gap: 32px;
         }
         @media (min-width: 768px) {
-            .kumo-nav-menu { display: flex; }
+            .kumo-nav-menu {
+                display: flex;
+            }
         }
         .kumo-nav-link {
             color: var(--kumo-subtle);
@@ -155,7 +181,9 @@
             position: relative;
             padding: 4px 0;
         }
-        .kumo-nav-link:hover { color: #fff; }
+        .kumo-nav-link:hover {
+            color: #fff;
+        }
         .kumo-nav-link.active {
             color: var(--kumo-brand);
             font-weight: 600;
@@ -180,22 +208,24 @@
             padding: 4px 8px;
         }
         @media (min-width: 768px) {
-            .kumo-mobile-toggle { display: none; }
+            .kumo-mobile-toggle {
+                display: none;
+            }
         }
 
-        /* ============================================
-                   МОБИЛЬНОЕ МЕНЮ
-                   ============================================ */
+        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
         .mobile-menu {
             display: none;
             flex-direction: column;
             gap: 12px;
             padding: 20px 0;
-            background: rgba(10,10,12,0.96);
+            background: rgba(10, 10, 12, 0.96);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--kumo-hairline);
         }
-        .mobile-menu.open { display: flex; }
+        .mobile-menu.open {
+            display: flex;
+        }
         .mobile-menu a {
             color: var(--kumo-subtle);
             font-size: 1rem;
@@ -203,32 +233,40 @@
             padding: 6px 0;
             transition: color 0.3s;
         }
-        .mobile-menu a:hover { color: #fff; }
-        .mobile-menu a.active { color: var(--kumo-brand); }
+        .mobile-menu a:hover {
+            color: #fff;
+        }
+        .mobile-menu a.active {
+            color: var(--kumo-brand);
+        }
         @media (min-width: 768px) {
-            .mobile-menu { display: none !important; }
+            .mobile-menu {
+                display: none !important;
+            }
         }
 
-        /* ============================================
-                   ОСНОВНОЙ КОНТЕНТ
-                   ============================================ */
+        /* ===== ОСНОВНАЯ СЕТКА ===== */
         .main-content {
             position: relative;
             z-index: 1;
             padding: 120px 0 80px;
         }
 
-        /* ============================================
-                   ЗАГОЛОВОК
-                   ============================================ */
+        /* ===== ЗАГОЛОВОК ===== */
         .about-header {
             text-align: center;
             margin-bottom: 50px;
             animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .about-header .badge {
             display: inline-block;
@@ -253,7 +291,9 @@
             margin-bottom: 8px;
         }
         @media (max-width: 768px) {
-            .about-header h1 { font-size: 2.4rem; }
+            .about-header h1 {
+                font-size: 2.4rem;
+            }
         }
         .about-header p {
             color: var(--kumo-subtle);
@@ -262,28 +302,28 @@
             margin: 0 auto;
         }
 
-        /* ============================================
-                   КАРТОЧКА ОБО МНЕ
-                   ============================================ */
+        /* ===== КАРТОЧКА "О НАС" ===== */
         .about-card {
             background: var(--kumo-card-bg);
             backdrop-filter: blur(16px);
             border: 1px solid var(--kumo-hairline);
             border-radius: 28px;
             padding: 48px 40px;
-            max-width: 860px;
-            margin: 0 auto;
+            max-width: 1000px;
+            margin: 0 auto 40px;
             position: relative;
             overflow: hidden;
             opacity: 0;
             transform: translateY(30px) scale(0.96);
             animation: cardAppear 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
         @keyframes cardAppear {
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
-
         .about-card::before {
             content: '';
             position: absolute;
@@ -298,51 +338,162 @@
             animation: rotateBorder 8s linear infinite;
         }
         @keyframes rotateBorder {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        .about-card .photo-wrapper {
-            text-align: center;
-            margin-bottom: 32px;
+        /* ===== КОМАНДА (СЕТКА 3 КАРТОЧКИ) ===== */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 28px;
+            margin: 40px 0 20px;
         }
-        .about-card .photo-wrapper img {
-            max-width: 320px;
-            width: 100%;
-            border-radius: 16px;
+        .team-card {
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--kumo-hairline);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 20px;
+            padding: 24px 16px 20px;
+            text-align: center;
+            transition: all 0.3s;
         }
-        .about-card .photo-wrapper img:hover {
-            transform: scale(1.02);
+        .team-card:hover {
+            border-color: var(--kumo-brand);
+            transform: translateY(-6px);
+        }
+        .team-card .avatar {
+            font-size: 3.2rem;
+            margin-bottom: 8px;
+        }
+        .team-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .team-card .nick {
+            color: var(--kumo-brand);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .team-card .role {
+            color: var(--kumo-subtle);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        .team-card .role strong {
+            color: #fff;
+            font-weight: 600;
         }
 
-        .about-card .text-content p {
+        /* ===== ТЕКСТ О КОМАНДЕ ===== */
+        .team-description {
             color: var(--kumo-subtle);
-            font-size: 1.05rem;
-            line-height: 1.9;
-            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin: 24px 0 10px;
+            padding: 0 4px;
         }
-        .about-card .text-content p:last-child {
-            margin-bottom: 0;
-        }
-        .about-card .text-content .highlight {
+        .team-description .highlight {
             color: var(--kumo-brand);
             font-weight: 600;
         }
 
-        /* ============================================
-                   СТАТИСТИКА
-                   ============================================ */
+        /* ===== БЫВШИЙ УЧАСТНИК — МАКАР ===== */
+        .ex-member-block {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .ex-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 50px;
+            padding: 10px 28px;
+            color: var(--kumo-subtle);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--kumo-font);
+        }
+        .ex-toggle-btn:hover {
+            border-color: var(--kumo-brand);
+            color: #fff;
+            background: rgba(251, 191, 36, 0.06);
+        }
+        .ex-toggle-btn .arrow {
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+        .ex-toggle-btn.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .ex-member-detail {
+            max-width: 600px;
+            margin: 16px auto 0;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--kumo-hairline);
+            border-radius: 20px;
+            padding: 24px 28px;
+            text-align: left;
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ex-member-detail.open {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .ex-member-detail h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .ex-member-detail .ex-nick {
+            color: var(--kumo-muted);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .ex-member-detail p {
+            color: var(--kumo-subtle);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .ex-member-detail .reason {
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid #ef4444;
+            border-radius: 8px;
+            color: #fca5a5;
+            font-size: 0.9rem;
+        }
+
+        /* ===== СТАТИСТИКА (оставим как есть) ===== */
         .about-stats {
             display: flex;
             gap: 16px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: 24px;
+            margin-top: 40px;
         }
         .stat-card {
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             padding: 16px 28px;
             border-radius: 16px;
             text-align: center;
@@ -368,9 +519,7 @@
             letter-spacing: 0.03em;
         }
 
-        /* ============================================
-                   ФУТЕР
-                   ============================================ */
+        /* ===== ФУТЕР ===== */
         .kumo-footer {
             position: relative;
             z-index: 1;
@@ -386,7 +535,9 @@
             gap: 32px;
         }
         @media (min-width: 768px) {
-            .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
         }
         .footer-heading {
             color: #fff;
@@ -394,14 +545,20 @@
             margin-bottom: 12px;
             font-size: 1rem;
         }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 6px; }
+        .footer-links {
+            list-style: none;
+        }
+        .footer-links li {
+            margin-bottom: 6px;
+        }
         .footer-links a {
             color: var(--kumo-subtle);
             font-size: 0.9rem;
             transition: color 0.3s;
         }
-        .footer-links a:hover { color: var(--kumo-brand); }
+        .footer-links a:hover {
+            color: var(--kumo-brand);
+        }
         .footer-bottom {
             margin-top: 32px;
             padding-top: 16px;
@@ -411,27 +568,33 @@
             font-size: 0.85rem;
         }
 
-        /* ============================================
-                   АДАПТИВ
-                   ============================================ */
+        /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
-            .about-card { padding: 32px 20px; }
-            .about-card .photo-wrapper img { max-width: 240px; }
-            .about-card .text-content p { font-size: 0.95rem; }
-            .about-stats { flex-direction: column; align-items: stretch; }
+            .about-card {
+                padding: 32px 20px;
+            }
+            .team-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .about-stats {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
         @media (max-width: 480px) {
-            .about-card { padding: 24px 16px; }
-            .about-card .photo-wrapper img { max-width: 180px; }
+            .about-card {
+                padding: 24px 16px;
+            }
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
+    <!-- ===== ФОН ===== -->
     <canvas id="particles-canvas"></canvas>
-
-    <!-- ===== ФОН: ПАРЯЩИЕ ФИГУРЫ ===== -->
     <div class="floating-shapes">
         <div class="shape"></div>
         <div class="shape"></div>
@@ -447,7 +610,7 @@
             </a>
             <ul class="kumo-nav-menu">
                 <li><a href="index.html" class="kumo-nav-link">Главная</a></li>
-                <li><a href="about.html" class="kumo-nav-link active">Обо мне</a></li>
+                <li><a href="about.html" class="kumo-nav-link active">О нас</a></li>
                 <li><a href="index.html#schedule" class="kumo-nav-link">Режим работы</a></li>
                 <li><a href="index.html#faq" class="kumo-nav-link">FAQ</a></li>
                 <li><a href="places.html" class="kumo-nav-link">🗺️ Маршруты</a></li>
@@ -463,7 +626,7 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="container" style="display:flex; flex-direction:column; gap:12px;">
             <a href="index.html">Главная</a>
-            <a href="about.html" class="active">Обо мне</a>
+            <a href="about.html" class="active">О нас</a>
             <a href="index.html#schedule">Режим работы</a>
             <a href="index.html#faq">FAQ</a>
             <a href="places.html">🗺️ Маршруты</a>
@@ -479,76 +642,98 @@
 
             <!-- ЗАГОЛОВОК -->
             <header class="about-header">
-                <span class="badge">👤 Обо мне</span>
-                <h1>О фотографе</h1>
-                <p>История, увлечения и планы на будущее</p>
+                <span class="badge">👥 Команда</span>
+                <h1>О нас и проекте</h1>
+                <p>Кто мы, чем занимаемся и кто помогает нам расти</p>
             </header>
 
-            <!-- КАРТОЧКА -->
+            <!-- КАРТОЧКА "О КОМАНДЕ" -->
             <div class="about-card">
 
-                <div class="photo-wrapper">
-                    <img src="media/portfolio/photo_2025-12-29_08-46-03.jpg" alt="Никс — Артур" loading="lazy">
+                <!-- ТЕКСТ О КОМАНДЕ -->
+                <div class="team-description">
+                    <p>
+                        👋 Привет! Это страница нашей команды. <span class="highlight">Артур (Никс)</span> — основатель, главный владелец этого сайта и основной фотограф проекта. 
+                        Вместе со мной над проектом работают два замечательных человека, без которых «Кадр решает Артурик» не был бы таким, какой он есть.
+                    </p>
                 </div>
 
-                <div class="text-content">
+                <!-- КАРТОЧКИ УЧАСТНИКОВ -->
+                <div class="team-grid">
+                    <!-- 1. АРТУР — ГЛАВНЫЙ -->
+                    <div class="team-card">
+                        <div class="avatar">👑</div>
+                        <h3>Артур</h3>
+                        <div class="nick">@tylenevv</div>
+                        <div class="role"><strong>Главный владелец и фотограф</strong><br />17 лет, Калининград. Создатель проекта, ведущий фотограф и идейный вдохновитель.</div>
+                    </div>
 
-                    <p>
-                        Привет! Меня зовут <span class="highlight">Артур</span>, и я живу в Калининграде. 
-                        Мне <span class="highlight">17 лет</span>, и я начинающий фотограф, который только начинает свой путь в этом увлекательном искусстве. 
-                        Фотография для меня — это способ запечатлеть моменты, которые я вижу вокруг себя, и передать свои эмоции через кадры.
-                    </p>
+                    <!-- 2. АРТЁМ -->
+                    <div class="team-card">
+                        <div class="avatar">💻</div>
+                        <h3>Артём</h3>
+                        <div class="nick">@owpq10</div>
+                        <div class="role"><strong>Технический сооснователь</strong><br />Помогает с разработкой сайта, придумывает идеи и реализует фишки.</div>
+                    </div>
 
-                    <p>
-                        После девятого класса я планирую поступить в колледж программирования. 
-                        Мне всегда интересовали технологии, и я хочу развиваться в этой области. 
-                        Но одновременно с учёбой я также собираюсь пройти курс по фотографии, чтобы улучшить свои навыки и стать более профессиональным в этом деле. 
-                        Я верю, что сочетание программирования и фотографии откроет для меня новые горизонты.
-                    </p>
-
-                    <p>
-                        В свободное время я люблю гулять по городу, наслаждаясь атмосферой и природой. 
-                        Это помогает мне находить вдохновение для моих фотографий. 
-                        Также я увлекаюсь рисованием — это позволяет мне развивать креативность и находить новые идеи для съемки. 
-                        Музыка — еще одна моя страсть: я слушаю разные жанры и часто пою. 
-                        Танцы тоже занимают важное место в моей жизни — это отличный способ выразить свои эмоции и расслабиться.
-                    </p>
-
-                    <p>
-                        Я также волонтерю в своей школе и городе, помогая людям в сложных ситуациях. 
-                        Мне важно делать что-то полезное и поддерживать тех, кто нуждается в помощи. 
-                        Это приносит мне удовлетворение и делает мир намного лучше.
-                    </p>
-
-                    <p>
-                        Если у вас есть вопросы или вы хотите пообщаться, не стесняйтесь писать мне! 
-                        Я всегда рад новым знакомствам и готов помочь, если вам нужна поддержка или совет. 
-                        Надеюсь, мы сможем поделиться опытом и вдохновением друг с другом!
-                    </p>
-
+                    <!-- 3. УЛЬЯНА -->
+                    <div class="team-card">
+                        <div class="avatar">📷</div>
+                        <h3>Ульяна</h3>
+                        <div class="nick">@ullyaliksi</div>
+                        <div class="role"><strong>Фотограф команды</strong><br />Снимает на камеру Артура, помогает на съёмках и создаёт дополнительный контент.</div>
+                    </div>
                 </div>
 
-                <!-- СТАТИСТИКА -->
+                <!-- ОБЩАЯ ФРАЗА ПРО КОМАНДУ -->
+                <div class="team-description" style="margin-top: 8px;">
+                    <p>
+                        Мы — <span class="highlight">трио</span>, которое объединяет любовь к фотографии, технологиям и творчеству. 
+                        Каждый из нас вносит что-то своё, и вместе мы делаем проект живым и развивающимся.
+                    </p>
+                </div>
+
+                <!-- ===== БЛОК "БЫВШИЙ УЧАСТНИК" ===== -->
+                <div class="ex-member-block">
+                    <button class="ex-toggle-btn" id="exToggleBtn">
+                        <span>👤 Бывшие участники</span>
+                        <span class="arrow">▾</span>
+                    </button>
+
+                    <div class="ex-member-detail" id="exMemberDetail">
+                        <h4>Макар</h4>
+                        <div class="ex-nick">@makarr (бывший участник)</div>
+                        <p>
+                            Макар помогал нам на старте проекта — участвовал в обсуждениях, поддерживал идеи и вносил свой вклад в развитие.
+                        </p>
+                        <div class="reason">
+                            <strong>Причина ухода:</strong> покинул проект по личным причинам. Мы благодарим Макара за его помощь и желаем удачи в его собственных начинаниях.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- СТАТИСТИКА (оставим как есть) -->
                 <div class="about-stats">
                     <div class="stat-card">
-                        <span class="stat-number">17</span>
-                        <span class="stat-label">Лет</span>
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">В команде</span>
                     </div>
                     <div class="stat-card">
                         <span class="stat-number">1+</span>
-                        <span class="stat-label">Год опыта</span>
+                        <span class="stat-label">Год проекта</span>
                     </div>
                     <div class="stat-card">
                         <span class="stat-number">30+</span>
-                        <span class="stat-label">Проведённых съёмок</span>
+                        <span class="stat-label">Съёмок</span>
                     </div>
                     <div class="stat-card">
                         <span class="stat-number">🏆</span>
-                        <span class="stat-label">Диплом призёра</span>
+                        <span class="stat-label">Диплом</span>
                     </div>
                 </div>
 
             </div>
+            <!-- конец about-card -->
 
         </div>
     </main>
@@ -568,7 +753,7 @@
                     <h4 class="footer-heading">Навигация</h4>
                     <ul class="footer-links">
                         <li><a href="index.html">Главная</a></li>
-                        <li><a href="about.html">Обо мне</a></li>
+                        <li><a href="about.html">О нас</a></li>
                         <li><a href="index.html#schedule">Режим работы</a></li>
                         <li><a href="index.html#faq">Частые вопросы</a></li>
                         <li><a href="places.html">🗺️ Маршруты</a></li>
@@ -638,7 +823,8 @@
 
             for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
-            let mouseX = null, mouseY = null;
+            let mouseX = null,
+                mouseY = null;
             canvas.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
@@ -691,6 +877,16 @@
         document.getElementById('mobileToggle')?.addEventListener('click', function() {
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('open');
+        });
+    </script>
+
+    <!-- 3. КНОПКА "БЫВШИЕ УЧАСТНИКИ" -->
+    <script>
+        document.getElementById('exToggleBtn')?.addEventListener('click', function() {
+            const detail = document.getElementById('exMemberDetail');
+            const isOpen = detail.classList.toggle('open');
+            this.classList.toggle('open', isOpen);
+            this.querySelector('.arrow').textContent = isOpen ? '▴' : '▾';
         });
     </script>
 
