@@ -294,11 +294,11 @@
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             // ===== СОСТОЯНИЯ =====
-            const STATE = { MENU: 0, SELECT: 1, TRANSITION: 2, PLAYING: 3, GAMEOVER: 4 };
+            const STATE = { MENU: 0, SELECT: 1, PLAYING: 2, GAMEOVER: 3 };
             let gameState = STATE.MENU;
             let controlMode = 'cursor';
             
-            // ===== ИГРОК С ЩИТОМ =====
+            // ===== ИГРОК =====
             let player = {
                 x: W / 2, y: H / 2, vy: 0,
                 radius: 28,
@@ -306,7 +306,7 @@
                 speed: 3.0,
                 hasShield: false,
                 shieldTimer: 0,
-                maxShieldTime: 300, // 5 секунд (60 FPS * 5)
+                maxShieldTime: 300,
             };
             let stars = [], clouds = [], shields = [];
             let score = 0;
@@ -314,8 +314,6 @@
             let gameActive = false;
             let frameId = null;
             let frameCount = 0;
-            let transitionProgress = 0;
-            const TRANSITION_DURATION = 60;
             const GRAVITY = 0.15, JUMP_FORCE = -0.5, MAX_SPEED = 8.0, FRICTION = 0.98;
 
             // ===== ЭФФЕКТ ТРЯСКИ =====
@@ -332,13 +330,14 @@
             }
 
             // ===== ИНИЦИАЛИЗАЦИЯ ИГРЫ =====
-            function initGame() {
+            function startPlaying() {
                 player.y = H / 2;
                 player.vy = 0;
                 player.speed = 3.0;
                 player.pulsePhase = 0;
                 player.hasShield = false;
                 player.shieldTimer = 0;
+                player.x = 80;
                 score = 0;
                 gameActive = true;
                 frameCount = 0;
@@ -391,7 +390,7 @@
                 btn.addEventListener('touchcancel', end);
             });
 
-            // ===== УПРАВЛЕНИЕ КУРСОРОМ (плавное) =====
+            // ===== УПРАВЛЕНИЕ КУРСОРОМ =====
             let targetY = player.y;
             canvas.addEventListener('mousemove', (e) => {
                 if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
@@ -410,25 +409,13 @@
 
             // ===== ОБНОВЛЕНИЕ =====
             function update() {
-                if (gameState === STATE.TRANSITION) {
-                    transitionProgress++;
-                    const t = transitionProgress / TRANSITION_DURATION;
-                    const ease = 1 - Math.pow(1 - t, 3);
-                    player.x = W / 2 + (80 - W / 2) * ease;
-                    player.y = H / 2;
-                    if (transitionProgress >= TRANSITION_DURATION) {
-                        player.x = 80;
-                        initGame();
-                    }
-                    return;
-                }
                 if (!gameActive || gameState !== STATE.PLAYING) return;
                 frameCount++;
 
                 // Управление
                 if (controlMode === 'cursor') {
                     const diff = targetY - player.y;
-                    player.vy += diff * 0.006; // ЕЩЁ МЯГЧЕ
+                    player.vy += diff * 0.006;
                 } else {
                     if (upPressed) player.vy += JUMP_FORCE;
                     if (downPressed) player.vy += GRAVITY * 0.8;
@@ -458,7 +445,7 @@
                 // Спавн
                 if (frameCount % 35 === 0) spawnStar();
                 if (frameCount % 55 === 0) spawnCloud();
-                if (frameCount % 70 === 0 && frameCount > 100) spawnShield(); // Щиты появляются реже
+                if (frameCount % 70 === 0 && frameCount > 100) spawnShield();
                 if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
 
                 // Сбор звёзд
@@ -487,7 +474,6 @@
                         player.hasShield = true;
                         player.shieldTimer = player.maxShieldTime;
                         shields.splice(i, 1);
-                        // Небольшая тряска при активации щита
                         shakeAmount = 4;
                         continue;
                     }
@@ -502,13 +488,10 @@
                     const dx = player.x - cloud.x, dy = player.y - cloud.y, dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < player.radius + cloud.r) {
                         if (player.hasShield) {
-                            // Уничтожаем тучу, трясём экран
                             clouds.splice(i, 1);
-                            shakeAmount = 12; // Сильная тряска
-                            // Небольшой эффект (можно добавить звук позже)
+                            shakeAmount = 12;
                             continue;
                         } else {
-                            // Обычный проигрыш
                             gameActive = false;
                             gameState = STATE.GAMEOVER;
                             finalScoreSpan.textContent = score;
@@ -534,7 +517,7 @@
                 if (shakeAmount > 0) {
                     shakeX = (Math.random() - 0.5) * shakeAmount * 1.2;
                     shakeY = (Math.random() - 0.5) * shakeAmount * 1.2;
-                    shakeAmount *= 0.92; // Затухание
+                    shakeAmount *= 0.92;
                     if (shakeAmount < 0.2) shakeAmount = 0;
                     ctx.translate(shakeX, shakeY);
                 }
@@ -542,7 +525,7 @@
                 ctx.clearRect(0, 0, W, H);
 
                 // ===== ШЛЕЙФ =====
-                if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER || gameState === STATE.TRANSITION) {
+                if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
                     const trailLen = 18;
                     for (let i = 1; i < trailLen; i++) {
                         const alpha = 0.3 * (1 - i / trailLen) * (player.speed / MAX_SPEED + 0.3);
@@ -578,7 +561,7 @@
                         ctx.shadowBlur = 0;
                     }
 
-                    // ===== ЩИТЫ (синие) =====
+                    // ===== ЩИТЫ =====
                     for (let shield of shields) {
                         const pulse = 1 + 0.12 * Math.sin(shield.phase);
                         const r = shield.r * pulse;
@@ -597,7 +580,6 @@
                         ctx.arc(shield.x, shield.y, r * 0.6, 0, Math.PI * 2);
                         ctx.fill();
                         ctx.shadowBlur = 0;
-                        // Иконка щита
                         ctx.font = '16px sans-serif';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
@@ -655,10 +637,9 @@
                     ctx.fillText('📷', drawX, drawY + 2);
                 }
 
-                // ===== ЭФФЕКТ ЩИТА (стекло) =====
-                if (player.hasShield && (gameState === STATE.PLAYING || gameState === STATE.TRANSITION)) {
+                // ===== ЭФФЕКТ ЩИТА =====
+                if (player.hasShield && gameState === STATE.PLAYING) {
                     const shieldRadius = player.radius * 1.8 + 8 * Math.sin(Date.now() * 0.005);
-                    // Основная сфера
                     const grad = ctx.createRadialGradient(player.x, player.y, 2, player.x, player.y, shieldRadius);
                     grad.addColorStop(0, 'rgba(96,165,250,0.05)');
                     grad.addColorStop(0.6, 'rgba(96,165,250,0.15)');
@@ -668,8 +649,6 @@
                     ctx.beginPath();
                     ctx.arc(player.x, player.y, shieldRadius, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Обводка (стекло)
                     ctx.strokeStyle = `rgba(96,165,250,${0.3 + 0.15 * Math.sin(Date.now() * 0.003)})`;
                     ctx.lineWidth = 2;
                     ctx.setLineDash([6, 8]);
@@ -677,8 +656,6 @@
                     ctx.arc(player.x, player.y, shieldRadius, 0, Math.PI * 2);
                     ctx.stroke();
                     ctx.setLineDash([]);
-
-                    // Искры по краям
                     for (let i = 0; i < 8; i++) {
                         const angle = i * Math.PI / 4 + Date.now() * 0.002;
                         const dist = shieldRadius * (0.85 + 0.15 * Math.sin(Date.now() * 0.005 + i));
@@ -689,8 +666,6 @@
                         ctx.fillStyle = `rgba(147, 197, 253, ${0.3 + 0.2 * Math.sin(Date.now() * 0.004 + i)})`;
                         ctx.fill();
                     }
-
-                    // Таймер щита (круговой индикатор)
                     const progress = player.shieldTimer / player.maxShieldTime;
                     ctx.strokeStyle = 'rgba(96,165,250,0.2)';
                     ctx.lineWidth = 2;
@@ -764,9 +739,8 @@
             function selectControl(mode) {
                 controlMode = mode;
                 controlSelectOverlay.classList.remove('show');
-                gameState = STATE.TRANSITION;
-                transitionProgress = 0;
-                player.x = W / 2;
+                // Сразу запускаем игру без лишнего перехода
+                player.x = 80;
                 player.y = H / 2;
                 player.vy = 0;
                 player.speed = 3.0;
@@ -774,16 +748,20 @@
                 player.hasShield = false;
                 player.shieldTimer = 0;
                 gameActive = true;
+                frameCount = 0;
                 stars = [];
                 clouds = [];
                 shields = [];
                 score = 0;
                 shakeAmount = 0;
-                updateUI();
+                gameState = STATE.PLAYING;
+                overlay.classList.remove('show');
                 gameHeader.classList.add('show');
                 gameControls.classList.add('show');
                 menuBtn.style.display = 'inline-block';
                 targetY = player.y;
+                updateUI();
+                playMusic();
             }
 
             function goToMenu() {
