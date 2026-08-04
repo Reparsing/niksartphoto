@@ -3,15 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Небесный объектив</title>
-    
-    <!-- ПОДКЛЮЧАЕМ АУДИО -->
-    <script>
-        const backgroundMusic = new Audio('https://raw.githubusercontent.com/Reparsing/niksartphoto/main/media/Nero_s_Day_At_Disneyland_-_Sprawling_Idiot_Effigy_(SkySound7.com).mp3');
-        backgroundMusic.loop = true;
-        backgroundMusic.volume = 0.4;
-    </script>
-
+    <title>Небесный объектив — Щиты</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
@@ -73,7 +65,6 @@
             touch-action: none;
             position: relative;
         }
-        /* ===== МЕНЮ ВЫБОРА УПРАВЛЕНИЯ ===== */
         .control-select-overlay {
             position: absolute;
             inset: 0;
@@ -98,22 +89,9 @@
             animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
-        .control-select-box h2 {
-            color: #fff;
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-        .control-select-box p {
-            color: #a1a1aa;
-            font-size: 0.95rem;
-            margin-bottom: 24px;
-        }
-        .control-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+        .control-select-box h2 { color: #fff; font-size: 1.8rem; margin-bottom: 8px; }
+        .control-select-box p { color: #a1a1aa; font-size: 0.95rem; margin-bottom: 24px; }
+        .control-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .control-btn {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -127,18 +105,8 @@
             font-family: inherit;
             min-width: 120px;
         }
-        .control-btn:hover {
-            background: rgba(251, 191, 36, 0.15);
-            border-color: #fbbf24;
-            transform: scale(1.03);
-        }
-        .control-btn.active {
-            background: #fbbf24;
-            color: #0a0a0c;
-            border-color: #fbbf24;
-        }
+        .control-btn:hover { background: rgba(251, 191, 36, 0.15); border-color: #fbbf24; transform: scale(1.03); }
         .control-btn .icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
-
         .menu-overlay {
             position: absolute;
             inset: 0;
@@ -197,7 +165,6 @@
         .btn-up:hover, .btn-down:hover { background: #fbbf24; color: #0a0a0c; }
         .btn-sm { padding: 8px 18px; font-size: 0.9rem; }
         .menu-btn-home { margin-top: 12px; }
-        
         .overlay {
             position: absolute;
             inset: 0;
@@ -231,7 +198,6 @@
         .overlay-box p strong { color: #fbbf24; font-size: 1.4rem; }
         .overlay-box .btn { background: #f87171; border-color: #f87171; color: #0a0a0c; padding: 12px 36px; }
         .overlay-box .btn:hover { background: #fca5a5; border-color: #fca5a5; transform: scale(1.05); }
-
         @media (max-width: 500px) {
             .game-wrapper { padding: 12px; }
             #gameCanvas { height: 400px; }
@@ -266,8 +232,6 @@
 
         <div style="position: relative;">
             <canvas id="gameCanvas" width="600" height="500"></canvas>
-
-            <!-- ГЛАВНОЕ МЕНЮ -->
             <div class="menu-overlay" id="menuOverlay">
                 <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
                     <button class="btn btn-primary" id="startGameBtn" style="font-size: 1.4rem; padding: 16px 56px;">🚀 Играть</button>
@@ -275,25 +239,17 @@
                 </div>
             </div>
 
-            <!-- ОКНО ВЫБОРА УПРАВЛЕНИЯ -->
             <div class="control-select-overlay" id="controlSelectOverlay">
                 <div class="control-select-box">
                     <h2>🎮 Выбери управление</h2>
                     <p>Как ты хочешь управлять камерой?</p>
                     <div class="control-buttons">
-                        <button class="control-btn" id="controlCursor">
-                            <span class="icon">🖱️</span>
-                            Курсор/палец
-                        </button>
-                        <button class="control-btn" id="controlButtons">
-                            <span class="icon">🔘</span>
-                            Кнопки ▲▼
-                        </button>
+                        <button class="control-btn" id="controlCursor"><span class="icon">🖱️</span>Курсор/палец</button>
+                        <button class="control-btn" id="controlButtons"><span class="icon">🔘</span>Кнопки ▲▼</button>
                     </div>
                 </div>
             </div>
 
-            <!-- ОКНО ПРОИГРЫША -->
             <div class="overlay" id="gameOverOverlay">
                 <div class="overlay-box">
                     <h2>💥 Игра окончена</h2>
@@ -340,10 +296,19 @@
             // ===== СОСТОЯНИЯ =====
             const STATE = { MENU: 0, SELECT: 1, TRANSITION: 2, PLAYING: 3, GAMEOVER: 4 };
             let gameState = STATE.MENU;
-            let controlMode = 'cursor'; // 'cursor' или 'buttons'
+            let controlMode = 'cursor';
             
-            let player = { x: W / 2, y: H / 2, vy: 0, radius: 28, pulsePhase: 0, speed: 3.0 };
-            let stars = [], clouds = [];
+            // ===== ИГРОК С ЩИТОМ =====
+            let player = {
+                x: W / 2, y: H / 2, vy: 0,
+                radius: 28,
+                pulsePhase: 0,
+                speed: 3.0,
+                hasShield: false,
+                shieldTimer: 0,
+                maxShieldTime: 300, // 5 секунд (60 FPS * 5)
+            };
+            let stars = [], clouds = [], shields = [];
             let score = 0;
             let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
             let gameActive = false;
@@ -352,6 +317,10 @@
             let transitionProgress = 0;
             const TRANSITION_DURATION = 60;
             const GRAVITY = 0.15, JUMP_FORCE = -0.5, MAX_SPEED = 8.0, FRICTION = 0.98;
+
+            // ===== ЭФФЕКТ ТРЯСКИ =====
+            let shakeAmount = 0;
+            let shakeX = 0, shakeY = 0;
 
             // ===== МУЗЫКА =====
             function playMusic() {
@@ -368,11 +337,15 @@
                 player.vy = 0;
                 player.speed = 3.0;
                 player.pulsePhase = 0;
+                player.hasShield = false;
+                player.shieldTimer = 0;
                 score = 0;
                 gameActive = true;
                 frameCount = 0;
                 stars = [];
                 clouds = [];
+                shields = [];
+                shakeAmount = 0;
                 gameState = STATE.PLAYING;
                 overlay.classList.remove('show');
                 gameHeader.classList.add('show');
@@ -391,6 +364,10 @@
                 const y = 30 + Math.random() * (H - 60);
                 const size = 28 + Math.random() * 16;
                 clouds.push({ x: W + 20, y, r: size, speed: 2.0 + Math.random() * 1.5, phase: Math.random() * Math.PI * 2 });
+            }
+            function spawnShield() {
+                const y = 30 + Math.random() * (H - 60);
+                shields.push({ x: W + 20, y, r: 14, speed: 1.8 + Math.random() * 0.8, phase: Math.random() * Math.PI * 2 });
             }
 
             function updateUI() {
@@ -414,7 +391,7 @@
                 btn.addEventListener('touchcancel', end);
             });
 
-            // ===== УПРАВЛЕНИЕ КУРСОРОМ/ПАЛЬЦЕМ =====
+            // ===== УПРАВЛЕНИЕ КУРСОРОМ (плавное) =====
             let targetY = player.y;
             canvas.addEventListener('mousemove', (e) => {
                 if (gameState !== STATE.PLAYING || controlMode !== 'cursor') return;
@@ -448,10 +425,10 @@
                 if (!gameActive || gameState !== STATE.PLAYING) return;
                 frameCount++;
 
-                // Управление: курсор или кнопки
+                // Управление
                 if (controlMode === 'cursor') {
                     const diff = targetY - player.y;
-                    player.vy += diff * 0.008;
+                    player.vy += diff * 0.006; // ЕЩЁ МЯГЧЕ
                 } else {
                     if (upPressed) player.vy += JUMP_FORCE;
                     if (downPressed) player.vy += GRAVITY * 0.8;
@@ -465,9 +442,23 @@
                 if (player.y < margin) { player.y = margin; player.vy = 0; }
                 if (player.y > H - margin) { player.y = H - margin; player.vy = 0; }
                 player.pulsePhase += 0.05 * (player.speed / MAX_SPEED + 0.3);
+
+                // Таймер щита
+                if (player.hasShield) {
+                    player.shieldTimer--;
+                    if (player.shieldTimer <= 0) {
+                        player.hasShield = false;
+                        player.shieldTimer = 0;
+                    }
+                }
+
+                // Скорость
                 if (frameCount % 60 === 0 && player.speed < MAX_SPEED) player.speed += 0.05;
+
+                // Спавн
                 if (frameCount % 35 === 0) spawnStar();
                 if (frameCount % 55 === 0) spawnCloud();
+                if (frameCount % 70 === 0 && frameCount > 100) spawnShield(); // Щиты появляются реже
                 if (frameCount % 80 === 0 && frameCount > 100) spawnCloud();
 
                 // Сбор звёзд
@@ -486,6 +477,23 @@
                     if (star.x < -20) stars.splice(i, 1);
                 }
 
+                // Сбор щитов
+                for (let i = shields.length - 1; i >= 0; i--) {
+                    const shield = shields[i];
+                    shield.x -= shield.speed * (player.speed / 3);
+                    shield.phase += 0.05;
+                    const dx = player.x - shield.x, dy = player.y - shield.y, dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < player.radius + shield.r) {
+                        player.hasShield = true;
+                        player.shieldTimer = player.maxShieldTime;
+                        shields.splice(i, 1);
+                        // Небольшая тряска при активации щита
+                        shakeAmount = 4;
+                        continue;
+                    }
+                    if (shield.x < -20) shields.splice(i, 1);
+                }
+
                 // Столкновение с тучей
                 for (let i = clouds.length - 1; i >= 0; i--) {
                     const cloud = clouds[i];
@@ -493,23 +501,47 @@
                     cloud.phase += 0.02;
                     const dx = player.x - cloud.x, dy = player.y - cloud.y, dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < player.radius + cloud.r) {
-                        gameActive = false;
-                        gameState = STATE.GAMEOVER;
-                        finalScoreSpan.textContent = score;
-                        overlay.classList.add('show');
-                        gameControls.classList.remove('show');
-                        stopMusic();
-                        return;
+                        if (player.hasShield) {
+                            // Уничтожаем тучу, трясём экран
+                            clouds.splice(i, 1);
+                            shakeAmount = 12; // Сильная тряска
+                            // Небольшой эффект (можно добавить звук позже)
+                            continue;
+                        } else {
+                            // Обычный проигрыш
+                            gameActive = false;
+                            gameState = STATE.GAMEOVER;
+                            finalScoreSpan.textContent = score;
+                            overlay.classList.add('show');
+                            gameControls.classList.remove('show');
+                            stopMusic();
+                            return;
+                        }
                     }
                     if (cloud.x < -40) clouds.splice(i, 1);
                 }
+
                 if (stars.length > 20) stars.splice(0, stars.length - 20);
                 if (clouds.length > 15) clouds.splice(0, clouds.length - 15);
+                if (shields.length > 5) shields.splice(0, shields.length - 5);
             }
 
-            // ===== ОТРИСОВКА (та же, что была) =====
+            // ===== ОТРИСОВКА =====
             function draw() {
+                ctx.save();
+
+                // Эффект тряски
+                if (shakeAmount > 0) {
+                    shakeX = (Math.random() - 0.5) * shakeAmount * 1.2;
+                    shakeY = (Math.random() - 0.5) * shakeAmount * 1.2;
+                    shakeAmount *= 0.92; // Затухание
+                    if (shakeAmount < 0.2) shakeAmount = 0;
+                    ctx.translate(shakeX, shakeY);
+                }
+
                 ctx.clearRect(0, 0, W, H);
+
+                // ===== ШЛЕЙФ =====
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER || gameState === STATE.TRANSITION) {
                     const trailLen = 18;
                     for (let i = 1; i < trailLen; i++) {
@@ -523,6 +555,8 @@
                         ctx.fill();
                     }
                 }
+
+                // ===== ЗВЁЗДЫ =====
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
                     for (let star of stars) {
                         const pulse = 1 + 0.15 * Math.sin(star.phase);
@@ -543,6 +577,35 @@
                         ctx.fill();
                         ctx.shadowBlur = 0;
                     }
+
+                    // ===== ЩИТЫ (синие) =====
+                    for (let shield of shields) {
+                        const pulse = 1 + 0.12 * Math.sin(shield.phase);
+                        const r = shield.r * pulse;
+                        const grad = ctx.createRadialGradient(shield.x, shield.y, 2, shield.x, shield.y, r * 2.2);
+                        grad.addColorStop(0, '#60a5fa');
+                        grad.addColorStop(0.5, 'rgba(96,165,250,0.3)');
+                        grad.addColorStop(1, 'rgba(96,165,250,0)');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath();
+                        ctx.arc(shield.x, shield.y, r * 2.2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#60a5fa';
+                        ctx.shadowColor = '#60a5fa';
+                        ctx.shadowBlur = 25;
+                        ctx.beginPath();
+                        ctx.arc(shield.x, shield.y, r * 0.6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        // Иконка щита
+                        ctx.font = '16px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = '#fff';
+                        ctx.fillText('🛡️', shield.x, shield.y + 1);
+                    }
+
+                    // ===== ТУЧИ =====
                     for (let cloud of clouds) {
                         const pulse = 1 + 0.05 * Math.sin(cloud.phase);
                         const r = cloud.r * pulse;
@@ -563,6 +626,8 @@
                         }
                     }
                 }
+
+                // ===== КАМЕРА =====
                 const pulse = 1 + 0.06 * Math.sin(player.pulsePhase);
                 const scaleX = pulse, scaleY = 1 / pulse;
                 let drawX = player.x, drawY = player.y;
@@ -589,6 +654,56 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', drawX, drawY + 2);
                 }
+
+                // ===== ЭФФЕКТ ЩИТА (стекло) =====
+                if (player.hasShield && (gameState === STATE.PLAYING || gameState === STATE.TRANSITION)) {
+                    const shieldRadius = player.radius * 1.8 + 8 * Math.sin(Date.now() * 0.005);
+                    // Основная сфера
+                    const grad = ctx.createRadialGradient(player.x, player.y, 2, player.x, player.y, shieldRadius);
+                    grad.addColorStop(0, 'rgba(96,165,250,0.05)');
+                    grad.addColorStop(0.6, 'rgba(96,165,250,0.15)');
+                    grad.addColorStop(0.85, 'rgba(96,165,250,0.3)');
+                    grad.addColorStop(1, 'rgba(96,165,250,0.1)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, shieldRadius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Обводка (стекло)
+                    ctx.strokeStyle = `rgba(96,165,250,${0.3 + 0.15 * Math.sin(Date.now() * 0.003)})`;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([6, 8]);
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, shieldRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Искры по краям
+                    for (let i = 0; i < 8; i++) {
+                        const angle = i * Math.PI / 4 + Date.now() * 0.002;
+                        const dist = shieldRadius * (0.85 + 0.15 * Math.sin(Date.now() * 0.005 + i));
+                        const x = player.x + Math.cos(angle) * dist;
+                        const y = player.y + Math.sin(angle) * dist;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 2 + Math.sin(Date.now() * 0.01 + i) * 1.5, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(147, 197, 253, ${0.3 + 0.2 * Math.sin(Date.now() * 0.004 + i)})`;
+                        ctx.fill();
+                    }
+
+                    // Таймер щита (круговой индикатор)
+                    const progress = player.shieldTimer / player.maxShieldTime;
+                    ctx.strokeStyle = 'rgba(96,165,250,0.2)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, shieldRadius + 8, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.strokeStyle = `rgba(96,165,250,${0.4 + 0.2 * Math.sin(Date.now() * 0.005)})`;
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, shieldRadius + 8, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress);
+                    ctx.stroke();
+                }
+
+                // ===== ЭФФЕКТЫ МЕНЮ =====
                 if (gameState === STATE.MENU || gameState === STATE.SELECT) {
                     const time = Date.now() * 0.001;
                     for (let i = 0; i < 16; i++) {
@@ -616,13 +731,21 @@
                         ctx.stroke();
                     }
                 }
+
+                // ===== СПИДОМЕТР =====
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
                     ctx.fillStyle = 'rgba(255,255,255,0.15)';
                     ctx.font = '12px monospace';
                     ctx.textAlign = 'left';
                     ctx.textBaseline = 'bottom';
                     ctx.fillText(`⚡ ${Math.round(player.speed)} км/ч`, 12, H - 10);
+                    if (player.hasShield) {
+                        ctx.fillStyle = 'rgba(96,165,250,0.5)';
+                        ctx.fillText(`🛡️ ${Math.ceil(player.shieldTimer / 60)}с`, 120, H - 10);
+                    }
                 }
+
+                ctx.restore();
             }
 
             function gameLoop() {
@@ -648,20 +771,19 @@
                 player.vy = 0;
                 player.speed = 3.0;
                 player.pulsePhase = 0;
+                player.hasShield = false;
+                player.shieldTimer = 0;
                 gameActive = true;
                 stars = [];
                 clouds = [];
+                shields = [];
                 score = 0;
+                shakeAmount = 0;
                 updateUI();
                 gameHeader.classList.add('show');
                 gameControls.classList.add('show');
                 menuBtn.style.display = 'inline-block';
-                // Подсказка для управления
-                if (mode === 'cursor') {
-                    console.log('Управление: курсор/палец');
-                } else {
-                    console.log('Управление: кнопки ▲▼');
-                }
+                targetY = player.y;
             }
 
             function goToMenu() {
@@ -675,11 +797,15 @@
                 menuBtn.style.display = 'none';
                 stars = [];
                 clouds = [];
+                shields = [];
                 player.x = W / 2;
                 player.y = H / 2;
                 player.vy = 0;
                 player.speed = 3.0;
+                player.hasShield = false;
+                player.shieldTimer = 0;
                 score = 0;
+                shakeAmount = 0;
                 updateUI();
                 stopMusic();
             }
@@ -693,10 +819,14 @@
                 player.vy = 0;
                 player.speed = 3.0;
                 player.pulsePhase = 0;
+                player.hasShield = false;
+                player.shieldTimer = 0;
                 score = 0;
                 stars = [];
                 clouds = [];
+                shields = [];
                 frameCount = 0;
+                shakeAmount = 0;
                 gameControls.classList.add('show');
                 updateUI();
                 playMusic();
@@ -720,4 +850,4 @@
         })();
     </script>
 </body>
-</html>1
+</html>
