@@ -167,7 +167,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== ОГРОМНАЯ КАМЕРА С ХВОСТОМ ===== */
+        /* ===== КАМЕРА С ХВОСТОМ (ОДИНАКОВЫЙ РАЗМЕР) ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -433,7 +433,7 @@
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             
-            <!-- ===== 1. ОГРОМНАЯ КАМЕРА С ХВОСТОМ (ПЕРВАЯ) ===== -->
+            <!-- ===== 1. КАМЕРА С ХВОСТОМ (ОДИНАКОВЫЙ РАЗМЕР) ===== -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container">
                     <canvas id="cameraNavCanvas" width="300" height="300"></canvas>
@@ -829,7 +829,7 @@
         });
     </script>
 
-    <!-- ===== ОГРОМНАЯ КАМЕРА С ХВОСТОМ ===== -->
+    <!-- ===== КАМЕРА С ХВОСТОМ (ОДИНАКОВЫЙ РАЗМЕР) ===== -->
     <script>
         (function() {
             const canvas = document.getElementById('cameraNavCanvas');
@@ -844,13 +844,16 @@
 
             let pulsePhase = 0;
 
+            // ОДИНАКОВЫЙ РАЗМЕР для камеры и хвоста
+            const SIZE = 130;
+
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
 
                 // --- 1. РИСУЕМ ХВОСТ (ПОЗАДИ КАМЕРЫ) ---
                 const time = Date.now() * 0.003;
-                const trailLength = 45;
-                const maxRadius = 120;
+                const trailLength = 50;
+                const maxRadius = SIZE;
                 
                 for (let i = 1; i < trailLength; i++) {
                     const progress = i / trailLength;
@@ -874,14 +877,14 @@
                 }
                 ctx.shadowBlur = 0;
 
-                // --- 2. РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА ---
+                // --- 2. РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА (ТОГО ЖЕ РАЗМЕРА) ---
                 const pulse = 1 + 0.08 * Math.sin(pulsePhase);
                 const scaleX = 1 / pulse;
                 const scaleY = pulse;
 
                 ctx.save();
                 ctx.translate(W/2, H/2);
-                const baseSize = 120;
+                const baseSize = SIZE;
                 const sizeX = baseSize * scaleX;
                 const sizeY = baseSize * scaleY;
                 
