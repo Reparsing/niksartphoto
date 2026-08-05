@@ -167,7 +167,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== БОЛЬШАЯ КАМЕРА С ХВОСТОМ (ОГРОМНАЯ) ===== */
+        /* ===== ОГРОМНАЯ КАМЕРА С ХВОСТОМ ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -185,16 +185,16 @@
 
         .camera-nav-container-large {
             position: relative;
-            width: 110px;
-            height: 110px;
+            width: 120px;
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         #cameraNavCanvasLarge {
-            width: 110px;
-            height: 110px;
+            width: 120px;
+            height: 120px;
             display: block;
             position: relative;
             z-index: 2;
@@ -203,33 +203,33 @@
 
         @media (max-width: 1024px) {
             .camera-nav-container-large {
-                width: 90px;
-                height: 90px;
+                width: 100px;
+                height: 100px;
             }
             #cameraNavCanvasLarge {
-                width: 90px;
-                height: 90px;
+                width: 100px;
+                height: 100px;
             }
         }
 
         @media (max-width: 768px) {
             .camera-nav-container-large {
-                width: 70px;
-                height: 70px;
+                width: 80px;
+                height: 80px;
             }
             #cameraNavCanvasLarge {
-                width: 70px;
-                height: 70px;
+                width: 80px;
+                height: 80px;
             }
         }
         @media (max-width: 480px) {
             .camera-nav-container-large {
-                width: 60px;
-                height: 60px;
+                width: 70px;
+                height: 70px;
             }
             #cameraNavCanvasLarge {
-                width: 60px;
-                height: 60px;
+                width: 70px;
+                height: 70px;
             }
         }
 
@@ -436,7 +436,7 @@
             <!-- ===== ОГРОМНАЯ КАМЕРА С РАДУЖНЫМ ХВОСТОМ (ПЕРВАЯ) ===== -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container-large">
-                    <canvas id="cameraNavCanvasLarge" width="160" height="160"></canvas>
+                    <canvas id="cameraNavCanvasLarge" width="200" height="200"></canvas>
                 </div>
             </div>
 
@@ -834,70 +834,81 @@
         });
     </script>
 
-    <!-- ===== ОГРОМНАЯ КАМЕРА С РАДУЖНЫМ ХВОСТОМ И ПУЛЬСАЦИЕЙ ===== -->
+    <!-- ===== ОГРОМНАЯ КАМЕРА С РЕАЛИСТИЧНЫМ ХВОСТОМ ===== -->
     <script>
         (function() {
             const canvas = document.getElementById('cameraNavCanvasLarge');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const W = canvas.width;  // 160
-            const H = canvas.height; // 160
+            const W = canvas.width;  // 200
+            const H = canvas.height; // 200
 
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             let pulsePhase = 0;
-            const baseRadius = 50; // Огромный радиус для хвоста
 
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- Радужный хвост (огромный и яркий) ---
+                // --- 1. СНАЧАЛА РИСУЕМ ХВОСТ (ПОЗАДИ КАМЕРЫ) ---
                 const time = Date.now() * 0.003;
-                const trailLen = 20;      // Очень длинный хвост
-                const spd = 4;
-                const radius = baseRadius;
-                for (let i = 1; i < trailLen; i++) {
-                    const alpha = 0.5 * (1 - i/trailLen) * (spd/8 + 0.3);
-                    const size = (1 - i/trailLen) * radius * 0.9;
-                    const yOff = Math.sin(time + i * 0.15) * 3;
-                    const xOff = -i * 4.5;
-                    const hue = (i * 15 + Date.now() * 0.025) % 360;
+                const trailLength = 30;
+                const maxRadius = 65;
+                
+                for (let i = 1; i < trailLength; i++) {
+                    const progress = i / trailLength;
+                    const alpha = 0.5 * (1 - progress) * (1 + 0.3 * Math.sin(time * 0.5 + i * 0.2));
+                    const size = (1 - progress) * maxRadius * 0.9;
+                    
+                    // Плавное движение хвоста
+                    const waveX = Math.sin(time * 0.7 + i * 0.12) * 4;
+                    const waveY = Math.sin(time * 0.5 + i * 0.18) * 3;
+                    
+                    const xOff = -i * 3.8 + waveX;
+                    const yOff = waveY;
+                    
+                    const hue = (i * 12 + time * 15) % 360;
+                    
                     ctx.beginPath();
                     ctx.arc(W/2 + xOff, H/2 + yOff, size, 0, Math.PI * 2);
                     ctx.fillStyle = `hsla(${hue}, 95%, 65%, ${alpha})`;
+                    ctx.shadowColor = `hsla(${hue}, 95%, 65%, ${alpha * 0.5})`;
+                    ctx.shadowBlur = 20;
                     ctx.fill();
                 }
+                ctx.shadowBlur = 0;
 
-                // --- Пульсация камеры (сильная) ---
-                const pulse = 1 + 0.09 * Math.sin(pulsePhase);
+                // --- 2. ТЕПЕРЬ РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА ---
+                const pulse = 1 + 0.08 * Math.sin(pulsePhase);
                 const scaleX = 1 / pulse;
                 const scaleY = pulse;
 
+                ctx.save();
+                ctx.translate(W/2, H/2);
+                const baseSize = 95;
+                const sizeX = baseSize * scaleX;
+                const sizeY = baseSize * scaleY;
+                
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
-                    ctx.save();
-                    ctx.translate(W/2, H/2);
-                    const baseSize = 90; // Огромный размер камеры
-                    const sizeX = baseSize * scaleX;
-                    const sizeY = baseSize * scaleY;
                     ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
-                    ctx.restore();
                 } else {
                     // Запасной вариант
-                    ctx.fillStyle = '#fbbf24';
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 30;
+                    ctx.fillStyle = '#fbbf24';
                     ctx.beginPath();
-                    ctx.ellipse(W/2, H/2, 32 * scaleX, 32 * scaleY, 0, 0, Math.PI * 2);
+                    ctx.ellipse(0, 0, 35 * scaleX, 35 * scaleY, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
-                    ctx.font = '44px sans-serif';
+                    ctx.font = '48px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('📷', W/2, H/2 + 1);
+                    ctx.fillText('📷', 0, 2);
                 }
+                ctx.restore();
 
                 pulsePhase += 0.045;
                 requestAnimationFrame(drawCamera);
