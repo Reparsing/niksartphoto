@@ -66,6 +66,8 @@
             align-items: center;
             justify-content: space-between;
         }
+
+        /* ===== ЛОГОТИП ===== */
         .logo {
             display: flex;
             align-items: center;
@@ -75,6 +77,7 @@
             color: #fff;
             text-decoration: none;
             cursor: pointer;
+            margin-left: 12px;
         }
         .logo .avatar {
             width: 40px;
@@ -108,6 +111,7 @@
             letter-spacing: 0.05em;
         }
 
+        /* ===== ОСНОВНОЕ МЕНЮ ===== */
         .nav-menu {
             display: none;
             list-style: none;
@@ -135,6 +139,8 @@
             border-radius: 2px;
             box-shadow: 0 0 20px var(--brand-glow);
         }
+
+        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
         .mobile-toggle {
             background: none;
             border: none;
@@ -161,46 +167,59 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== КАМЕРА КАК ИКОНКА МЕНЮ (РАЗМЕР С ХВОСТОМ) ===== */
+        /* ===== БОЛЬШАЯ КАМЕРА С ХВОСТОМ (В МЕНЮ) ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 4px;
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             z-index: 55;
+            margin-right: 4px;
+            flex-shrink: 0;
         }
         .camera-nav-wrapper:hover {
             transform: scale(1.08);
         }
 
-        .camera-nav-container {
+        .camera-nav-container-large {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 72px;
+            height: 72px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        #cameraNavCanvas {
-            width: 32px;
-            height: 32px;
+        #cameraNavCanvasLarge {
+            width: 72px;
+            height: 72px;
             display: block;
             position: relative;
             z-index: 2;
-            filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.2));
+            filter: drop-shadow(0 0 24px rgba(251, 191, 36, 0.3));
         }
 
         @media (max-width: 768px) {
-            .camera-nav-container { width: 34px; height: 34px; }
-            #cameraNavCanvas { width: 28px; height: 28px; }
+            .camera-nav-container-large {
+                width: 56px;
+                height: 56px;
+            }
+            #cameraNavCanvasLarge {
+                width: 56px;
+                height: 56px;
+            }
         }
         @media (max-width: 480px) {
-            .camera-nav-container { width: 30px; height: 30px; }
-            #cameraNavCanvas { width: 24px; height: 24px; }
+            .camera-nav-container-large {
+                width: 48px;
+                height: 48px;
+            }
+            #cameraNavCanvasLarge {
+                width: 48px;
+                height: 48px;
+            }
         }
 
         /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
@@ -397,9 +416,20 @@
     <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
     <canvas id="particles-canvas"></canvas>
 
-    <!-- ===== НАВИГАЦИЯ ===== -->
+    <!-- ============================================================ -->
+    <!-- ===== НАВИГАЦИЯ С БОЛЬШОЙ КАМЕРОЙ В НАЧАЛЕ ===== -->
+    <!-- ============================================================ -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
+            
+            <!-- ===== КАМЕРА С РАДУЖНЫМ ХВОСТОМ (ПЕРВАЯ) ===== -->
+            <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
+                <div class="camera-nav-container-large">
+                    <canvas id="cameraNavCanvasLarge" width="96" height="96"></canvas>
+                </div>
+            </div>
+
+            <!-- ===== ЛОГОТИП ===== -->
             <div class="logo" id="avatarTrigger">
                 <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" id="avatarImg">
                 <div class="brand-text">
@@ -407,6 +437,8 @@
                     <span class="sub">Кадр решает</span>
                 </div>
             </div>
+
+            <!-- ===== ОСНОВНОЕ МЕНЮ ===== -->
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link active">Главная</a></li>
                 <li><a href="about.html" class="nav-link">О нас</a></li>
@@ -418,12 +450,8 @@
                 <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
-            <!-- КАМЕРА КАК ИКОНКА МЕНЮ (РАЗМЕР 32X32) -->
-            <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
-                <div class="camera-nav-container">
-                    <canvas id="cameraNavCanvas" width="64" height="64"></canvas>
-                </div>
-            </div>
+
+            <!-- ===== КНОПКА МОБИЛЬНОГО МЕНЮ ===== -->
             <button class="mobile-toggle" id="mobileToggle">☰</button>
         </div>
     </nav>
@@ -482,7 +510,7 @@
         </div>
     </section>
 
-    <!-- ===== ОСТАЛЬНЫЕ СЕКЦИИ ===== -->
+    <!-- ===== НАПРАВЛЕНИЯ ===== -->
     <section class="section">
         <div class="container">
             <div style="text-align:center;margin-bottom:48px;">
@@ -504,6 +532,7 @@
         </div>
     </section>
 
+    <!-- ===== ОБО МНЕ ===== -->
     <section id="about">
         <div class="container">
             <div class="about-grid">
@@ -527,6 +556,7 @@
         </div>
     </section>
 
+    <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <section class="awards" id="awards">
         <div class="container">
             <div style="text-align:center;">
@@ -549,6 +579,7 @@
         </div>
     </section>
 
+    <!-- ===== РАСПИСАНИЕ ===== -->
     <section class="schedule" id="schedule">
         <div class="container">
             <div class="schedule-card">
@@ -560,6 +591,7 @@
         </div>
     </section>
 
+    <!-- ===== FAQ ===== -->
     <section class="faq" id="faq">
         <div class="container">
             <div style="text-align:center;margin-bottom:40px;">
@@ -593,6 +625,7 @@
         </div>
     </section>
 
+    <!-- ===== CTA ===== -->
     <section class="cta">
         <div class="container">
             <span class="section-label">Начнём?</span>
@@ -611,7 +644,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;cursor:default;">
+                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;cursor:default;margin-left:0;">
                         <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" style="width:32px;height:32px;border:2px solid var(--brand);">
                         <div>
                             <span style="font-weight:800;color:#fff;">Артурик</span>
@@ -790,35 +823,35 @@
         });
     </script>
 
-    <!-- ===== КАМЕРА КАК ИКОНКА МЕНЮ (ХВОСТ + ПУЛЬСАЦИЯ) ===== -->
+    <!-- ===== БОЛЬШАЯ КАМЕРА С РАДУЖНЫМ ХВОСТОМ И ПУЛЬСАЦИЕЙ ===== -->
     <script>
         (function() {
-            const canvas = document.getElementById('cameraNavCanvas');
+            const canvas = document.getElementById('cameraNavCanvasLarge');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const W = canvas.width;  // 64
-            const H = canvas.height; // 64
+            const W = canvas.width;  // 96
+            const H = canvas.height; // 96
 
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             let pulsePhase = 0;
-            const baseRadius = 20;
+            const baseRadius = 30; // Увеличен для большой камеры
 
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- Радужный хвост (прямой, с лёгким покачиванием) ---
+                // --- Радужный хвост (больше и ярче) ---
                 const time = Date.now() * 0.003;
-                const trailLen = 10;
-                const spd = 3;
+                const trailLen = 14;      // Длиннее хвост
+                const spd = 3.5;
                 const radius = baseRadius;
                 for (let i = 1; i < trailLen; i++) {
-                    const alpha = 0.35 * (1 - i/trailLen) * (spd/8 + 0.3);
+                    const alpha = 0.4 * (1 - i/trailLen) * (spd/8 + 0.3);
                     const size = (1 - i/trailLen) * radius * 0.85;
-                    const yOff = Math.sin(time + i * 0.15) * 2;
-                    const xOff = -i * 2.8;
+                    const yOff = Math.sin(time + i * 0.15) * 2.5;
+                    const xOff = -i * 3.2;
                     const hue = (i * 18 + Date.now() * 0.02) % 360;
                     ctx.beginPath();
                     ctx.arc(W/2 + xOff, H/2 + yOff, size, 0, Math.PI * 2);
@@ -826,29 +859,30 @@
                     ctx.fill();
                 }
 
-                // --- Камера с пульсацией (растяжение по вертикали) ---
-                const pulse = 1 + 0.06 * Math.sin(pulsePhase);
+                // --- Пульсация камеры ---
+                const pulse = 1 + 0.07 * Math.sin(pulsePhase);
                 const scaleX = 1 / pulse;
                 const scaleY = pulse;
 
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(W/2, H/2);
-                    const baseSize = 36;
+                    const baseSize = 54; // Больше размер
                     const sizeX = baseSize * scaleX;
                     const sizeY = baseSize * scaleY;
                     ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
                     ctx.restore();
                 } else {
+                    // Запасной вариант
                     ctx.fillStyle = '#fbbf24';
                     ctx.shadowColor = '#fbbf24';
-                    ctx.shadowBlur = 10;
+                    ctx.shadowBlur = 20;
                     ctx.beginPath();
-                    ctx.ellipse(W/2, H/2, 14 * scaleX, 14 * scaleY, 0, 0, Math.PI * 2);
+                    ctx.ellipse(W/2, H/2, 20 * scaleX, 20 * scaleY, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
-                    ctx.font = '16px sans-serif';
+                    ctx.font = '28px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', W/2, H/2 + 1);
@@ -858,7 +892,6 @@
                 requestAnimationFrame(drawCamera);
             }
 
-            // Запускаем анимацию после загрузки картинки
             if (cameraImg.complete) {
                 drawCamera();
             } else {
