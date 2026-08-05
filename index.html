@@ -67,7 +67,7 @@
             justify-content: space-between;
         }
 
-        /* ===== ЛОГОТИП ===== */
+        /* ===== ЛОГОТИП С АВАТАРКОЙ ===== */
         .logo {
             display: flex;
             align-items: center;
@@ -428,19 +428,19 @@
     <canvas id="particles-canvas"></canvas>
 
     <!-- ============================================================ -->
-    <!-- ===== НАВИГАЦИЯ С ОГРОМНОЙ КАМЕРОЙ ===== -->
+    <!-- ===== НАВИГАЦИЯ ===== -->
     <!-- ============================================================ -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             
-            <!-- ===== ОГРОМНАЯ КАМЕРА С ХВОСТОМ ===== -->
+            <!-- ===== 1. ОГРОМНАЯ КАМЕРА С ХВОСТОМ (ПЕРВАЯ) ===== -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container">
                     <canvas id="cameraNavCanvas" width="300" height="300"></canvas>
                 </div>
             </div>
 
-            <!-- ===== ЛОГОТИП ===== -->
+            <!-- ===== 2. ЛОГОТИП С АВАТАРКОЙ ===== -->
             <div class="logo" id="avatarTrigger">
                 <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" id="avatarImg">
                 <div class="brand-text">
@@ -449,7 +449,7 @@
                 </div>
             </div>
 
-            <!-- ===== ОСНОВНОЕ МЕНЮ ===== -->
+            <!-- ===== 3. ОСНОВНОЕ МЕНЮ ===== -->
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link active">Главная</a></li>
                 <li><a href="about.html" class="nav-link">О нас</a></li>
@@ -462,7 +462,7 @@
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
 
-            <!-- ===== КНОПКА МОБИЛЬНОГО МЕНЮ ===== -->
+            <!-- ===== 4. КНОПКА МОБИЛЬНОГО МЕНЮ ===== -->
             <button class="mobile-toggle" id="mobileToggle">☰</button>
         </div>
     </nav>
@@ -521,7 +521,7 @@
         </div>
     </section>
 
-    <!-- ===== НАПРАВЛЕНИЯ ===== -->
+    <!-- ===== ОСТАЛЬНЫЕ СЕКЦИИ ===== -->
     <section class="section">
         <div class="container">
             <div style="text-align:center;margin-bottom:48px;">
@@ -543,7 +543,6 @@
         </div>
     </section>
 
-    <!-- ===== ОБО МНЕ ===== -->
     <section id="about">
         <div class="container">
             <div class="about-grid">
@@ -567,7 +566,6 @@
         </div>
     </section>
 
-    <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <section class="awards" id="awards">
         <div class="container">
             <div style="text-align:center;">
@@ -590,7 +588,6 @@
         </div>
     </section>
 
-    <!-- ===== РАСПИСАНИЕ ===== -->
     <section class="schedule" id="schedule">
         <div class="container">
             <div class="schedule-card">
@@ -602,7 +599,6 @@
         </div>
     </section>
 
-    <!-- ===== FAQ ===== -->
     <section class="faq" id="faq">
         <div class="container">
             <div style="text-align:center;margin-bottom:40px;">
@@ -636,7 +632,6 @@
         </div>
     </section>
 
-    <!-- ===== CTA ===== -->
     <section class="cta">
         <div class="container">
             <span class="section-label">Начнём?</span>
@@ -855,7 +850,7 @@
                 // --- 1. РИСУЕМ ХВОСТ (ПОЗАДИ КАМЕРЫ) ---
                 const time = Date.now() * 0.003;
                 const trailLength = 45;
-                const maxRadius = 120; // Тот же размер, что и камера
+                const maxRadius = 120;
                 
                 for (let i = 1; i < trailLength; i++) {
                     const progress = i / trailLength;
@@ -886,7 +881,7 @@
 
                 ctx.save();
                 ctx.translate(W/2, H/2);
-                const baseSize = 120; // Огромный размер
+                const baseSize = 120;
                 const sizeX = baseSize * scaleX;
                 const sizeY = baseSize * scaleY;
                 
