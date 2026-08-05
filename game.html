@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>Небесный объектив — Игры</title>
-<script>
-const audio = new Audio('https://raw.githubusercontent.com/Reparsing/niksartphoto/main/media/Nero_s_Day_At_Disneyland_-_Sprawling_Idiot_Effigy_(SkySound7.com).mp3');
-audio.loop = true;
-audio.volume = 0.3;
-</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none}body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI',sans-serif;padding:16px}.game-wrapper{background:#16161a;border-radius:32px;padding:24px;border:1px solid rgba(255,255,255,.06);max-width:700px;width:100%;position:relative}.game-header{display:flex;justify-content:space-between;color:#f4f4f5;font-size:1.2rem;font-weight:600;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px;flex-wrap:wrap;gap:8px}.game-header span{color:#fbbf24}#gameCanvas{width:100%;height:500px;background:radial-gradient(ellipse at 30%20%,#132a44,#0a1628);border-radius:20px;display:block;touch-action:none;position:relative;cursor:pointer}.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;align-items:center}.btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#f4f4f5;padding:10px 24px;border-radius:40px;font-weight:600;font-size:1rem;transition:all .3s;cursor:pointer;font-family:inherit;position:relative}.btn:hover{background:#fbbf24;color:#0a0a0c;border-color:#fbbf24}.btn-primary{background:#fbbf24;color:#0a0a0c;border-color:#fbbf24}.btn-sm{padding:6px 16px;font-size:.8rem}.btn-fullscreen{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:8px 16px;font-size:.9rem}.btn-fullscreen:hover{background:#fbbf24;color:#0a0a0c}.btn-rules{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);color:#f4f4f5;padding:8px 18px;border-radius:40px;font-weight:600;font-size:.9rem;transition:all .3s;cursor:pointer;font-family:inherit}.btn-rules:hover{background:#fbbf24;color:#0a0a0c;border-color:#fbbf24;transform:scale(1.05)}.rules-overlay{position:absolute;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);border-radius:32px;display:none;justify-content:center;align-items:center;z-index:40;padding:20px}.rules-overlay.show{display:flex}.rules-box{background:#1c1c22;padding:32px 28px;border-radius:28px;text-align:center;max-width:500px;width:100%;border:1px solid rgba(255,255,255,.08);animation:popIn .4s cubic-bezier(.16,1,.3,1);position:relative}.rules-box .preview-wrapper{width:100%;height:160px;background:radial-gradient(circle at 30%30%,#132a44,#0a1628);border-radius:16px;border:1px solid rgba(255,255,255,.06);margin-bottom:16px;overflow:hidden;position:relative}.rules-box .preview-wrapper canvas{width:100%;height:100%;display:block}.rules-box h2{color:#fff;font-size:1.8rem;margin-bottom:6px}.rules-box h2 span{color:#fbbf24}.rules-box .rules-text{color:#a1a1aa;font-size:.9rem;line-height:1.6;text-align:left;margin-bottom:16px;padding:0 4px}.rules-box .rules-text strong{color:#fbbf24}.rules-box .rules-text .emoji{font-size:1.2rem}.close-rules-btn{margin-top:6px;background:#fbbf24;border:2px solid #fbbf24;color:#0a0a0c;padding:12px 40px;border-radius:40px;font-weight:700;font-size:1.1rem;cursor:pointer;transition:all .3s;font-family:inherit;position:relative;animation:pulse-btn 1.5s ease-in-out infinite}.close-rules-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(251,191,36,.4)}@keyframes pulse-btn{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(251,191,36,.2)}50%{transform:scale(1.05);box-shadow:0 0 30px rgba(251,191,36,.5)}}.arrow-pointer{position:absolute;top:-40px;left:50%;transform:translateX(-50%);font-size:2rem;color:#fbbf24;animation:bounce-arrow 1s ease-in-out infinite;text-shadow:0 0 20px rgba(251,191,36,.5)}@keyframes bounce-arrow{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-10px)}}.overlay{position:absolute;inset:0;border-radius:32px;display:none;justify-content:center;align-items:center;z-index:10}.overlay.show{display:flex;background:rgba(0,0,0,.85);backdrop-filter:blur(8px)}.overlay-box{background:#1c1c22;padding:40px 36px;border-radius:28px;text-align:center;max-width:340px;border:1px solid rgba(255,255,255,.08);animation:popIn .6s cubic-bezier(.34,1.56,.64,1)}.overlay-box h2{color:#f87171;font-size:2.2rem;margin-bottom:6px}.overlay-box p{color:#a1a1aa;font-size:1.1rem;margin-bottom:20px}.overlay-box p strong{color:#fbbf24;font-size:1.4rem}.overlay-box .btn{background:#f87171;border-color:#f87171;color:#0a0a0c;padding:12px 32px;font-size:1.1rem}.overlay-box .btn:hover{background:#fca5a5;border-color:#fca5a5;transform:scale(1.05)}.menu-overlay{position:absolute;inset:0;background:rgba(10,10,12,.5);backdrop-filter:blur(4px);border-radius:32px;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:20;padding:20px}.menu-overlay.hidden{display:none}.menu-overlay h1{color:#fff;font-size:2.2rem;margin-bottom:4px}.menu-overlay h1 span{color:#fbbf24}.menu-overlay p{color:#a1a1aa;margin-bottom:16px}.menu-buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.menu-buttons .btn{font-size:1rem;padding:12px 24px;min-width:140px}.settings-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);border-radius:32px;display:none;justify-content:center;align-items:center;z-index:30;padding:20px}.settings-overlay.show{display:flex}.settings-box{background:#1c1c22;padding:32px 28px;border-radius:28px;text-align:center;max-width:400px;width:100%;border:1px solid rgba(255,255,255,.08);animation:popIn .4s cubic-bezier(.16,1,.3,1)}.settings-box h2{color:#fff;font-size:1.8rem;margin-bottom:12px}.settings-box .preview-wrapper{width:160px;height:160px;margin:0 auto 16px;background:transparent;border-radius:50%;border:2px solid rgba(255,255,255,.1);overflow:hidden;position:relative}.settings-box .preview-wrapper canvas{width:100%;height:100%;display:block}.settings-box .option{display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:40px;background:rgba(255,255,255,.04);margin-bottom:10px;cursor:pointer;transition:all .3s;border:2px solid transparent}.settings-box .option:hover{background:rgba(255,255,255,.08)}.settings-box .option.active{border-color:#fbbf24;background:rgba(251,191,36,.1)}.settings-box .option .label{color:#f4f4f5;font-weight:500}.settings-box .option.locked{opacity:.5;filter:grayscale(1);cursor:not-allowed}.settings-box .option.locked:hover{background:rgba(255,0,0,.05);border-color:#666}.settings-box .close-settings{margin-top:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#f4f4f5;padding:8px 24px;border-radius:40px;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .3s;font-family:inherit}.settings-box .close-settings:hover{background:#fbbf24;color:#0a0a0c;border-color:#fbbf24}.countdown-overlay{position:absolute;inset:0;border-radius:32px;display:none;justify-content:center;align-items:center;z-index:50;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}.countdown-overlay.show{display:flex}.countdown-number{font-size:10rem;font-weight:900;color:#fbbf24;text-shadow:0 0 60px rgba(251,191,36,.5),0 0 120px rgba(251,191,36,.2);animation:countPop .8s cubic-bezier(.34,1.56,.64,1)}@keyframes countPop{0%{transform:scale(2);opacity:0}50%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:1}}.pause-overlay{position:absolute;inset:0;border-radius:32px;display:none;justify-content:center;align-items:center;z-index:45;background:rgba(0,0,0,.8);backdrop-filter:blur(8px)}.pause-overlay.show{display:flex}.pause-box{background:#1c1c22;padding:40px 36px;border-radius:28px;text-align:center;max-width:340px;border:1px solid rgba(255,255,255,.08);animation:popIn .4s cubic-bezier(.16,1,.3,1)}.pause-box h2{color:#fbbf24;font-size:2.2rem;margin-bottom:6px}.pause-box p{color:#a1a1aa;font-size:1.1rem;margin-bottom:20px}.pause-box p strong{color:#fbbf24;font-size:1.6rem}.pause-box .btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.pause-box .btn-group .btn{min-width:120px}.pause-camera-wrapper{width:80px;height:80px;margin:0 auto 8px;position:relative}#pauseCameraCanvas{width:100%;height:100%;display:block}@keyframes flashGold{0%,100%{color:#fbbf24}50%{color:#fff;text-shadow:0 0 20px #fbbf24}}.record-flash{animation:flashGold .5s ease-in-out 3}@keyframes popIn{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}@media(max-width:500px){.game-wrapper{padding:12px}#gameCanvas{height:400px}.overlay-box{padding:30px 24px}.overlay-box h2{font-size:1.8rem}.settings-box{padding:24px 16px}.settings-box .preview-wrapper{width:120px;height:120px}.rules-box{padding:24px 16px}.rules-box .preview-wrapper{height:120px}.countdown-number{font-size:6rem}}
 </style>
@@ -167,16 +162,17 @@ audio.volume = 0.3;
   const LOCKED = ['shadow', 'vortex'];
   let trailType = localStorage.getItem('niksTrailType') || 'rainbow';
   let player = { x: 120, y: H / 2, vy: 0, baseRadius: 22, pulsePhase: 0, speed: 3, score: 0 };
-  let stars = [], clouds = [];
-  let hearts = [];
+  let stars = [], clouds = [], hearts = [], coins = [], magnets = [];
   let bestScore = parseInt(localStorage.getItem('niksBestScore')) || 0;
   let targetY = player.y;
   let shakeX = 0, shakeY = 0, shakeIntensity = 0;
   let bgStars = [];
-
-  // === НОВОЕ: история хвоста для Раннера ===
+  let hasMagnet = false;
+  let magnetTimer = 0;
+  const MAGNET_DURATION = 8 * 70;
+  const MAGNET_RADIUS = 250;
+  let heartsCollected = 0;
   let trailHistory = [];
-  let heartsCollected = 0; // Счётчик собранных сердец
   const MAX_TRAIL_LENGTH = 50;
 
   // --- ПЕРЕМЕННЫЕ ДЛЯ ПАРКУРА ---
@@ -191,12 +187,15 @@ audio.volume = 0.3;
   let maxJumps = 2;
   let parkourTimer = 0;
   let parkourHearts = [];
+  let parkourCoins = [];
+  let parkourMagnets = [];
   let parkourLives = 3;
   const parkourMaxLives = 3;
   let parkourHp = [];
-  // === НОВОЕ: история хвоста для Паркура ===
   let parkourTrailHistory = [];
   let parkourHeartsCollected = 0;
+  let parkourHasMagnet = false;
+  let parkourMagnetTimer = 0;
 
   // --- ДЕМО ДЛЯ ПРАВИЛ ---
   let demoPlayer = { x: 80, y: 80, vy: 0, pulsePhase: 0 };
@@ -219,14 +218,9 @@ audio.volume = 0.3;
 
   function getRadius() { return player.baseRadius * cs; }
 
-  function playMusic() { audio.play().catch(e => console.log('Автовоспроизведение заблокировано')); }
-  function stopMusic() { audio.pause(); audio.currentTime = 0; }
-  function pauseMusic() { audio.pause(); }
-  function resumeMusic() { audio.play().catch(e => console.log('Автовоспроизведение заблокировано')); }
-
   // --- ВЗРЫВЫ И ЧАСТИЦЫ ---
-  function spawnExplosion(x, y) {
-    const cols = ['#fbbf24', '#f59e0b', '#ef4444', '#f472b6', '#60a5fa', '#34d399', '#fcd34d'];
+  function spawnExplosion(x, y, color) {
+    const cols = color ? [color, color, '#fff'] : ['#fbbf24', '#f59e0b', '#ef4444', '#f472b6', '#60a5fa', '#34d399', '#fcd34d'];
     for (let i = 0; i < 30; i++) {
       const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 4;
       ep.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, size: 4 + Math.random() * 8, life: 1, color: cols[Math.floor(Math.random() * cols.length)], rotation: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - .5) * .3 });
@@ -322,6 +316,28 @@ audio.volume = 0.3;
     hearts.push({ x: W + 20, y, r: 12, speed: 1.2 + Math.random() * .6, phase: Math.random() * Math.PI * 2, scale: 0 });
   }
 
+  // === НОВОЕ: МОНЕТЫ ===
+  function spawnCoin() {
+    const y = 30 + Math.random() * (H - 60);
+    coins.push({ x: W + 20, y, r: 10, speed: 1.2 + Math.random() * .6, phase: Math.random() * Math.PI * 2, scale: 0, rotation: 0 });
+  }
+
+  // === НОВОЕ: МАГНИТ ===
+  function spawnMagnet() {
+    const y = 30 + Math.random() * (H - 60);
+    magnets.push({ x: W + 20, y, r: 16, speed: 1.2 + Math.random() * .5, phase: Math.random() * Math.PI * 2, scale: 0 });
+  }
+
+  function spawnParkourCoin() {
+    const y = 100 + Math.random() * 250;
+    parkourCoins.push({ x: W + 30, y, r: 10, speed: parkourSpeed * 0.6 + 0.5, phase: Math.random() * Math.PI * 2, rotation: 0 });
+  }
+
+  function spawnParkourMagnet() {
+    const y = 100 + Math.random() * 250;
+    parkourMagnets.push({ x: W + 30, y, r: 16, speed: parkourSpeed * 0.6 + 0.5, phase: Math.random() * Math.PI * 2 });
+  }
+
   function spawnParkourHeart(x, y) {
     const posX = x || W + 30;
     const posY = y || 100 + Math.random() * 250;
@@ -346,9 +362,7 @@ audio.volume = 0.3;
     }
   }
 
-  // === НОВАЯ ФУНКЦИЯ: ДЛИНА ХВОСТА ОТ КОЛИЧЕСТВА СЕРДЕЦ ===
   function getTrailLength() {
-    // Базовая длина 10 + по 2 за каждое собранное сердце (максимум 50)
     return Math.min(10 + heartsCollected * 2, MAX_TRAIL_LENGTH);
   }
 
@@ -356,33 +370,22 @@ audio.volume = 0.3;
     return Math.min(10 + parkourHeartsCollected * 2, MAX_TRAIL_LENGTH);
   }
 
-  // === НОВАЯ ФУНКЦИЯ: РИСОВАНИЕ ХВОСТА ИЗ ИСТОРИИ ===
+  // === НОВАЯ ФУНКЦИЯ: ХВОСТ ИЗ ИСТОРИИ ===
   function drawTrailFromHistory(c, history, length, x, y, isDemo) {
     if (history.length < 2) return;
-    
     const len = Math.min(length || history.length, history.length);
     const time = Date.now() * .003;
     const baseSize = isDemo ? 18 : 22;
-    
     for (let i = 0; i < len && i < history.length - 1; i++) {
       const index = Math.min(i, history.length - 1);
       const point = history[index];
       const progress = i / len;
-      
-      // Размер и прозрачность уменьшаются к концу хвоста
       const alpha = 0.6 * (1 - progress) * (1 + 0.2 * Math.sin(time + i * 0.2));
       const size = (1 - progress * 0.7) * baseSize * cs;
-      
-      // Радужный цвет
       const hue = (i * 12 + time * 20) % 360;
-      
-      // Небольшое покачивание для живости
       const wave = Math.sin(time + i * 0.15) * 2;
-      
-      // Относительное смещение от позиции камеры
       const relX = point.x - x;
       const relY = point.y - y + wave;
-      
       c.beginPath();
       c.arc(x + relX, y + relY, size, 0, Math.PI * 2);
       c.fillStyle = `hsla(${hue}, 95%, 65%, ${alpha})`;
@@ -410,13 +413,11 @@ audio.volume = 0.3;
     const pw = PC.width, ph = PC.height;
     PX.clearRect(0, 0, pw, ph);
     const cx = pw / 2, cy = ph / 2, radius = 22 * cs;
-    // Демо-хвост для превью
     const demoHistory = [];
     for (let i = 0; i < 20; i++) {
       demoHistory.push({ x: cx - i * 5 + Math.sin(i * 0.3) * 3, y: cy + Math.sin(i * 0.5) * 4 });
     }
     drawTrailFromHistory(PX, demoHistory, 20, cx, cy, true);
-    
     const pulse = 1 + .06 * Math.sin(Date.now() * .003);
     const scaleX = pulse * cs, scaleY = (1 / pulse) * cs;
     if (CAM.complete && CAM.naturalWidth > 0) {
@@ -643,7 +644,6 @@ audio.volume = 0.3;
     RX.globalAlpha = 1;
 
     if (demoMode === 'runner') {
-      // Демо-хвост
       const demoHistory = [];
       for (let i = 0; i < 20; i++) {
         demoHistory.push({ 
@@ -769,6 +769,8 @@ audio.volume = 0.3;
         <p><span class="emoji">🦘</span> Прыгай по <strong>зелёным платформам</strong> — у тебя есть <strong>двойной прыжок</strong>!</p>
         <p><span class="emoji">🧱</span> Избегай <strong>красных препятствий</strong> — столкновение отнимает <strong>1 жизнь</strong>.</p>
         <p><span class="emoji">❤️</span> У тебя <strong>3 жизни</strong> (сердца в углу экрана).</p>
+        <p><span class="emoji">🪙</span> Собирай <strong>золотые монеты</strong> — они дают <strong>+1 очко</strong> и крутятся!</p>
+        <p><span class="emoji">🧲</span> Подбирай <strong>фиолетовый магнит</strong> — он <strong>притягивает монеты и сердца</strong> в радиусе 250px на 8 секунд!</p>
         <p><span class="emoji">❤️</span> Собирай <strong>красные сердца</strong> на платформах, чтобы <strong>восстановить жизнь</strong> и <strong>удлинить хвост</strong>!</p>
         <p><span class="emoji">⭐</span> Проходи платформы, чтобы <strong>зарабатывать очки</strong>.</p>
         <p><span class="emoji">🏆</span> Цель — набрать как можно больше очков!</p>
@@ -779,6 +781,8 @@ audio.volume = 0.3;
         <p><span class="emoji">⭐</span> Собирай <strong>жёлтые звёзды</strong> — они увеличивают счёт и ускоряют тебя.</p>
         <p><span class="emoji">☁️</span> Избегай <strong>белых туч</strong> — у тебя всего <strong>3 жизни</strong>.</p>
         <p><span class="emoji">🛡️</span> Подбирай <strong>синие щиты</strong> — они защищают от туч на 10 секунд.</p>
+        <p><span class="emoji">🪙</span> Собирай <strong>золотые монеты</strong> — они дают <strong>+1 очко</strong> и крутятся!</p>
+        <p><span class="emoji">🧲</span> Подбирай <strong>фиолетовый магнит</strong> — он <strong>притягивает монеты и сердца</strong> в радиусе 250px на 8 секунд!</p>
         <p><span class="emoji">❤️</span> Собирай <strong>красные сердца</strong> — они восстанавливают <strong>+1 жизнь</strong> и <strong>удлиняют хвост</strong>!</p>
         <p><span class="emoji">🏆</span> Цель — набрать как можно больше очков!</p>
       `;
@@ -832,12 +836,15 @@ audio.volume = 0.3;
     clouds = [];
     shieldObjects = [];
     hearts = [];
+    coins = [];
+    magnets = [];
+    hasMagnet = false;
+    magnetTimer = 0;
     shakeIntensity = 0;
     shakeX = 0;
     shakeY = 0;
     fc = 0;
     targetY = player.y;
-    // === СБРАСЫВАЕМ ХВОСТ ===
     trailHistory = [];
     heartsCollected = 0;
     updateUI();
@@ -850,7 +857,6 @@ audio.volume = 0.3;
       MO.classList.add('hidden');
       GO.classList.remove('show');
       GO.style.display = 'none';
-      resumeMusic();
       intervalId = setInterval(update, 1000 / 70);
     });
   }
@@ -862,6 +868,8 @@ audio.volume = 0.3;
     platforms = [];
     obstacles = [];
     parkourHearts = [];
+    parkourCoins = [];
+    parkourMagnets = [];
     parkourScore = 0;
     parkourSpeed = 3;
     parkourTimer = 0;
@@ -870,9 +878,10 @@ audio.volume = 0.3;
     fc = 0;
     parkourLives = parkourMaxLives;
     parkourHp = [];
-    // === СБРАСЫВАЕМ ХВОСТ ПАРКУРА ===
     parkourTrailHistory = [];
     parkourHeartsCollected = 0;
+    parkourHasMagnet = false;
+    parkourMagnetTimer = 0;
     ga = true;
     updateUI();
     initBgStars();
@@ -883,7 +892,6 @@ audio.volume = 0.3;
       MO.classList.add('hidden');
       GO.classList.remove('show');
       GO.style.display = 'none';
-      resumeMusic();
       const startPositions = [
         { x: 200, y: 330 },
         { x: 350, y: 280 },
@@ -941,14 +949,40 @@ audio.volume = 0.3;
       if (shieldTimer <= 0) { hasShield = false; shieldTimer = 0; }
     }
 
+    if (hasMagnet) {
+      magnetTimer--;
+      if (magnetTimer <= 0) { hasMagnet = false; magnetTimer = 0; }
+    }
+
     const rate = Math.max(18, 28 - speedMult * 4);
     if (fc % Math.floor(rate) === 0) spawnStar();
     if (fc % Math.floor(rate * 1.6) === 0) spawnCloud();
     if (fc % Math.floor(rate * 2.2) === 0 && fc > 100) spawnCloud();
     if (fc % Math.floor(rate * 3) === 0 && fc > 150) spawnShield();
+    if (fc % Math.floor(rate * 2.5) === 0 && fc > 80) spawnCoin();
     if (fc % Math.floor(rate * 2.8) === 0 && fc > 100) spawnHeart();
+    if (fc % Math.floor(rate * 4) === 0 && fc > 200) spawnMagnet();
 
     const r = getRadius();
+
+    // Магнит притягивает объекты
+    if (hasMagnet) {
+      const attract = (objArray) => {
+        for (let obj of objArray) {
+          const dx = player.x - obj.x;
+          const dy = player.y - obj.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAGNET_RADIUS && dist > 10) {
+            const force = 0.08 * (1 - dist / MAGNET_RADIUS);
+            obj.x += dx * force;
+            obj.y += dy * force;
+          }
+        }
+      };
+      attract(stars);
+      attract(coins);
+      attract(hearts);
+    }
 
     // Сбор звёзд
     for (let i = stars.length - 1; i >= 0; i--) {
@@ -989,6 +1023,29 @@ audio.volume = 0.3;
       if (sh.x < -20) shieldObjects.splice(i, 1);
     }
 
+    // Сбор монет
+    for (let i = coins.length - 1; i >= 0; i--) {
+      const coin = coins[i];
+      coin.x -= coin.speed * (player.speed / 3) * speedMult;
+      coin.phase += .05;
+      coin.scale += (1 - coin.scale) * 0.1;
+      coin.rotation += 0.05;
+      const dx = player.x - coin.x, dy = player.y - coin.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < r + coin.r) {
+        player.score++;
+        if (player.score > bestScore) {
+          bestScore = player.score;
+          localStorage.setItem('niksBestScore', bestScore);
+        }
+        spawnExplosion(coin.x, coin.y, '#fbbf24');
+        coins.splice(i, 1);
+        updateUI();
+        continue;
+      }
+      if (coin.x < -20) coins.splice(i, 1);
+    }
+
     // Сбор сердец
     for (let i = hearts.length - 1; i >= 0; i--) {
       const heart = hearts[i];
@@ -1000,7 +1057,7 @@ audio.volume = 0.3;
       if (dist < r + heart.r) {
         if (lives < maxLives) {
           lives++;
-          heartsCollected++; // <-- УВЕЛИЧИВАЕМ СЧЁТЧИК СЕРДЕЦ (ХВОСТ РАСТЁТ)
+          heartsCollected++;
           shakeIntensity = 4;
           spawnHeartExplosion(heart.x, heart.y);
         }
@@ -1009,6 +1066,24 @@ audio.volume = 0.3;
         continue;
       }
       if (heart.x < -20) hearts.splice(i, 1);
+    }
+
+    // Сбор магнитов
+    for (let i = magnets.length - 1; i >= 0; i--) {
+      const magnet = magnets[i];
+      magnet.x -= magnet.speed * (player.speed / 3) * speedMult;
+      magnet.phase += .05;
+      magnet.scale += (1 - magnet.scale) * 0.1;
+      const dx = player.x - magnet.x, dy = player.y - magnet.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < r + magnet.r) {
+        hasMagnet = true;
+        magnetTimer = MAGNET_DURATION;
+        spawnExplosion(magnet.x, magnet.y, '#8b5cf6');
+        magnets.splice(i, 1);
+        continue;
+      }
+      if (magnet.x < -20) magnets.splice(i, 1);
     }
 
     // Столкновение с тучами
@@ -1048,9 +1123,8 @@ audio.volume = 0.3;
       if (cloud.x < -40) clouds.splice(i, 1);
     }
 
-    // === ДОБАВЛЯЕМ ПОЗИЦИЮ КАМЕРЫ В ИСТОРИЮ ХВОСТА ===
+    // Добавляем позицию камеры в историю хвоста
     trailHistory.push({ x: player.x, y: player.y });
-    // Ограничиваем длину истории
     const maxLen = getTrailLength();
     if (trailHistory.length > maxLen) {
       trailHistory.splice(0, trailHistory.length - maxLen);
@@ -1061,6 +1135,8 @@ audio.volume = 0.3;
     if (clouds.length > 18) clouds.splice(0, clouds.length - 18);
     if (shieldObjects.length > 5) shieldObjects.splice(0, shieldObjects.length - 5);
     if (hearts.length > 5) hearts.splice(0, hearts.length - 5);
+    if (coins.length > 15) coins.splice(0, coins.length - 15);
+    if (magnets.length > 3) magnets.splice(0, magnets.length - 3);
   }
 
   // === ОБНОВЛЕНИЕ ПАРКУРА ===
@@ -1087,6 +1163,15 @@ audio.volume = 0.3;
       platforms.push({ x: W + 20, y: y, width: w, height: 20, passed: false });
     }
 
+    // Спавн монет на платформах
+    if (Math.random() < 0.03 && platforms.length > 0) {
+      const p = platforms[platforms.length - 1];
+      spawnParkourCoin(p.x + p.width/2, p.y - 20);
+    }
+    if (Math.random() < 0.008 && fc > 120) {
+      spawnParkourMagnet();
+    }
+
     for (let i = platforms.length - 1; i >= 0; i--) {
       const p = platforms[i];
       p.x -= parkourSpeed;
@@ -1110,34 +1195,93 @@ audio.volume = 0.3;
       obstacles.push({ x: W + 20, y: y, width: 20, height: 20 + Math.random() * 30 });
     }
 
-    if (Math.random() < 0.005 && fc > 120) {
-      spawnParkourHeart();
+    // Магнит в паркуре
+    if (parkourHasMagnet) {
+      parkourMagnetTimer--;
+      if (parkourMagnetTimer <= 0) { parkourHasMagnet = false; parkourMagnetTimer = 0; }
+      
+      // Притягиваем монеты и сердца
+      const attractParkour = (objArray) => {
+        for (let obj of objArray) {
+          const dx = (parkourPlayer.x + parkourPlayer.width/2) - obj.x;
+          const dy = (parkourPlayer.y + parkourPlayer.height/2) - obj.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAGNET_RADIUS && dist > 10) {
+            const force = 0.08 * (1 - dist / MAGNET_RADIUS);
+            obj.x += dx * force;
+            obj.y += dy * force;
+          }
+        }
+      };
+      attractParkour(parkourCoins);
+      attractParkour(parkourHearts);
     }
 
+    // Сбор монет в паркуре
+    for (let i = parkourCoins.length - 1; i >= 0; i--) {
+      const coin = parkourCoins[i];
+      coin.x -= coin.speed;
+      coin.phase += .05;
+      coin.rotation += 0.05;
+      const dx = (parkourPlayer.x + parkourPlayer.width/2) - coin.x;
+      const dy = (parkourPlayer.y + parkourPlayer.height/2) - coin.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 30 + coin.r) {
+        parkourScore++;
+        if (parkourScore > parkourBest) {
+          parkourBest = parkourScore;
+          localStorage.setItem('parkourBest', parkourBest);
+        }
+        spawnExplosion(coin.x, coin.y, '#fbbf24');
+        parkourCoins.splice(i, 1);
+        updateUI();
+        continue;
+      }
+      if (coin.x < -30) parkourCoins.splice(i, 1);
+    }
+
+    // Сбор магнитов в паркуре
+    for (let i = parkourMagnets.length - 1; i >= 0; i--) {
+      const magnet = parkourMagnets[i];
+      magnet.x -= magnet.speed;
+      magnet.phase += .05;
+      const dx = (parkourPlayer.x + parkourPlayer.width/2) - magnet.x;
+      const dy = (parkourPlayer.y + parkourPlayer.height/2) - magnet.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 30 + magnet.r) {
+        parkourHasMagnet = true;
+        parkourMagnetTimer = MAGNET_DURATION;
+        spawnExplosion(magnet.x, magnet.y, '#8b5cf6');
+        parkourMagnets.splice(i, 1);
+        continue;
+      }
+      if (magnet.x < -30) parkourMagnets.splice(i, 1);
+    }
+
+    // Сбор сердец в паркуре
     for (let i = parkourHearts.length - 1; i >= 0; i--) {
       const heart = parkourHearts[i];
       heart.x -= heart.speed;
       heart.phase += .05;
-      
       const dx = (parkourPlayer.x + parkourPlayer.width/2) - heart.x;
       const dy = (parkourPlayer.y + parkourPlayer.height/2) - heart.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < 30 + heart.r) {
         if (parkourLives < parkourMaxLives) {
           parkourLives++;
-          parkourHeartsCollected++; // <-- УВЕЛИЧИВАЕМ СЧЁТЧИК СЕРДЕЦ (ХВОСТ РАСТЁТ)
+          parkourHeartsCollected++;
           spawnHeartExplosion(heart.x, heart.y);
         }
         parkourHearts.splice(i, 1);
         updateUI();
         continue;
       }
-      
       if (heart.x < -30) {
         parkourHearts.splice(i, 1);
       }
     }
 
+    // Столкновение с препятствиями
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const o = obstacles[i];
       o.x -= parkourSpeed;
@@ -1149,11 +1293,9 @@ audio.volume = 0.3;
           o.x + o.width > parkourPlayer.x &&
           o.y < parkourPlayer.y + parkourPlayer.height &&
           o.y + o.height > parkourPlayer.y) {
-        
         parkourLives--;
         spawnHeartExplosion(parkourPlayer.x + parkourPlayer.width/2, parkourPlayer.y + parkourPlayer.height/2);
         obstacles.splice(i, 1);
-        
         if (parkourLives <= 0) {
           gameOver('💥 Жизни кончились!');
           return;
@@ -1196,7 +1338,7 @@ audio.volume = 0.3;
       updateUI();
     }
 
-    // === ДОБАВЛЯЕМ ПОЗИЦИЮ КАМЕРЫ В ИСТОРИЮ ХВОСТА ПАРКУРА ===
+    // Добавляем позицию в историю хвоста паркура
     parkourTrailHistory.push({ 
       x: parkourPlayer.x + parkourPlayer.width/2, 
       y: parkourPlayer.y + parkourPlayer.height/2 
@@ -1228,10 +1370,42 @@ audio.volume = 0.3;
     X.globalAlpha = 1;
 
     if (gs === STATE.PLAYING && gameMode === 'runner') {
-      // === РИСУЕМ ХВОСТ ИЗ ИСТОРИИ (РАННЕР) ===
+      // === РИСУЕМ ХВОСТ ===
       drawTrailFromHistory(X, trailHistory, getTrailLength(), player.x, player.y, false);
       
-      // === РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА ===
+      // === МЕРЦАЮЩАЯ ФИОЛЕТОВАЯ ОБВОДКА ПРИ МАГНИТЕ ===
+      if (hasMagnet) {
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.005);
+        const radius = MAGNET_RADIUS;
+        X.strokeStyle = `rgba(139, 92, 246, ${0.3 + 0.2 * pulse})`;
+        X.lineWidth = 3;
+        X.setLineDash([8, 12]);
+        X.shadowColor = '#8b5cf6';
+        X.shadowBlur = 30;
+        X.beginPath();
+        X.arc(player.x, player.y, radius, 0, Math.PI * 2);
+        X.stroke();
+        X.setLineDash([]);
+        X.shadowBlur = 0;
+        
+        // Искры внутри круга
+        for (let i = 0; i < 12; i++) {
+          const angle = i * Math.PI / 6 + Date.now() * 0.002;
+          const dist = radius * (0.3 + 0.7 * (0.5 + 0.5 * Math.sin(Date.now() * 0.003 + i)));
+          const x = player.x + Math.cos(angle) * dist;
+          const y = player.y + Math.sin(angle) * dist;
+          const size = 2 + Math.sin(Date.now() * 0.01 + i) * 1.5;
+          X.fillStyle = `rgba(139, 92, 246, ${0.3 + 0.3 * Math.sin(Date.now() * 0.004 + i)})`;
+          X.shadowColor = '#8b5cf6';
+          X.shadowBlur = 15;
+          X.beginPath();
+          X.arc(x, y, size, 0, Math.PI * 2);
+          X.fill();
+        }
+        X.shadowBlur = 0;
+      }
+
+      // === РИСУЕМ КАМЕРУ ===
       const pulse = 1 + .06 * Math.sin(player.pulsePhase);
       const scaleX = pulse * cs;
       const scaleY = (1 / pulse) * cs;
@@ -1245,7 +1419,7 @@ audio.volume = 0.3;
         X.restore();
       }
 
-      // Остальные объекты (звёзды, щиты, тучи, сердца)
+      // === ЗВЁЗДЫ ===
       for (let star of stars) {
         const pulse2 = 1 + .15 * Math.sin(star.phase);
         const r = star.r * pulse2 * Math.min(star.scale, 1);
@@ -1266,31 +1440,42 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
-      for (let sh of shieldObjects) {
-        const pulse3 = 1 + .12 * Math.sin(sh.phase);
-        const r = sh.r * pulse3 * Math.min(sh.scale, 1);
-        const grad = X.createRadialGradient(sh.x, sh.y, 2, sh.x, sh.y, r * 2.2);
-        grad.addColorStop(0, '#60a5fa');
-        grad.addColorStop(.5, 'rgba(96,165,250,.3)');
-        grad.addColorStop(1, 'rgba(96,165,250,0)');
+      // === МОНЕТЫ ===
+      for (let coin of coins) {
+        const pulse3 = 1 + .1 * Math.sin(coin.phase);
+        const r = coin.r * pulse3 * Math.min(coin.scale, 1);
+        const grad = X.createRadialGradient(coin.x, coin.y, 1, coin.x, coin.y, r * 2);
+        grad.addColorStop(0, '#fbbf24');
+        grad.addColorStop(1, 'rgba(251,191,36,0)');
         X.fillStyle = grad;
         X.beginPath();
-        X.arc(sh.x, sh.y, r * 2.2, 0, Math.PI * 2);
+        X.arc(coin.x, coin.y, r * 2, 0, Math.PI * 2);
         X.fill();
-        X.fillStyle = '#60a5fa';
-        X.shadowColor = '#60a5fa';
-        X.shadowBlur = 25;
+        // Рисуем монетку с вращением
+        X.save();
+        X.translate(coin.x, coin.y);
+        X.rotate(coin.rotation || 0);
+        X.fillStyle = '#fbbf24';
+        X.shadowColor = '#fbbf24';
+        X.shadowBlur = 15;
         X.beginPath();
-        X.arc(sh.x, sh.y, r * .6, 0, Math.PI * 2);
+        X.arc(0, 0, r * .7, 0, Math.PI * 2);
         X.fill();
         X.shadowBlur = 0;
-        X.font = '16px sans-serif';
+        X.strokeStyle = '#f59e0b';
+        X.lineWidth = 2;
+        X.beginPath();
+        X.arc(0, 0, r * .5, 0, Math.PI * 2);
+        X.stroke();
+        X.fillStyle = '#f59e0b';
+        X.font = `${r * .8}px sans-serif`;
         X.textAlign = 'center';
         X.textBaseline = 'middle';
-        X.fillStyle = '#fff';
-        X.fillText('🛡️', sh.x, sh.y + 1);
+        X.fillText('$', 0, 1);
+        X.restore();
       }
 
+      // === СЕРДЦА ===
       for (let heart of hearts) {
         const pulse4 = 1 + .1 * Math.sin(heart.phase);
         const r = heart.r * pulse4 * Math.min(heart.scale, 1);
@@ -1313,9 +1498,31 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
+      // === МАГНИТЫ ===
+      for (let magnet of magnets) {
+        const pulse5 = 1 + .12 * Math.sin(magnet.phase);
+        const r = magnet.r * pulse5 * Math.min(magnet.scale, 1);
+        const grad = X.createRadialGradient(magnet.x, magnet.y, 1, magnet.x, magnet.y, r * 3);
+        grad.addColorStop(0, 'rgba(139,92,246,0.8)');
+        grad.addColorStop(1, 'rgba(139,92,246,0)');
+        X.fillStyle = grad;
+        X.beginPath();
+        X.arc(magnet.x, magnet.y, r * 3, 0, Math.PI * 2);
+        X.fill();
+        X.fillStyle = '#8b5cf6';
+        X.shadowColor = '#8b5cf6';
+        X.shadowBlur = 30;
+        X.font = '28px sans-serif';
+        X.textAlign = 'center';
+        X.textBaseline = 'middle';
+        X.fillText('🧲', magnet.x, magnet.y + 1);
+        X.shadowBlur = 0;
+      }
+
+      // === ОБЛАКА ===
       for (let cloud of clouds) {
-        const pulse5 = 1 + .05 * Math.sin(cloud.phase);
-        const r = cloud.r * pulse5 * Math.min(cloud.scale, 1);
+        const pulse6 = 1 + .05 * Math.sin(cloud.phase);
+        const r = cloud.r * pulse6 * Math.min(cloud.scale, 1);
         X.fillStyle = 'rgba(180,190,200,.4)';
         X.shadowColor = 'rgba(180,190,200,.1)';
         X.shadowBlur = 30;
@@ -1332,6 +1539,7 @@ audio.volume = 0.3;
         }
       }
 
+      // === ЩИТ ===
       if (hasShield && gs === STATE.PLAYING) {
         const sr = getRadius() * 1.8 + 8 * Math.sin(Date.now() * .005);
         const grad = X.createRadialGradient(player.x, player.y, 2, player.x, player.y, sr);
@@ -1371,7 +1579,7 @@ audio.volume = 0.3;
         X.stroke();
       }
 
-      // Сердечки (жизни) для Раннера
+      // === ЖИЗНИ ===
       if (gs === STATE.PLAYING) {
         const hSize = 24, sp = 10, total = maxLives * hSize + (maxLives - 1) * sp;
         const startX = (W - total) / 2;
@@ -1396,6 +1604,7 @@ audio.volume = 0.3;
 
       drawParticles();
 
+      // Инфо
       if (gs === STATE.PLAYING) {
         X.fillStyle = 'rgba(255,255,255,.15)';
         X.font = '12px monospace';
@@ -1407,19 +1616,54 @@ audio.volume = 0.3;
           X.fillStyle = 'rgba(96,165,250,.5)';
           X.fillText(`🛡️ ${Math.ceil(shieldTimer/70)}с`, 200, H - 10);
         }
+        if (hasMagnet) {
+          X.fillStyle = 'rgba(139,92,246,.5)';
+          X.fillText(`🧲 ${Math.ceil(magnetTimer/70)}с`, 290, H - 10);
+        }
         X.fillStyle = 'rgba(255,255,255,.15)';
-        X.fillText(`❤️ ${heartsCollected}`, 300, H - 10);
+        X.fillText(`❤️ ${heartsCollected}`, 390, H - 10);
       }
     }
 
     // --- ОТРИСОВКА ПАРКУРА ---
     if (gs === STATE.PARKOUR) {
-      // === РИСУЕМ ХВОСТ ПАРКУРА ИЗ ИСТОРИИ ===
       const cx = parkourPlayer.x + parkourPlayer.width/2;
       const cy = parkourPlayer.y + parkourPlayer.height/2;
+      
+      // === ХВОСТ ПАРКУРА ===
       drawTrailFromHistory(X, parkourTrailHistory, getParkourTrailLength(), cx, cy, false);
 
-      // Жизни в паркуре
+      // === МЕРЦАЮЩАЯ ФИОЛЕТОВАЯ ОБВОДКА ПАРКУРА ===
+      if (parkourHasMagnet) {
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.005);
+        const radius = MAGNET_RADIUS;
+        X.strokeStyle = `rgba(139, 92, 246, ${0.3 + 0.2 * pulse})`;
+        X.lineWidth = 3;
+        X.setLineDash([8, 12]);
+        X.shadowColor = '#8b5cf6';
+        X.shadowBlur = 30;
+        X.beginPath();
+        X.arc(cx, cy, radius, 0, Math.PI * 2);
+        X.stroke();
+        X.setLineDash([]);
+        X.shadowBlur = 0;
+        for (let i = 0; i < 12; i++) {
+          const angle = i * Math.PI / 6 + Date.now() * 0.002;
+          const dist = radius * (0.3 + 0.7 * (0.5 + 0.5 * Math.sin(Date.now() * 0.003 + i)));
+          const x = cx + Math.cos(angle) * dist;
+          const y = cy + Math.sin(angle) * dist;
+          const size = 2 + Math.sin(Date.now() * 0.01 + i) * 1.5;
+          X.fillStyle = `rgba(139, 92, 246, ${0.3 + 0.3 * Math.sin(Date.now() * 0.004 + i)})`;
+          X.shadowColor = '#8b5cf6';
+          X.shadowBlur = 15;
+          X.beginPath();
+          X.arc(x, y, size, 0, Math.PI * 2);
+          X.fill();
+        }
+        X.shadowBlur = 0;
+      }
+
+      // === ЖИЗНИ ===
       const hSize = 24, sp = 10, total = parkourMaxLives * hSize + (parkourMaxLives - 1) * sp;
       const startX = (W - total) / 2;
       for (let i = 0; i < parkourLives; i++) {
@@ -1440,6 +1684,7 @@ audio.volume = 0.3;
         X.restore();
       }
 
+      // === ПЛАТФОРМЫ ===
       for (let p of platforms) {
         X.fillStyle = '#4ade80';
         X.shadowColor = '#4ade80';
@@ -1451,6 +1696,7 @@ audio.volume = 0.3;
         X.strokeRect(p.x, p.y, p.width, p.height);
       }
 
+      // === ПРЕПЯТСТВИЯ ===
       for (let o of obstacles) {
         X.fillStyle = '#f87171';
         X.shadowColor = '#f87171';
@@ -1459,6 +1705,62 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
+      // === МОНЕТЫ ПАРКУРА ===
+      for (let coin of parkourCoins) {
+        const pulse3 = 1 + .1 * Math.sin(coin.phase);
+        const r = coin.r * pulse3;
+        const grad = X.createRadialGradient(coin.x, coin.y, 1, coin.x, coin.y, r * 2);
+        grad.addColorStop(0, '#fbbf24');
+        grad.addColorStop(1, 'rgba(251,191,36,0)');
+        X.fillStyle = grad;
+        X.beginPath();
+        X.arc(coin.x, coin.y, r * 2, 0, Math.PI * 2);
+        X.fill();
+        X.save();
+        X.translate(coin.x, coin.y);
+        X.rotate(coin.rotation || 0);
+        X.fillStyle = '#fbbf24';
+        X.shadowColor = '#fbbf24';
+        X.shadowBlur = 15;
+        X.beginPath();
+        X.arc(0, 0, r * .7, 0, Math.PI * 2);
+        X.fill();
+        X.shadowBlur = 0;
+        X.strokeStyle = '#f59e0b';
+        X.lineWidth = 2;
+        X.beginPath();
+        X.arc(0, 0, r * .5, 0, Math.PI * 2);
+        X.stroke();
+        X.fillStyle = '#f59e0b';
+        X.font = `${r * .8}px sans-serif`;
+        X.textAlign = 'center';
+        X.textBaseline = 'middle';
+        X.fillText('$', 0, 1);
+        X.restore();
+      }
+
+      // === МАГНИТЫ ПАРКУРА ===
+      for (let magnet of parkourMagnets) {
+        const pulse5 = 1 + .12 * Math.sin(magnet.phase);
+        const r = magnet.r * pulse5;
+        const grad = X.createRadialGradient(magnet.x, magnet.y, 1, magnet.x, magnet.y, r * 3);
+        grad.addColorStop(0, 'rgba(139,92,246,0.8)');
+        grad.addColorStop(1, 'rgba(139,92,246,0)');
+        X.fillStyle = grad;
+        X.beginPath();
+        X.arc(magnet.x, magnet.y, r * 3, 0, Math.PI * 2);
+        X.fill();
+        X.fillStyle = '#8b5cf6';
+        X.shadowColor = '#8b5cf6';
+        X.shadowBlur = 30;
+        X.font = '28px sans-serif';
+        X.textAlign = 'center';
+        X.textBaseline = 'middle';
+        X.fillText('🧲', magnet.x, magnet.y + 1);
+        X.shadowBlur = 0;
+      }
+
+      // === СЕРДЦА ПАРКУРА ===
       for (let heart of parkourHearts) {
         const pulse4 = 1 + 0.08 * Math.sin(heart.phase);
         const r = heart.r * pulse4;
@@ -1481,7 +1783,7 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
-      // === РИСУЕМ КАМЕРУ ПАРКУРА ПОВЕРХ ХВОСТА ===
+      // === КАМЕРА ПАРКУРА ===
       if (CAM.complete && CAM.naturalWidth > 0) {
         X.save();
         X.translate(cx, cy);
@@ -1499,13 +1801,18 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
+      // === ИНФО ПАРКУРА ===
       X.fillStyle = 'rgba(255,255,255,.6)';
       X.font = '14px sans-serif';
       X.textAlign = 'left';
       X.textBaseline = 'top';
       X.fillText(`🏃 Скорость: ${parkourSpeed.toFixed(1)}`, 10, 60);
       X.fillText(`❤️ ${parkourLives}`, 10, 80);
-      X.fillText(`📏 ${parkourHeartsCollected}`, 10, 100);
+      X.fillText(`🧲 ${parkourHeartsCollected}`, 10, 100);
+      if (parkourHasMagnet) {
+        X.fillStyle = 'rgba(139,92,246,.6)';
+        X.fillText(`🧲 ${Math.ceil(parkourMagnetTimer/70)}с`, 180, 60);
+      }
       
       X.fillStyle = 'rgba(255,255,255,.3)';
       X.font = '12px sans-serif';
@@ -1537,7 +1844,6 @@ audio.volume = 0.3;
     setTimeout(() => {
       GO.style.display = 'flex';
       GO.classList.add('show');
-      stopMusic();
       if (intervalId) { clearInterval(intervalId); intervalId = null; }
     }, 600);
   }
@@ -1548,12 +1854,10 @@ audio.volume = 0.3;
       gs = STATE.PAUSED;
       PO.classList.add('show');
       PS.textContent = gameMode === 'runner' ? player.score : parkourScore;
-      pauseMusic();
       if (intervalId) { clearInterval(intervalId); intervalId = null; }
     } else if (gs === STATE.PAUSED) {
       gs = gameMode === 'runner' ? STATE.PLAYING : STATE.PARKOUR;
       PO.classList.remove('show');
-      resumeMusic();
       if (!intervalId) { intervalId = setInterval(update, 1000 / 70); }
     }
   }
@@ -1570,22 +1874,29 @@ audio.volume = 0.3;
       clouds = [];
       shieldObjects = [];
       hearts = [];
+      coins = [];
+      magnets = [];
       hp = [];
       ep = [];
       player.score = 0;
       trailHistory = [];
       heartsCollected = 0;
+      hasMagnet = false;
+      magnetTimer = 0;
     } else {
       platforms = [];
       obstacles = [];
       parkourHearts = [];
+      parkourCoins = [];
+      parkourMagnets = [];
       parkourScore = 0;
       parkourLives = parkourMaxLives;
       parkourTrailHistory = [];
       parkourHeartsCollected = 0;
+      parkourHasMagnet = false;
+      parkourMagnetTimer = 0;
     }
     updateUI();
-    stopMusic();
     if (intervalId) { clearInterval(intervalId); intervalId = null; }
     stopRulesDemo();
     RO.classList.remove('show');
