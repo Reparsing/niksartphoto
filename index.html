@@ -161,7 +161,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== КАМЕРА НА CANVAS (УВЕЛИЧЕНА) ===== */
+        /* ===== КАМЕРА КАК ИКОНКА МЕНЮ (РАЗМЕР С ХВОСТОМ) ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -178,16 +178,16 @@
 
         .camera-nav-container {
             position: relative;
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         #cameraNavCanvas {
-            width: 42px;
-            height: 42px;
+            width: 32px;
+            height: 32px;
             display: block;
             position: relative;
             z-index: 2;
@@ -195,12 +195,12 @@
         }
 
         @media (max-width: 768px) {
-            .camera-nav-container { width: 42px; height: 42px; }
-            #cameraNavCanvas { width: 36px; height: 36px; }
+            .camera-nav-container { width: 34px; height: 34px; }
+            #cameraNavCanvas { width: 28px; height: 28px; }
         }
         @media (max-width: 480px) {
-            .camera-nav-container { width: 38px; height: 38px; }
-            #cameraNavCanvas { width: 32px; height: 32px; }
+            .camera-nav-container { width: 30px; height: 30px; }
+            #cameraNavCanvas { width: 24px; height: 24px; }
         }
 
         /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
@@ -418,10 +418,10 @@
                 <li><a href="my-awards.html" class="nav-link">🏆 Мои награды</a></li>
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
-            <!-- КАМЕРА НА CANVAS (УВЕЛИЧЕНА) -->
+            <!-- КАМЕРА КАК ИКОНКА МЕНЮ (РАЗМЕР 32X32) -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
                 <div class="camera-nav-container">
-                    <canvas id="cameraNavCanvas" width="80" height="80"></canvas>
+                    <canvas id="cameraNavCanvas" width="64" height="64"></canvas>
                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle">☰</button>
@@ -790,38 +790,36 @@
         });
     </script>
 
-    <!-- ===== НОВЫЙ СКРИПТ ДЛЯ КАМЕРЫ (радужный хвост + пульсация) ===== -->
+    <!-- ===== КАМЕРА КАК ИКОНКА МЕНЮ (ХВОСТ + ПУЛЬСАЦИЯ) ===== -->
     <script>
         (function() {
             const canvas = document.getElementById('cameraNavCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const W = canvas.width;  // 80
-            const H = canvas.height; // 80
+            const W = canvas.width;  // 64
+            const H = canvas.height; // 64
 
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             let pulsePhase = 0;
-            const baseRadius = 22; // для размера 80
+            const baseRadius = 20;
 
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- Радужный хвост (волна) ---
+                // --- Радужный хвост (прямой, с лёгким покачиванием) ---
                 const time = Date.now() * 0.003;
-                const trailLen = 8;
+                const trailLen = 10;
                 const spd = 3;
                 const radius = baseRadius;
                 for (let i = 1; i < trailLen; i++) {
-                    const alpha = 0.3 * (1 - i/trailLen) * (spd/8 + 0.3);
-                    const size = (1 - i/trailLen) * radius * 0.8;
-                    const waveY = Math.sin(i * 0.8 + time) * 4;
-                    const waveX = Math.sin(i * 0.4 + time * 0.7) * 2;
-                    const xOff = -i * 3 + waveX;
-                    const yOff = waveY;
-                    const hue = (i * 15 + Date.now() * 0.03) % 360;
+                    const alpha = 0.35 * (1 - i/trailLen) * (spd/8 + 0.3);
+                    const size = (1 - i/trailLen) * radius * 0.85;
+                    const yOff = Math.sin(time + i * 0.15) * 2;
+                    const xOff = -i * 2.8;
+                    const hue = (i * 18 + Date.now() * 0.02) % 360;
                     ctx.beginPath();
                     ctx.arc(W/2 + xOff, H/2 + yOff, size, 0, Math.PI * 2);
                     ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${alpha})`;
@@ -836,7 +834,7 @@
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
                     ctx.save();
                     ctx.translate(W/2, H/2);
-                    const baseSize = 45; // увеличено для размера 80
+                    const baseSize = 36;
                     const sizeX = baseSize * scaleX;
                     const sizeY = baseSize * scaleY;
                     ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
@@ -846,17 +844,17 @@
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 10;
                     ctx.beginPath();
-                    ctx.ellipse(W/2, H/2, 18 * scaleX, 18 * scaleY, 0, 0, Math.PI * 2);
+                    ctx.ellipse(W/2, H/2, 14 * scaleX, 14 * scaleY, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
-                    ctx.font = '18px sans-serif';
+                    ctx.font = '16px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', W/2, H/2 + 1);
                 }
 
-                pulsePhase += 0.05;
+                pulsePhase += 0.04;
                 requestAnimationFrame(drawCamera);
             }
 
