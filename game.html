@@ -59,7 +59,7 @@
       <p><span class="emoji">🛡️</span> Подбирай <strong>синие щиты</strong> — они защищают от туч на 10 секунд.</p>
       <p><span class="emoji">🎯</span> Цель — набрать как можно больше очков!</p>
     </div>
-    <button class="close-rules-btn" id="closeRulesBtn">Понятно</button>
+    <button class="close-rules-btn" id="closeRulesBtn">Понятно!</button>
   </div>
 </div>
 
@@ -162,13 +162,13 @@
   let shakeX = 0, shakeY = 0, shakeIntensity = 0;
   let bgStars = [];
 
-  // --- Демо (исправленное) ---
+  // --- Демо (ПЛАВНОЕ УКЛОНЕНИЕ) ---
   let demoPlayer = {
     x: 80, y: 75, vy: 0,
     baseRadius: 18, pulsePhase: 0,
     speed: 2.5, score: 0,
-    targetY: 75,      // Целевая позиция по Y для плавного движения
-    dodgeTimer: 0     // Таймер для запоминания направления уклонения
+    targetY: 75,      // Целевая позиция
+    dodgeForce: 0     // Сила уклонения (плавно нарастает)
   };
   let demoStars = [], demoClouds = [], demoShield = null;
   let demoFrame = 0, rulesAnimationId = null;
@@ -731,23 +731,23 @@
     X.restore();
   }
 
-  // --- Демо правил (ИСПРАВЛЕННОЕ - камера облетает тучи) ---
+  // --- ДЕМО ПРАВИЛ (ПЛАВНОЕ УКЛОНЕНИЕ) ---
   function updateRulesDemo() {
     demoFrame++;
     const WD = RPC.width,
       HD = RPC.height;
 
     // ---- 1. Генерация объектов ----
-    if (demoFrame % 35 === 0) {
+    if (demoFrame % 40 === 0) {
       const y = 20 + Math.random() * (HD - 40);
       demoStars.push({ x: WD + 10, y, r: 8, speed: 1.2 + Math.random() * .5, phase: Math.random() * Math.PI * 2 });
     }
-    if (demoFrame % 55 === 0) {
+    if (demoFrame % 60 === 0) {
       const y = 20 + Math.random() * (HD - 40),
-        size = 16 + Math.random() * 10;
+        size = 16 + Math.random() * 12;
       demoClouds.push({ x: WD + 10, y, r: size, speed: 1.5 + Math.random() * .8, phase: Math.random() * Math.PI * 2 });
     }
-    if (demoFrame % 120 === 0 && demoFrame > 60) {
+    if (demoFrame % 130 === 0 && demoFrame > 60) {
       const y = 20 + Math.random() * (HD - 40);
       demoShield = { x: WD + 10, y, r: 10, speed: 1.8, phase: 0 };
     }
@@ -760,7 +760,6 @@
       star.phase += .05;
       const dx = demoPlayer.x - star.x,
         dy = demoPlayer.y - star.y;
-      // Сбор звёзд (для красоты)
       if (Math.sqrt(dx * dx + dy * dy) < 20 + star.r) {
         demoStars.splice(i, 1);
         continue;
@@ -780,108 +779,119 @@
       if (demoShield && demoShield.x < -20) demoShield = null;
     }
 
-    // ---- 3. УМНОЕ УКЛОНЕНИЕ ОТ ТУЧ (НОВАЯ ЛОГИКА) ----
-    // Сначала обновляем тучи (они двигаются)
+    // Тучи (двигаем и удаляем)
     for (let i = demoClouds.length - 1; i >= 0; i--) {
       const cloud = demoClouds[i];
       cloud.x -= cloud.speed * 1.2;
       cloud.phase += .02;
-      // Удаляем ушедшие
       if (cloud.x < -30) {
         demoClouds.splice(i, 1);
         continue;
       }
     }
 
-    // --- Логика уклонения ---
-    // Находим ближайшую опасную тучу (которая впереди и на одной высоте)
+    // ---- 3. ПЛАВНОЕ ПРЕДСКАЗЫВАЮЩЕЕ УКЛОНЕНИЕ ----
+    // Находим самую опасную тучу (которая ближе всего и на курсе)
     let dangerCloud = null;
     let minDist = Infinity;
-    const DANGER_ZONE = 130; // Радиус, в котором камера начинает реагировать
-    const COLLISION_RADIUS = 25; // Радиус камеры + радиус тучи (примерно)
+    const LOOK_AHEAD = 120; // Смотрим на 120 пикселей вперёд
+    const SAFE_RADIUS = 28; // Безопасный радиус (камера + туча)
 
     for (let cloud of demoClouds) {
-      // Только если туча впереди камеры
+      // Только тучи, которые впереди камеры
       if (cloud.x <= demoPlayer.x) continue;
       const dx = cloud.x - demoPlayer.x;
       const dy = cloud.y - demoPlayer.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      // Если туча близко и угрожает
-      if (dist < DANGER_ZONE && dist < minDist) {
-        // Проверяем, не находится ли туча прямо на курсе
-        if (Math.abs(dy) < COLLISION_RADIUS + cloud.r) {
-          dangerCloud = cloud;
-          minDist = dist;
-        }
+      
+      // Проверяем, угрожает ли туча (находится на курсе)
+      const isOnCourse = Math.abs(dy) < SAFE_RADIUS + cloud.r;
+      // Или туча близко к курсу (будет угрожать скоро)
+      const isNearCourse = Math.abs(dy) < SAFE_RADIUS + cloud.r + 20;
+      
+      if (dist < LOOK_AHEAD && (isOnCourse || isNearCourse) && dist < minDist) {
+        dangerCloud = cloud;
+        minDist = dist;
       }
     }
 
-    // Если есть опасная туча — уклоняемся
+    // Если есть опасная туча — плавно уклоняемся
     if (dangerCloud) {
-      // Определяем, свободно ли сверху или снизу
-      const canGoUp = demoPlayer.y > 35;
-      const canGoDown = demoPlayer.y < HD - 35;
-
-      // Проверяем, есть ли другие тучи, которые мешают уклоняться
-      let blockedUp = false,
-        blockedDown = false;
+      // Определяем, куда безопаснее уклоняться
+      const canGoUp = demoPlayer.y > 40;
+      const canGoDown = demoPlayer.y < HD - 40;
+      
+      // Проверяем, занято ли место для уклонения другими тучами
+      let blockedUp = false, blockedDown = false;
+      const dodgeOffset = 55; // На сколько пикселей уклоняемся
+      
       for (let cloud of demoClouds) {
         if (cloud === dangerCloud) continue;
-        // Проверяем тучи, которые находятся рядом с камерой
+        // Проверяем тучи, которые могут помешать уклонению
         if (cloud.x > demoPlayer.x - 20 && cloud.x < demoPlayer.x + 100) {
-          if (Math.abs(cloud.y - (demoPlayer.y - 50)) < 40) blockedUp = true;
-          if (Math.abs(cloud.y - (demoPlayer.y + 50)) < 40) blockedDown = true;
+          if (Math.abs(cloud.y - (demoPlayer.y - dodgeOffset)) < 35) blockedUp = true;
+          if (Math.abs(cloud.y - (demoPlayer.y + dodgeOffset)) < 35) blockedDown = true;
         }
       }
 
-      // Выбираем направление уклонения
+      // Выбираем направление с учётом препятствий
+      let targetOffset = 0;
       if (canGoUp && !blockedUp) {
-        demoPlayer.targetY = Math.max(35, demoPlayer.y - 55);
+        targetOffset = -dodgeOffset;
       } else if (canGoDown && !blockedDown) {
-        demoPlayer.targetY = Math.min(HD - 35, demoPlayer.y + 55);
+        targetOffset = dodgeOffset;
       } else {
-        // Если везде тучи — уклоняемся в сторону с большим пространством
-        const spaceUp = demoPlayer.y - 35;
-        const spaceDown = HD - demoPlayer.y - 35;
-        demoPlayer.targetY = spaceUp > spaceDown ? 35 : HD - 35;
+        // Если везде тучи — выбираем сторону с большим пространством
+        const spaceUp = demoPlayer.y - 40;
+        const spaceDown = HD - demoPlayer.y - 40;
+        targetOffset = spaceUp > spaceDown ? -dodgeOffset : dodgeOffset;
       }
 
-      // Увеличиваем скорость уклонения, если туча совсем близко
-      if (minDist < 70) {
-        demoPlayer.vy += (demoPlayer.targetY - demoPlayer.y) * 0.08;
-      } else {
-        demoPlayer.vy += (demoPlayer.targetY - demoPlayer.y) * 0.04;
+      // Плавно двигаем целевую позицию
+      const targetY = Math.min(Math.max(40, demoPlayer.y + targetOffset), HD - 40);
+      // Плавно подтягиваем цель, чтобы движение было естественным
+      demoPlayer.targetY += (targetY - demoPlayer.targetY) * 0.08;
+      
+      // Если туча очень близко — усиливаем реакцию
+      if (minDist < 60) {
+        demoPlayer.targetY += (targetY - demoPlayer.targetY) * 0.15;
       }
     } else {
-      // Если опасности нет — возвращаемся в центр (но не резко)
+      // Если опасности нет — плавно возвращаемся к центру
       const centerY = HD / 2;
-      // Добавляем небольшое движение по синусоиде для плавности
-      const sineWave = 20 * Math.sin(demoFrame * 0.015);
-      demoPlayer.targetY = centerY + sineWave;
-      // Плавно движемся к цели
-      const diff = demoPlayer.targetY - demoPlayer.y;
-      demoPlayer.vy += diff * 0.015;
+      // Небольшое синусоидальное покачивание для живости
+      const sineWave = 15 * Math.sin(demoFrame * 0.012);
+      const targetCenter = centerY + sineWave;
+      demoPlayer.targetY += (targetCenter - demoPlayer.targetY) * 0.025;
     }
 
-    // Применяем физику
-    demoPlayer.vy *= 0.92; // friction
+    // ---- 4. Применяем физику с затуханием (плавное движение) ----
+    const diff = demoPlayer.targetY - demoPlayer.y;
+    // Ускорение пропорционально отклонению, но с ограничением
+    const acceleration = Math.min(Math.max(diff * 0.035, -1.2), 1.2);
+    demoPlayer.vy += acceleration;
+    // Демпфирование (трение)
+    demoPlayer.vy *= 0.93;
+    // Ограничиваем максимальную скорость
+    demoPlayer.vy = Math.min(Math.max(demoPlayer.vy, -3), 3);
     demoPlayer.y += demoPlayer.vy;
     demoPlayer.pulsePhase += .05;
 
-    // Ограничиваем, чтобы не вылететь за край
-    const margin = 30;
+    // Жёсткие границы
+    const margin = 35;
     if (demoPlayer.y < margin) {
       demoPlayer.y = margin;
       demoPlayer.vy = 0;
+      demoPlayer.targetY = margin + 10;
     }
     if (demoPlayer.y > HD - margin) {
       demoPlayer.y = HD - margin;
       demoPlayer.vy = 0;
+      demoPlayer.targetY = HD - margin - 10;
     }
 
-    // ---- 4. ОТРИСОВКА ----
+    // ---- 5. ОТРИСОВКА ----
     RX.clearRect(0, 0, WD, HD);
-    // Градиент фона
     const grad = RX.createRadialGradient(WD / 2, HD / 2, 0, WD / 2, HD / 2, WD / 2);
     grad.addColorStop(0, '#1a2a3a');
     grad.addColorStop(1, '#0a1628');
