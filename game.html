@@ -10,6 +10,7 @@
         audio.volume = 0.3;
     </script>
     <style>
+        /* ===== ВСЕ СТИЛИ (БЕЗ ИЗМЕНЕНИЙ) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body { background: #0a0a0c; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; padding: 16px; }
         .game-wrapper { background: #16161a; border-radius: 32px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); max-width: 700px; width: 100%; position: relative; }
@@ -137,6 +138,9 @@
             const GRAVITY = .15, FRICTION = .92;
             let targetY = player.y;
 
+            // ===== ТРЯСКА =====
+            let shakeX = 0, shakeY = 0, shakeIntensity = 0;
+
             function getRadius() { return player.baseRadius * currentScale; }
 
             // === МУЗЫКА ===
@@ -153,18 +157,45 @@
                         rotSpeed: (Math.random() - .5) * .3 });
                 }
             }
+
+            // === НОВАЯ АНИМАЦИЯ СЕРДЦА (рассыпается на осколки) ===
             function spawnHeartExplosion(x, y) {
-                const half1 = { x, y, vx: -2 + Math.random() * 1.5, vy: -3 + Math.random() * 2, size: 16, life: 1, rotation: 0,
-                    rotSpeed: (Math.random() - .5) * .2, part: 'left', color: '#ef4444' };
-                const half2 = { x, y, vx: 2 + Math.random() * 1.5, vy: -3 + Math.random() * 2, size: 16, life: 1, rotation: 0,
-                    rotSpeed: (Math.random() - .5) * .2, part: 'right', color: '#ef4444' };
-                for (let i = 0; i < 6; i++) {
-                    const angle = Math.random() * Math.PI * 2, speed = 1 + Math.random() * 2;
-                    heartParticles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 1, size: 4 + Math.random() * 4,
-                        life: 1, rotation: 0, rotSpeed: (Math.random() - .5) * .3, part: 'debris', color: `hsl(0,80%,${50+Math.random()*30}%)` });
+                const particleCount = 25;
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 1 + Math.random() * 3;
+                    const size = 3 + Math.random() * 5;
+                    heartParticles.push({
+                        x, y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 1.5,
+                        size: size,
+                        life: 1.0,
+                        color: `hsl(340, 90%, ${50 + Math.random() * 30}%)`,
+                        rotation: Math.random() * Math.PI * 2,
+                        rotSpeed: (Math.random() - 0.5) * 0.2,
+                        // Для формы осколка
+                        type: 'debris'
+                    });
                 }
-                heartParticles.push(half1, half2);
+                // Несколько крупных осколков
+                for (let i = 0; i < 5; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 0.5 + Math.random() * 1.5;
+                    heartParticles.push({
+                        x, y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 0.5,
+                        size: 8 + Math.random() * 10,
+                        life: 1.0,
+                        color: '#ef4444',
+                        rotation: Math.random() * Math.PI * 2,
+                        rotSpeed: (Math.random() - 0.5) * 0.1,
+                        type: 'debris'
+                    });
+                }
             }
+
             function updateParticles() {
                 for (let i = explosionParticles.length - 1; i >= 0; i--) {
                     const p = explosionParticles[i];
@@ -173,10 +204,11 @@
                 }
                 for (let i = heartParticles.length - 1; i >= 0; i--) {
                     const p = heartParticles[i];
-                    p.x += p.vx; p.y += p.vy; p.vy += .05; p.rotation += p.rotSpeed; p.life -= .015;
+                    p.x += p.vx; p.y += p.vy; p.vy += .05; p.rotation += p.rotSpeed; p.life -= .012;
                     if (p.life <= 0) heartParticles.splice(i, 1);
                 }
             }
+
             function drawParticles() {
                 for (let p of explosionParticles) {
                     ctx.save();
@@ -196,24 +228,16 @@
                     ctx.translate(p.x, p.y);
                     ctx.rotate(p.rotation);
                     ctx.globalAlpha = p.life;
-                    if (p.part === 'left') {
-                        ctx.fillStyle = p.color || '#ef4444';
-                        ctx.beginPath();
-                        ctx.moveTo(0, 0);
-                        ctx.quadraticCurveTo(-10, -10, 0, -18);
-                        ctx.quadraticCurveTo(0, -10, 0, 0);
-                        ctx.fill();
-                    } else if (p.part === 'right') {
-                        ctx.fillStyle = p.color || '#ef4444';
-                        ctx.beginPath();
-                        ctx.moveTo(0, 0);
-                        ctx.quadraticCurveTo(10, -10, 0, -18);
-                        ctx.quadraticCurveTo(0, -10, 0, 0);
-                        ctx.fill();
+                    ctx.fillStyle = p.color;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 8;
+                    // Рисуем осколки в виде маленьких квадратиков или кружков
+                    if (p.type === 'debris') {
+                        const size = p.size * 0.5;
+                        ctx.fillRect(-size/2, -size/2, size, size);
                     } else {
-                        ctx.fillStyle = p.color || '#ef4444';
                         ctx.beginPath();
-                        ctx.arc(0, 0, p.size * .5, 0, Math.PI * 2);
+                        ctx.arc(0, 0, p.size * 0.5, 0, Math.PI * 2);
                         ctx.fill();
                     }
                     ctx.restore();
@@ -242,6 +266,7 @@
                 lives = maxLives; speedMultiplier = 1; hasShield = false; shieldTimer = 0;
                 currentScale = 1; targetScale = 1;
                 heartParticles = []; explosionParticles = []; stars = []; clouds = []; shieldObjects = [];
+                shakeIntensity = 0; shakeX = 0; shakeY = 0;
                 frameCount = 0;
                 gameActive = true; gameState = STATE.PLAYING;
                 gameOverOverlay.classList.remove('show'); gameOverOverlay.style.display = 'none';
@@ -260,6 +285,7 @@
                 gameActive = false; gameState = STATE.GAMEOVER;
                 finalSpan.textContent = player.score;
                 spawnExplosion(player.x, player.y);
+                // Взрываем все оставшиеся сердца
                 const heartSize = 24, spacing = 10, total = maxLives * heartSize + (maxLives - 1) * spacing, startX = (W - total) / 2;
                 for (let i = 0; i < lives; i++) {
                     const x = startX + i * (heartSize + spacing), y = 20 + heartSize * .3;
@@ -273,7 +299,7 @@
                 }, 600);
             }
 
-            // === ОТРИСОВКА СЛЕДА С ВОЛНОЙ ===
+            // === ОТРИСОВКА СЛЕДА (прямой, но с анимацией вверх-вниз) ===
             function getTrailColor(i, type, alpha) {
                 const t = Date.now() * .03;
                 switch(type) {
@@ -291,11 +317,9 @@
                 for (let i = 1; i < len; i++) {
                     const alpha = .3 * (1 - i/len) * (spd/8 + .3);
                     const size = (1 - i/len) * baseR * .9;
-                    // Волна: смещение по Y и X
-                    const waveY = Math.sin(i * 0.8 + time) * 5;
-                    const waveX = Math.sin(i * 0.4 + time * 0.7) * 3;
-                    const xOff = -i * 4 + waveX;
-                    const yOff = waveY;
+                    // Только движение вверх-вниз (без волны)
+                    const yOff = Math.sin(time + i * 0.2) * 3; // лёгкое покачивание
+                    const xOff = -i * 4;
                     c.beginPath();
                     c.arc(x + xOff, y + yOff, size, 0, Math.PI * 2);
                     c.fillStyle = getTrailColor(i, type, alpha);
@@ -344,6 +368,18 @@
                 } else currentScale = targetScale;
                 updateScaleDisplay();
                 frameCount++;
+
+                // Тряска затухает
+                if (shakeIntensity > 0) {
+                    shakeIntensity *= 0.92;
+                    if (shakeIntensity < 0.1) shakeIntensity = 0;
+                    shakeX = (Math.random() - 0.5) * shakeIntensity * 1.2;
+                    shakeY = (Math.random() - 0.5) * shakeIntensity * 1.2;
+                } else {
+                    shakeX = 0;
+                    shakeY = 0;
+                }
+
                 const diff = targetY - player.y;
                 player.vy += diff * .008;
                 player.vy *= FRICTION;
@@ -402,10 +438,22 @@
                             hasShield = false;
                             shieldTimer = 0;
                             clouds.splice(i, 1);
+                            // Лёгкая тряска при блокировке
+                            shakeIntensity = 6;
                             continue;
                         } else {
                             lives--;
-                            spawnHeartExplosion(player.x, player.y - 30);
+                            // АНИМАЦИЯ РАССЫПАНИЯ СЕРДЦА
+                            const heartSize = 24, spacing = 10;
+                            const totalWidth = maxLives * heartSize + (maxLives - 1) * spacing;
+                            const startX = (W - totalWidth) / 2;
+                            // Взрываем последнее сердце (которое только что исчезло)
+                            const heartIndex = lives; // 0, 1, 2
+                            const x = startX + heartIndex * (heartSize + spacing);
+                            const y = 20 + heartSize * 0.3;
+                            spawnHeartExplosion(x, y);
+                            // ТРЯСКА
+                            shakeIntensity = 14;
                             clouds.splice(i, 1);
                             if (lives <= 0) { gameOver(); return; } else { player.vy = -2; continue; }
                         }
@@ -420,11 +468,19 @@
 
             // === ОТРИСОВКА ===
             function draw() {
+                ctx.save();
+
+                // Применяем тряску
+                if (shakeIntensity > 0) {
+                    ctx.translate(shakeX, shakeY);
+                }
+
                 ctx.clearRect(0, 0, W, H);
                 if (settingsOverlay.classList.contains('show')) {
                     ctx.fillStyle = '#0a0a0c';
                     ctx.fillRect(0, 0, W, H);
                     updatePreview();
+                    ctx.restore();
                     return;
                 }
                 if (gameState === STATE.PLAYING || gameState === STATE.GAMEOVER) {
@@ -533,7 +589,7 @@
                     ctx.arc(player.x, player.y, sr + 8, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * progress);
                     ctx.stroke();
                 }
-                // жизни
+                // жизни (рисуем только если игра активна)
                 if (gameState === STATE.PLAYING) {
                     const heartSize = 24, spacing = 10, total = maxLives * heartSize + (maxLives - 1) * spacing, startX = (W - total) / 2;
                     for (let i = 0; i < lives; i++) {
@@ -562,6 +618,8 @@
                         ctx.fillText(`🛡️ ${Math.ceil(shieldTimer/70)}с`, 200, H - 10);
                     }
                 }
+
+                ctx.restore();
             }
 
             // === ОТРИСОВКА ИГРОКА ===
