@@ -65,6 +65,15 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* ===== ЛЕВАЯ ЧАСТЬ: КАМЕРА + ЛОГОТИП ===== */
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
         }
 
         /* ===== ЛОГОТИП С АВАТАРКОЙ ===== */
@@ -77,7 +86,6 @@
             color: #fff;
             text-decoration: none;
             cursor: pointer;
-            margin-left: 16px;
         }
         .logo .avatar {
             width: 40px;
@@ -111,13 +119,50 @@
             letter-spacing: 0.05em;
         }
 
-        /* ===== ОСНОВНОЕ МЕНЮ ===== */
+        /* ===== КАМЕРА ===== */
+        .camera-nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+        .camera-nav-wrapper:hover {
+            transform: scale(1.08);
+        }
+
+        .camera-nav-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cameraNavCanvas {
+            width: 60px;
+            height: 60px;
+            display: block;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 40px rgba(251, 191, 36, 0.4));
+        }
+
+        /* ===== ЦЕНТРАЛЬНАЯ ЧАСТЬ: МЕНЮ ===== */
         .nav-menu {
             display: none;
             list-style: none;
-            gap: 32px;
+            gap: 28px;
+            align-items: center;
+            margin: 0 auto;
         }
-        @media(min-width:768px) { .nav-menu { display: flex; } }
+        @media(min-width:768px) { 
+            .nav-menu { 
+                display: flex; 
+            } 
+        }
         .nav-link {
             color: var(--subtle);
             font-size: .9rem;
@@ -125,6 +170,7 @@
             transition: all .3s;
             padding: 4px 0;
             position: relative;
+            white-space: nowrap;
         }
         .nav-link:hover { color: #fff; }
         .nav-link.active { color: var(--brand); font-weight: 600; }
@@ -140,7 +186,13 @@
             box-shadow: 0 0 20px var(--brand-glow);
         }
 
-        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
+        /* ===== ПРАВАЯ ЧАСТЬ: МОБИЛЬНАЯ КНОПКА ===== */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
         .mobile-toggle {
             background: none;
             border: none;
@@ -148,7 +200,6 @@
             font-size: 1.5rem;
             cursor: pointer;
             padding: 4px 8px;
-            margin-left: 8px;
         }
         @media(min-width:768px) { .mobile-toggle { display: none; } }
 
@@ -166,72 +217,6 @@
         .mobile-menu a:hover { color: #fff; }
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
-
-        /* ===== КАМЕРА С ХВОСТОМ (ОДИНАКОВЫЙ РАЗМЕР) ===== */
-        .camera-nav-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            z-index: 55;
-            margin-right: 4px;
-            flex-shrink: 0;
-        }
-        .camera-nav-wrapper:hover {
-            transform: scale(1.08);
-        }
-
-        .camera-nav-container {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #cameraNavCanvas {
-            width: 160px;
-            height: 160px;
-            display: block;
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 0 60px rgba(251, 191, 36, 0.5));
-        }
-
-        @media (max-width: 1024px) {
-            .camera-nav-container {
-                width: 140px;
-                height: 140px;
-            }
-            #cameraNavCanvas {
-                width: 140px;
-                height: 140px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .camera-nav-container {
-                width: 110px;
-                height: 110px;
-            }
-            #cameraNavCanvas {
-                width: 110px;
-                height: 110px;
-            }
-        }
-        @media (max-width: 480px) {
-            .camera-nav-container {
-                width: 90px;
-                height: 90px;
-            }
-            #cameraNavCanvas {
-                width: 90px;
-                height: 90px;
-            }
-        }
 
         /* ===== ЛАЙТБОКС ДЛЯ АВАТАРКИ ===== */
         .avatar-lightbox {
@@ -433,23 +418,26 @@
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             
-            <!-- ===== 1. КАМЕРА С ХВОСТОМ (ОДИНАКОВЫЙ РАЗМЕР) ===== -->
-            <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
-                <div class="camera-nav-container">
-                    <canvas id="cameraNavCanvas" width="300" height="300"></canvas>
+            <!-- ===== ЛЕВАЯ ЧАСТЬ: КАМЕРА + ЛОГОТИП ===== -->
+            <div class="nav-left">
+                <!-- КАМЕРА -->
+                <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
+                    <div class="camera-nav-container">
+                        <canvas id="cameraNavCanvas" width="200" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- ЛОГОТИП С АВАТАРКОЙ -->
+                <div class="logo" id="avatarTrigger">
+                    <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" id="avatarImg">
+                    <div class="brand-text">
+                        <span class="name">Артурик</span>
+                        <span class="sub">Кадр решает</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- ===== 2. ЛОГОТИП С АВАТАРКОЙ ===== -->
-            <div class="logo" id="avatarTrigger">
-                <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" id="avatarImg">
-                <div class="brand-text">
-                    <span class="name">Артурик</span>
-                    <span class="sub">Кадр решает</span>
-                </div>
-            </div>
-
-            <!-- ===== 3. ОСНОВНОЕ МЕНЮ ===== -->
+            <!-- ===== ЦЕНТРАЛЬНАЯ ЧАСТЬ: МЕНЮ ===== -->
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link active">Главная</a></li>
                 <li><a href="about.html" class="nav-link">О нас</a></li>
@@ -462,8 +450,10 @@
                 <li><a href="clients-map.html" class="nav-link">🗺️ Карта клиентов</a></li>
             </ul>
 
-            <!-- ===== 4. КНОПКА МОБИЛЬНОГО МЕНЮ ===== -->
-            <button class="mobile-toggle" id="mobileToggle">☰</button>
+            <!-- ===== ПРАВАЯ ЧАСТЬ: МОБИЛЬНАЯ КНОПКА ===== -->
+            <div class="nav-right">
+                <button class="mobile-toggle" id="mobileToggle">☰</button>
+            </div>
         </div>
     </nav>
 
@@ -650,7 +640,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;cursor:default;margin-left:0;">
+                    <a href="index.html" class="logo" style="gap:10px;font-size:1rem;cursor:default;">
                         <img src="images/IMG_20260715_125043_560.jpg" alt="Артурик" class="avatar" style="width:32px;height:32px;border:2px solid var(--brand);">
                         <div>
                             <span style="font-weight:800;color:#fff;">Артурик</span>
@@ -829,55 +819,25 @@
         });
     </script>
 
-    <!-- ===== КАМЕРА С ХВОСТОМ (ОДИНАКОВЫЙ РАЗМЕР) ===== -->
+    <!-- ===== КАМЕРА С ПУЛЬСАЦИЕЙ ===== -->
     <script>
         (function() {
             const canvas = document.getElementById('cameraNavCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const W = canvas.width;  // 300
-            const H = canvas.height; // 300
+            const W = canvas.width;  // 200
+            const H = canvas.height; // 200
 
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
             cameraImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
             let pulsePhase = 0;
-
-            // ОДИНАКОВЫЙ РАЗМЕР для камеры и хвоста
-            const SIZE = 130;
+            const SIZE = 90;
 
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- 1. РИСУЕМ ХВОСТ (ПОЗАДИ КАМЕРЫ) ---
-                const time = Date.now() * 0.003;
-                const trailLength = 50;
-                const maxRadius = SIZE;
-                
-                for (let i = 1; i < trailLength; i++) {
-                    const progress = i / trailLength;
-                    const alpha = 0.7 * (1 - progress) * (1 + 0.3 * Math.sin(time * 0.5 + i * 0.2));
-                    const size = (1 - progress) * maxRadius * 0.9;
-                    
-                    const waveX = Math.sin(time * 0.7 + i * 0.12) * 5;
-                    const waveY = Math.sin(time * 0.5 + i * 0.18) * 4;
-                    
-                    const xOff = -i * 5.5 + waveX;
-                    const yOff = waveY;
-                    
-                    const hue = (i * 12 + time * 15) % 360;
-                    
-                    ctx.beginPath();
-                    ctx.arc(W/2 + xOff, H/2 + yOff, size, 0, Math.PI * 2);
-                    ctx.fillStyle = `hsla(${hue}, 95%, 65%, ${alpha})`;
-                    ctx.shadowColor = `hsla(${hue}, 95%, 65%, ${alpha * 0.5})`;
-                    ctx.shadowBlur = 35;
-                    ctx.fill();
-                }
-                ctx.shadowBlur = 0;
-
-                // --- 2. РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА (ТОГО ЖЕ РАЗМЕРА) ---
                 const pulse = 1 + 0.08 * Math.sin(pulsePhase);
                 const scaleX = 1 / pulse;
                 const scaleY = pulse;
@@ -889,17 +849,19 @@
                 const sizeY = baseSize * scaleY;
                 
                 if (cameraImg.complete && cameraImg.naturalWidth > 0) {
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.shadowBlur = 40;
                     ctx.drawImage(cameraImg, -sizeX/2, -sizeY/2, sizeX, sizeY);
                 } else {
                     ctx.shadowColor = '#fbbf24';
                     ctx.shadowBlur = 40;
                     ctx.fillStyle = '#fbbf24';
                     ctx.beginPath();
-                    ctx.ellipse(0, 0, 50 * scaleX, 50 * scaleY, 0, 0, Math.PI * 2);
+                    ctx.ellipse(0, 0, 35 * scaleX, 35 * scaleY, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#0a0a0c';
-                    ctx.font = '60px sans-serif';
+                    ctx.font = '40px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText('📷', 0, 2);
