@@ -174,6 +174,11 @@ audio.volume = 0.3;
   let shakeX = 0, shakeY = 0, shakeIntensity = 0;
   let bgStars = [];
 
+  // === НОВОЕ: история хвоста для Раннера ===
+  let trailHistory = [];
+  let heartsCollected = 0; // Счётчик собранных сердец
+  const MAX_TRAIL_LENGTH = 50;
+
   // --- ПЕРЕМЕННЫЕ ДЛЯ ПАРКУРА ---
   let parkourPlayer = { x: 80, y: 350, vy: 0, width: 30, height: 40 };
   let platforms = [];
@@ -186,10 +191,12 @@ audio.volume = 0.3;
   let maxJumps = 2;
   let parkourTimer = 0;
   let parkourHearts = [];
-  // --- НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЖИЗНЕЙ В ПАРКУРЕ ---
   let parkourLives = 3;
   const parkourMaxLives = 3;
   let parkourHp = [];
+  // === НОВОЕ: история хвоста для Паркура ===
+  let parkourTrailHistory = [];
+  let parkourHeartsCollected = 0;
 
   // --- ДЕМО ДЛЯ ПРАВИЛ ---
   let demoPlayer = { x: 80, y: 80, vy: 0, pulsePhase: 0 };
@@ -315,7 +322,6 @@ audio.volume = 0.3;
     hearts.push({ x: W + 20, y, r: 12, speed: 1.2 + Math.random() * .6, phase: Math.random() * Math.PI * 2, scale: 0 });
   }
 
-  // === СПАВН СЕРДЕЦ В ПАРКУРЕ ===
   function spawnParkourHeart(x, y) {
     const posX = x || W + 30;
     const posY = y || 100 + Math.random() * 250;
@@ -340,6 +346,53 @@ audio.volume = 0.3;
     }
   }
 
+  // === НОВАЯ ФУНКЦИЯ: ДЛИНА ХВОСТА ОТ КОЛИЧЕСТВА СЕРДЕЦ ===
+  function getTrailLength() {
+    // Базовая длина 10 + по 2 за каждое собранное сердце (максимум 50)
+    return Math.min(10 + heartsCollected * 2, MAX_TRAIL_LENGTH);
+  }
+
+  function getParkourTrailLength() {
+    return Math.min(10 + parkourHeartsCollected * 2, MAX_TRAIL_LENGTH);
+  }
+
+  // === НОВАЯ ФУНКЦИЯ: РИСОВАНИЕ ХВОСТА ИЗ ИСТОРИИ ===
+  function drawTrailFromHistory(c, history, length, x, y, isDemo) {
+    if (history.length < 2) return;
+    
+    const len = Math.min(length || history.length, history.length);
+    const time = Date.now() * .003;
+    const baseSize = isDemo ? 18 : 22;
+    
+    for (let i = 0; i < len && i < history.length - 1; i++) {
+      const index = Math.min(i, history.length - 1);
+      const point = history[index];
+      const progress = i / len;
+      
+      // Размер и прозрачность уменьшаются к концу хвоста
+      const alpha = 0.6 * (1 - progress) * (1 + 0.2 * Math.sin(time + i * 0.2));
+      const size = (1 - progress * 0.7) * baseSize * cs;
+      
+      // Радужный цвет
+      const hue = (i * 12 + time * 20) % 360;
+      
+      // Небольшое покачивание для живости
+      const wave = Math.sin(time + i * 0.15) * 2;
+      
+      // Относительное смещение от позиции камеры
+      const relX = point.x - x;
+      const relY = point.y - y + wave;
+      
+      c.beginPath();
+      c.arc(x + relX, y + relY, size, 0, Math.PI * 2);
+      c.fillStyle = `hsla(${hue}, 95%, 65%, ${alpha})`;
+      c.shadowColor = `hsla(${hue}, 95%, 65%, ${alpha * 0.5})`;
+      c.shadowBlur = 15;
+      c.fill();
+    }
+    c.shadowBlur = 0;
+  }
+
   function getTrailColor(i, type, alpha) {
     const t = Date.now() * .03;
     switch (type) {
@@ -353,30 +406,17 @@ audio.volume = 0.3;
     }
   }
 
-  function drawTrail(c, x, y, speed, radius, type, isDemo) {
-    const len = isDemo ? 20 : 16;
-    const baseR = radius || 22;
-    const spd = speed || 3;
-    type = type || trailType;
-    const time = Date.now() * .003;
-    const scale = isDemo ? 1.3 : 1;
-    for (let i = 1; i < len; i++) {
-      const alpha = .4 * (1 - i / len) * (spd / 8 + .3);
-      const size = (1 - i / len) * baseR * .9 * scale;
-      const yOff = Math.sin(time + i * .2) * (isDemo ? 5 : 3);
-      const xOff = -i * (isDemo ? 5 : 4);
-      c.beginPath();
-      c.arc(x + xOff, y + yOff, size, 0, Math.PI * 2);
-      c.fillStyle = getTrailColor(i, type, alpha);
-      c.fill();
-    }
-  }
-
   function updatePreview() {
     const pw = PC.width, ph = PC.height;
     PX.clearRect(0, 0, pw, ph);
     const cx = pw / 2, cy = ph / 2, radius = 22 * cs;
-    drawTrail(PX, cx, cy, 3, radius, trailType, false);
+    // Демо-хвост для превью
+    const demoHistory = [];
+    for (let i = 0; i < 20; i++) {
+      demoHistory.push({ x: cx - i * 5 + Math.sin(i * 0.3) * 3, y: cy + Math.sin(i * 0.5) * 4 });
+    }
+    drawTrailFromHistory(PX, demoHistory, 20, cx, cy, true);
+    
     const pulse = 1 + .06 * Math.sin(Date.now() * .003);
     const scaleX = pulse * cs, scaleY = (1 / pulse) * cs;
     if (CAM.complete && CAM.naturalWidth > 0) {
@@ -603,18 +643,15 @@ audio.volume = 0.3;
     RX.globalAlpha = 1;
 
     if (demoMode === 'runner') {
-      const trailLen = 14;
-      for (let i = 1; i < trailLen; i++) {
-        const alpha = .35 * (1 - i / trailLen) * .6;
-        const size = (1 - i / trailLen) * 22 * .9;
-        const yOff = Math.sin(Date.now() * .003 + i * .25) * 4;
-        const xOff = -i * 4.5;
-        const hue = (i * 20 + Date.now() * .025) % 360;
-        RX.beginPath();
-        RX.arc(demoPlayer.x + xOff, demoPlayer.y + yOff, size, 0, Math.PI * 2);
-        RX.fillStyle = `hsla(${hue},90%,65%,${alpha})`;
-        RX.fill();
+      // Демо-хвост
+      const demoHistory = [];
+      for (let i = 0; i < 20; i++) {
+        demoHistory.push({ 
+          x: demoPlayer.x - i * 4 + Math.sin(i * 0.3 + Date.now() * 0.002) * 3, 
+          y: demoPlayer.y + Math.sin(i * 0.5 + Date.now() * 0.003) * 4 
+        });
       }
+      drawTrailFromHistory(RX, demoHistory, 20, demoPlayer.x, demoPlayer.y, true);
 
       for (let star of demoStars) {
         const pulse = 1 + .15 * Math.sin(star.phase), r = star.r * pulse;
@@ -732,7 +769,7 @@ audio.volume = 0.3;
         <p><span class="emoji">🦘</span> Прыгай по <strong>зелёным платформам</strong> — у тебя есть <strong>двойной прыжок</strong>!</p>
         <p><span class="emoji">🧱</span> Избегай <strong>красных препятствий</strong> — столкновение отнимает <strong>1 жизнь</strong>.</p>
         <p><span class="emoji">❤️</span> У тебя <strong>3 жизни</strong> (сердца в углу экрана).</p>
-        <p><span class="emoji">❤️</span> Собирай <strong>красные сердца</strong> на платформах, чтобы <strong>восстановить жизнь</strong>!</p>
+        <p><span class="emoji">❤️</span> Собирай <strong>красные сердца</strong> на платформах, чтобы <strong>восстановить жизнь</strong> и <strong>удлинить хвост</strong>!</p>
         <p><span class="emoji">⭐</span> Проходи платформы, чтобы <strong>зарабатывать очки</strong>.</p>
         <p><span class="emoji">🏆</span> Цель — набрать как можно больше очков!</p>
       `;
@@ -742,7 +779,7 @@ audio.volume = 0.3;
         <p><span class="emoji">⭐</span> Собирай <strong>жёлтые звёзды</strong> — они увеличивают счёт и ускоряют тебя.</p>
         <p><span class="emoji">☁️</span> Избегай <strong>белых туч</strong> — у тебя всего <strong>3 жизни</strong>.</p>
         <p><span class="emoji">🛡️</span> Подбирай <strong>синие щиты</strong> — они защищают от туч на 10 секунд.</p>
-        <p><span class="emoji">❤️</span> Собирай <strong>красные сердца</strong> — они восстанавливают <strong>+1 жизнь</strong>!</p>
+        <p><span class="emoji">❤️</span> Собирай <strong>красные сердца</strong> — они восстанавливают <strong>+1 жизнь</strong> и <strong>удлиняют хвост</strong>!</p>
         <p><span class="emoji">🏆</span> Цель — набрать как можно больше очков!</p>
       `;
     }
@@ -800,6 +837,9 @@ audio.volume = 0.3;
     shakeY = 0;
     fc = 0;
     targetY = player.y;
+    // === СБРАСЫВАЕМ ХВОСТ ===
+    trailHistory = [];
+    heartsCollected = 0;
     updateUI();
     initBgStars();
     if (intervalId) clearInterval(intervalId);
@@ -828,9 +868,11 @@ audio.volume = 0.3;
     onGround = false;
     jumpCount = 0;
     fc = 0;
-    // --- СБРАСЫВАЕМ ЖИЗНИ В ПАРКУРЕ ---
     parkourLives = parkourMaxLives;
     parkourHp = [];
+    // === СБРАСЫВАЕМ ХВОСТ ПАРКУРА ===
+    parkourTrailHistory = [];
+    parkourHeartsCollected = 0;
     ga = true;
     updateUI();
     initBgStars();
@@ -842,7 +884,6 @@ audio.volume = 0.3;
       GO.classList.remove('show');
       GO.style.display = 'none';
       resumeMusic();
-      // Создаём 3 стартовых сердца на платформах
       const startPositions = [
         { x: 200, y: 330 },
         { x: 350, y: 280 },
@@ -959,6 +1000,7 @@ audio.volume = 0.3;
       if (dist < r + heart.r) {
         if (lives < maxLives) {
           lives++;
+          heartsCollected++; // <-- УВЕЛИЧИВАЕМ СЧЁТЧИК СЕРДЕЦ (ХВОСТ РАСТЁТ)
           shakeIntensity = 4;
           spawnHeartExplosion(heart.x, heart.y);
         }
@@ -1006,6 +1048,14 @@ audio.volume = 0.3;
       if (cloud.x < -40) clouds.splice(i, 1);
     }
 
+    // === ДОБАВЛЯЕМ ПОЗИЦИЮ КАМЕРЫ В ИСТОРИЮ ХВОСТА ===
+    trailHistory.push({ x: player.x, y: player.y });
+    // Ограничиваем длину истории
+    const maxLen = getTrailLength();
+    if (trailHistory.length > maxLen) {
+      trailHistory.splice(0, trailHistory.length - maxLen);
+    }
+
     updateParticles();
     if (stars.length > 25) stars.splice(0, stars.length - 25);
     if (clouds.length > 18) clouds.splice(0, clouds.length - 18);
@@ -1013,7 +1063,7 @@ audio.volume = 0.3;
     if (hearts.length > 5) hearts.splice(0, hearts.length - 5);
   }
 
-  // === ОБНОВЛЕНИЕ ПАРКУРА (С ЖИЗНЯМИ) ===
+  // === ОБНОВЛЕНИЕ ПАРКУРА ===
   function updateParkour() {
     if (!ga || gs !== STATE.PARKOUR) return;
 
@@ -1055,18 +1105,15 @@ audio.volume = 0.3;
       }
     }
 
-    // Генерация препятствий
     if (Math.random() < 0.02) {
       const y = 350 + Math.random() * 100;
       obstacles.push({ x: W + 20, y: y, width: 20, height: 20 + Math.random() * 30 });
     }
 
-    // Спавн новых сердец (редко)
     if (Math.random() < 0.005 && fc > 120) {
       spawnParkourHeart();
     }
 
-    // Движение и сбор сердец в паркуре
     for (let i = parkourHearts.length - 1; i >= 0; i--) {
       const heart = parkourHearts[i];
       heart.x -= heart.speed;
@@ -1078,6 +1125,7 @@ audio.volume = 0.3;
       if (dist < 30 + heart.r) {
         if (parkourLives < parkourMaxLives) {
           parkourLives++;
+          parkourHeartsCollected++; // <-- УВЕЛИЧИВАЕМ СЧЁТЧИК СЕРДЕЦ (ХВОСТ РАСТЁТ)
           spawnHeartExplosion(heart.x, heart.y);
         }
         parkourHearts.splice(i, 1);
@@ -1090,7 +1138,6 @@ audio.volume = 0.3;
       }
     }
 
-    // Движение препятствий и столкновение (отнимает жизнь!)
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const o = obstacles[i];
       o.x -= parkourSpeed;
@@ -1103,10 +1150,7 @@ audio.volume = 0.3;
           o.y < parkourPlayer.y + parkourPlayer.height &&
           o.y + o.height > parkourPlayer.y) {
         
-        // --- ОТНИМАЕМ ЖИЗНЬ В ПАРКУРЕ ---
         parkourLives--;
-        
-        // Взрыв сердечка в месте столкновения
         spawnHeartExplosion(parkourPlayer.x + parkourPlayer.width/2, parkourPlayer.y + parkourPlayer.height/2);
         obstacles.splice(i, 1);
         
@@ -1114,7 +1158,6 @@ audio.volume = 0.3;
           gameOver('💥 Жизни кончились!');
           return;
         } else {
-          // Отбрасываем игрока назад при потере жизни
           parkourPlayer.vy = -6;
           parkourPlayer.y -= 20;
           continue;
@@ -1152,6 +1195,16 @@ audio.volume = 0.3;
       }
       updateUI();
     }
+
+    // === ДОБАВЛЯЕМ ПОЗИЦИЮ КАМЕРЫ В ИСТОРИЮ ХВОСТА ПАРКУРА ===
+    parkourTrailHistory.push({ 
+      x: parkourPlayer.x + parkourPlayer.width/2, 
+      y: parkourPlayer.y + parkourPlayer.height/2 
+    });
+    const maxParkourLen = getParkourTrailLength();
+    if (parkourTrailHistory.length > maxParkourLen) {
+      parkourTrailHistory.splice(0, parkourTrailHistory.length - maxParkourLen);
+    }
   }
 
   // --- ОТРИСОВКА ---
@@ -1175,11 +1228,27 @@ audio.volume = 0.3;
     X.globalAlpha = 1;
 
     if (gs === STATE.PLAYING && gameMode === 'runner') {
-      drawTrail(X, player.x, player.y, player.speed, getRadius(), trailType, false);
+      // === РИСУЕМ ХВОСТ ИЗ ИСТОРИИ (РАННЕР) ===
+      drawTrailFromHistory(X, trailHistory, getTrailLength(), player.x, player.y, false);
       
+      // === РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА ===
+      const pulse = 1 + .06 * Math.sin(player.pulsePhase);
+      const scaleX = pulse * cs;
+      const scaleY = (1 / pulse) * cs;
+      if (CAM.complete && CAM.naturalWidth > 0) {
+        X.save();
+        X.translate(player.x, player.y);
+        const bs = 70;
+        const sizeX = bs * scaleX * (1 + (player.speed / 8) * .05);
+        const sizeY = bs * scaleY * (1 + (player.speed / 8) * .05);
+        X.drawImage(CAM, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
+        X.restore();
+      }
+
+      // Остальные объекты (звёзды, щиты, тучи, сердца)
       for (let star of stars) {
-        const pulse = 1 + .15 * Math.sin(star.phase);
-        const r = star.r * pulse * Math.min(star.scale, 1);
+        const pulse2 = 1 + .15 * Math.sin(star.phase);
+        const r = star.r * pulse2 * Math.min(star.scale, 1);
         const grad = X.createRadialGradient(star.x, star.y, 2, star.x, star.y, r * 2.5);
         grad.addColorStop(0, '#fbbf24');
         grad.addColorStop(.5, 'rgba(251,191,36,.3)');
@@ -1198,8 +1267,8 @@ audio.volume = 0.3;
       }
 
       for (let sh of shieldObjects) {
-        const pulse = 1 + .12 * Math.sin(sh.phase);
-        const r = sh.r * pulse * Math.min(sh.scale, 1);
+        const pulse3 = 1 + .12 * Math.sin(sh.phase);
+        const r = sh.r * pulse3 * Math.min(sh.scale, 1);
         const grad = X.createRadialGradient(sh.x, sh.y, 2, sh.x, sh.y, r * 2.2);
         grad.addColorStop(0, '#60a5fa');
         grad.addColorStop(.5, 'rgba(96,165,250,.3)');
@@ -1222,10 +1291,9 @@ audio.volume = 0.3;
         X.fillText('🛡️', sh.x, sh.y + 1);
       }
 
-      // Отрисовка сердец в раннере
       for (let heart of hearts) {
-        const pulse = 1 + .1 * Math.sin(heart.phase);
-        const r = heart.r * pulse * Math.min(heart.scale, 1);
+        const pulse4 = 1 + .1 * Math.sin(heart.phase);
+        const r = heart.r * pulse4 * Math.min(heart.scale, 1);
         const grad = X.createRadialGradient(heart.x, heart.y, 1, heart.x, heart.y, r * 2.5);
         grad.addColorStop(0, 'rgba(239,68,68,0.8)');
         grad.addColorStop(1, 'rgba(239,68,68,0)');
@@ -1246,8 +1314,8 @@ audio.volume = 0.3;
       }
 
       for (let cloud of clouds) {
-        const pulse = 1 + .05 * Math.sin(cloud.phase);
-        const r = cloud.r * pulse * Math.min(cloud.scale, 1);
+        const pulse5 = 1 + .05 * Math.sin(cloud.phase);
+        const r = cloud.r * pulse5 * Math.min(cloud.scale, 1);
         X.fillStyle = 'rgba(180,190,200,.4)';
         X.shadowColor = 'rgba(180,190,200,.1)';
         X.shadowBlur = 30;
@@ -1261,21 +1329,6 @@ audio.volume = 0.3;
           X.arc(cloud.x + dx, cloud.y + dy, r * .4, 0, Math.PI * 2);
           X.fillStyle = 'rgba(200,210,220,.2)';
           X.fill();
-        }
-      }
-
-      if (gs !== STATE.GAMEOVER || ep.length > 0) {
-        const pulse = 1 + .06 * Math.sin(player.pulsePhase);
-        const scaleX = pulse * cs;
-        const scaleY = (1 / pulse) * cs;
-        if (CAM.complete && CAM.naturalWidth > 0) {
-          X.save();
-          X.translate(player.x, player.y);
-          const bs = 70;
-          const sizeX = bs * scaleX * (1 + (player.speed / 8) * .05);
-          const sizeY = bs * scaleY * (1 + (player.speed / 8) * .05);
-          X.drawImage(CAM, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
-          X.restore();
         }
       }
 
@@ -1354,12 +1407,19 @@ audio.volume = 0.3;
           X.fillStyle = 'rgba(96,165,250,.5)';
           X.fillText(`🛡️ ${Math.ceil(shieldTimer/70)}с`, 200, H - 10);
         }
+        X.fillStyle = 'rgba(255,255,255,.15)';
+        X.fillText(`❤️ ${heartsCollected}`, 300, H - 10);
       }
     }
 
     // --- ОТРИСОВКА ПАРКУРА ---
     if (gs === STATE.PARKOUR) {
-      // --- ОТРИСОВКА ЖИЗНЕЙ В ПАРКУРЕ (в углу экрана) ---
+      // === РИСУЕМ ХВОСТ ПАРКУРА ИЗ ИСТОРИИ ===
+      const cx = parkourPlayer.x + parkourPlayer.width/2;
+      const cy = parkourPlayer.y + parkourPlayer.height/2;
+      drawTrailFromHistory(X, parkourTrailHistory, getParkourTrailLength(), cx, cy, false);
+
+      // Жизни в паркуре
       const hSize = 24, sp = 10, total = parkourMaxLives * hSize + (parkourMaxLives - 1) * sp;
       const startX = (W - total) / 2;
       for (let i = 0; i < parkourLives; i++) {
@@ -1380,7 +1440,6 @@ audio.volume = 0.3;
         X.restore();
       }
 
-      // Платформы
       for (let p of platforms) {
         X.fillStyle = '#4ade80';
         X.shadowColor = '#4ade80';
@@ -1392,7 +1451,6 @@ audio.volume = 0.3;
         X.strokeRect(p.x, p.y, p.width, p.height);
       }
 
-      // Препятствия
       for (let o of obstacles) {
         X.fillStyle = '#f87171';
         X.shadowColor = '#f87171';
@@ -1401,10 +1459,9 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
-      // Сердца на уровне
       for (let heart of parkourHearts) {
-        const pulse = 1 + 0.08 * Math.sin(heart.phase);
-        const r = heart.r * pulse;
+        const pulse4 = 1 + 0.08 * Math.sin(heart.phase);
+        const r = heart.r * pulse4;
         const grad = X.createRadialGradient(heart.x, heart.y, 1, heart.x, heart.y, r * 2.5);
         grad.addColorStop(0, 'rgba(239,68,68,0.7)');
         grad.addColorStop(1, 'rgba(239,68,68,0)');
@@ -1424,10 +1481,10 @@ audio.volume = 0.3;
         X.shadowBlur = 0;
       }
 
-      // Камера
+      // === РИСУЕМ КАМЕРУ ПАРКУРА ПОВЕРХ ХВОСТА ===
       if (CAM.complete && CAM.naturalWidth > 0) {
         X.save();
-        X.translate(parkourPlayer.x + parkourPlayer.width/2, parkourPlayer.y + parkourPlayer.height/2);
+        X.translate(cx, cy);
         const size = 40;
         X.drawImage(CAM, -size/2, -size/2, size, size);
         X.restore();
@@ -1438,7 +1495,7 @@ audio.volume = 0.3;
         X.font = '32px sans-serif';
         X.textAlign = 'center';
         X.textBaseline = 'middle';
-        X.fillText('📷', parkourPlayer.x + parkourPlayer.width/2, parkourPlayer.y + parkourPlayer.height/2 + 2);
+        X.fillText('📷', cx, cy + 2);
         X.shadowBlur = 0;
       }
 
@@ -1448,6 +1505,7 @@ audio.volume = 0.3;
       X.textBaseline = 'top';
       X.fillText(`🏃 Скорость: ${parkourSpeed.toFixed(1)}`, 10, 60);
       X.fillText(`❤️ ${parkourLives}`, 10, 80);
+      X.fillText(`📏 ${parkourHeartsCollected}`, 10, 100);
       
       X.fillStyle = 'rgba(255,255,255,.3)';
       X.font = '12px sans-serif';
@@ -1474,7 +1532,6 @@ audio.volume = 0.3;
       }
     } else {
       F.textContent = parkourScore;
-      // Взрыв в месте смерти в паркуре
       spawnExplosion(parkourPlayer.x + parkourPlayer.width/2, parkourPlayer.y + parkourPlayer.height/2);
     }
     setTimeout(() => {
@@ -1516,12 +1573,16 @@ audio.volume = 0.3;
       hp = [];
       ep = [];
       player.score = 0;
+      trailHistory = [];
+      heartsCollected = 0;
     } else {
       platforms = [];
       obstacles = [];
       parkourHearts = [];
       parkourScore = 0;
       parkourLives = parkourMaxLives;
+      parkourTrailHistory = [];
+      parkourHeartsCollected = 0;
     }
     updateUI();
     stopMusic();
