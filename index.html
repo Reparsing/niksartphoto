@@ -167,7 +167,7 @@
         .mobile-menu a.active { color: var(--brand); }
         @media(min-width:768px) { .mobile-menu { display: none !important; } }
 
-        /* ===== ОГРОМНАЯ КАМЕРА С ХВОСТОМ ===== */
+        /* ===== КАМЕРА С ХВОСТОМ ===== */
         .camera-nav-wrapper {
             display: flex;
             align-items: center;
@@ -183,18 +183,18 @@
             transform: scale(1.08);
         }
 
-        .camera-nav-container-large {
+        .camera-nav-container {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        #cameraNavCanvasLarge {
-            width: 120px;
-            height: 120px;
+        #cameraNavCanvas {
+            width: 110px;
+            height: 110px;
             display: block;
             position: relative;
             z-index: 2;
@@ -202,34 +202,34 @@
         }
 
         @media (max-width: 1024px) {
-            .camera-nav-container-large {
-                width: 100px;
-                height: 100px;
+            .camera-nav-container {
+                width: 90px;
+                height: 90px;
             }
-            #cameraNavCanvasLarge {
-                width: 100px;
-                height: 100px;
+            #cameraNavCanvas {
+                width: 90px;
+                height: 90px;
             }
         }
 
         @media (max-width: 768px) {
-            .camera-nav-container-large {
-                width: 80px;
-                height: 80px;
+            .camera-nav-container {
+                width: 75px;
+                height: 75px;
             }
-            #cameraNavCanvasLarge {
-                width: 80px;
-                height: 80px;
+            #cameraNavCanvas {
+                width: 75px;
+                height: 75px;
             }
         }
         @media (max-width: 480px) {
-            .camera-nav-container-large {
-                width: 70px;
-                height: 70px;
+            .camera-nav-container {
+                width: 65px;
+                height: 65px;
             }
-            #cameraNavCanvasLarge {
-                width: 70px;
-                height: 70px;
+            #cameraNavCanvas {
+                width: 65px;
+                height: 65px;
             }
         }
 
@@ -428,15 +428,15 @@
     <canvas id="particles-canvas"></canvas>
 
     <!-- ============================================================ -->
-    <!-- ===== НАВИГАЦИЯ С ОГРОМНОЙ КАМЕРОЙ В НАЧАЛЕ ===== -->
+    <!-- ===== НАВИГАЦИЯ С КАМЕРОЙ И ХВОСТОМ ===== -->
     <!-- ============================================================ -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             
-            <!-- ===== ОГРОМНАЯ КАМЕРА С РАДУЖНЫМ ХВОСТОМ (ПЕРВАЯ) ===== -->
+            <!-- ===== КАМЕРА С ХВОСТОМ (ПЕРВАЯ) ===== -->
             <div class="camera-nav-wrapper" id="cameraNavWrapper" title="Играть">
-                <div class="camera-nav-container-large">
-                    <canvas id="cameraNavCanvasLarge" width="200" height="200"></canvas>
+                <div class="camera-nav-container">
+                    <canvas id="cameraNavCanvas" width="220" height="220"></canvas>
                 </div>
             </div>
 
@@ -834,14 +834,14 @@
         });
     </script>
 
-    <!-- ===== ОГРОМНАЯ КАМЕРА С РЕАЛИСТИЧНЫМ ХВОСТОМ ===== -->
+    <!-- ===== КАМЕРА С ХВОСТОМ (ХВОСТ ПОЗАДИ, ВИДЕН ТОЛЬКО КОНЧИК) ===== -->
     <script>
         (function() {
-            const canvas = document.getElementById('cameraNavCanvasLarge');
+            const canvas = document.getElementById('cameraNavCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const W = canvas.width;  // 200
-            const H = canvas.height; // 200
+            const W = canvas.width;  // 220
+            const H = canvas.height; // 220
 
             const cameraImg = new Image();
             cameraImg.crossOrigin = 'Anonymous';
@@ -852,21 +852,23 @@
             function drawCamera() {
                 ctx.clearRect(0, 0, W, H);
 
-                // --- 1. СНАЧАЛА РИСУЕМ ХВОСТ (ПОЗАДИ КАМЕРЫ) ---
+                // --- 1. РИСУЕМ ХВОСТ (ПОЗАДИ КАМЕРЫ) ---
                 const time = Date.now() * 0.003;
-                const trailLength = 30;
-                const maxRadius = 65;
+                const trailLength = 35;
+                const maxRadius = 45; // Тот же размер, что и камера
                 
                 for (let i = 1; i < trailLength; i++) {
                     const progress = i / trailLength;
-                    const alpha = 0.5 * (1 - progress) * (1 + 0.3 * Math.sin(time * 0.5 + i * 0.2));
-                    const size = (1 - progress) * maxRadius * 0.9;
+                    // Хвост виден только сзади (левая часть)
+                    const alpha = 0.6 * (1 - progress) * (1 + 0.3 * Math.sin(time * 0.5 + i * 0.2));
+                    const size = (1 - progress) * maxRadius * 0.85;
                     
                     // Плавное движение хвоста
-                    const waveX = Math.sin(time * 0.7 + i * 0.12) * 4;
-                    const waveY = Math.sin(time * 0.5 + i * 0.18) * 3;
+                    const waveX = Math.sin(time * 0.7 + i * 0.12) * 3;
+                    const waveY = Math.sin(time * 0.5 + i * 0.18) * 2;
                     
-                    const xOff = -i * 3.8 + waveX;
+                    // Хвост идёт влево от центра
+                    const xOff = -i * 3.5 + waveX;
                     const yOff = waveY;
                     
                     const hue = (i * 12 + time * 15) % 360;
@@ -875,19 +877,19 @@
                     ctx.arc(W/2 + xOff, H/2 + yOff, size, 0, Math.PI * 2);
                     ctx.fillStyle = `hsla(${hue}, 95%, 65%, ${alpha})`;
                     ctx.shadowColor = `hsla(${hue}, 95%, 65%, ${alpha * 0.5})`;
-                    ctx.shadowBlur = 20;
+                    ctx.shadowBlur = 25;
                     ctx.fill();
                 }
                 ctx.shadowBlur = 0;
 
-                // --- 2. ТЕПЕРЬ РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА ---
+                // --- 2. РИСУЕМ КАМЕРУ ПОВЕРХ ХВОСТА ---
                 const pulse = 1 + 0.08 * Math.sin(pulsePhase);
                 const scaleX = 1 / pulse;
                 const scaleY = pulse;
 
                 ctx.save();
                 ctx.translate(W/2, H/2);
-                const baseSize = 95;
+                const baseSize = 90;
                 const sizeX = baseSize * scaleX;
                 const sizeY = baseSize * scaleY;
                 
