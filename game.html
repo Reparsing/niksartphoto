@@ -9,13 +9,13 @@
 .game-cards{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;width:100%;margin:8px 0 16px}
 .game-card{background:#1c1c22;border-radius:24px;padding:20px;width:260px;border:2px solid rgba(255,255,255,.06);transition:all .4s cubic-bezier(.34,1.56,.64,1);text-align:center;cursor:pointer}
 .game-card:hover{transform:translateY(-8px) scale(1.02);border-color:#fbbf24;box-shadow:0 20px 60px rgba(251,191,36,.15)}
-.game-card-image{width:100%;height:160px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#132a44,#0a1628);margin-bottom:12px;border:1px solid rgba(255,255,255,.06);position:relative}
-.game-card-image img{width:100%;height:100%;object-fit:cover;display:block}
+.game-card-image{width:100%;height:160px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#132a44,#0a1628);margin-bottom:12px;border:1px solid rgba(255,255,255,.06);position:relative;display:flex;align-items:center;justify-content:center;font-size:5rem}
+.game-card-image .emoji{animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
 .game-card h2{color:#fff;font-size:1.3rem;margin-bottom:4px}
 .game-card p{color:#a1a1aa;font-size:.8rem;margin-bottom:12px}
 .game-card .btn{width:100%;justify-content:center;padding:8px}
-.card-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2a3a,#0a1628);border-radius:16px;font-size:4rem}
-@media(max-width:700px){.game-card{width:100%;max-width:320px}.menu-container h1{font-size:1.6rem}.game-card-image{height:140px}}
+@media(max-width:700px){.game-card{width:100%;max-width:320px}.menu-container h1{font-size:1.6rem}.game-card-image{height:140px;font-size:4rem}}
 </style>
 </head>
 <body>
@@ -24,18 +24,19 @@
 <div style="position:relative;">
 <canvas id="gameCanvas" width="600" height="500"></canvas>
 
+<!-- Меню с анимированными эмодзи -->
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-container">
     <h1>🎮 <span>ВО ЧТО ПОИГРАЕМ?</span></h1>
     <div class="game-cards">
       <div class="game-card" id="runnerCard">
-        <div class="game-card-image"><img src="https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/file_000000003a7481f4a51c0b3ece2cbc88.png" alt="Раннер" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=card-placeholder><span style=font-size:4rem;>🚀</span></div>'"></div>
+        <div class="game-card-image"><span class="emoji">🚀</span></div>
         <h2>🚀 Раннер</h2>
         <p>Летай, собирай звёзды, уклоняйся от туч</p>
         <button class="btn btn-primary" id="startBtn">👆 Играть</button>
       </div>
       <div class="game-card" id="parkourCard">
-        <div class="game-card-image"><img src="https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/file_00000000825481f4b27c4525e4b80e75.png" alt="Паркур" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=card-placeholder><span style=font-size:4rem;>🏃</span></div>'"></div>
+        <div class="game-card-image"><span class="emoji">🏃</span></div>
         <h2>🏃 Паркур</h2>
         <p>Прыгай по платформам, уклоняйся от препятствий</p>
         <button class="btn btn-primary" id="parkourBtn" style="background:#8b5cf6;border-color:#8b5cf6;">👆 Играть</button>
