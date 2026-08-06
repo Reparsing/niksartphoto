@@ -24,7 +24,6 @@
 <div style="position:relative;">
 <canvas id="gameCanvas" width="600" height="500"></canvas>
 
-<!-- НОВОЕ МЕНЮ С КАРТОЧКАМИ -->
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-container">
     <h1>🎮 <span>ВО ЧТО ПОИГРАЕМ?</span></h1>
@@ -104,8 +103,9 @@
   <button class="btn btn-sm" id="trailToggleBtn" style="background:rgba(74,222,128,0.2);border-color:#4ade80;">🌊 Хвост</button>
 </div>
 </div>
+
 <script>
-(function(){
+(function() {
 const C=document.getElementById('gameCanvas'),X=C.getContext('2d'),S=document.getElementById('scoreDisplay'),B=document.getElementById('bestDisplay'),F=document.getElementById('finalScore'),GT=document.getElementById('gameOverTitle'),MO=document.getElementById('menuOverlay'),GO=document.getElementById('gameOverOverlay'),SO=document.getElementById('settingsOverlay'),RO=document.getElementById('rulesOverlay'),CO=document.getElementById('countdownOverlay'),PO=document.getElementById('pauseOverlay'),CN=document.getElementById('countdownNumber'),PS=document.getElementById('pauseScore'),rulesTitle=document.getElementById('rulesTitle'),rulesText=document.getElementById('rulesText');
 const SB=document.getElementById('startBtn'),PKB=document.getElementById('parkourBtn'),RB=document.getElementById('restartBtn'),MB=document.getElementById('menuBtn'),PauseBtn=document.getElementById('pauseBtn'),ResumeBtn=document.getElementById('resumeBtn'),PauseMenuBtn=document.getElementById('pauseMenuBtn'),FB=document.getElementById('fullscreenBtn'),SETB=document.getElementById('settingsBtn'),CSB=document.getElementById('closeSettingsBtn'),RULESB=document.getElementById('rulesBtn'),CRB=document.getElementById('closeRulesBtn');
 const PC=document.getElementById('previewCanvas'),PX=PC.getContext('2d'),RPC=document.getElementById('rulesPreviewCanvas'),RX=RPC.getContext('2d'),pauseCamCanvas=document.getElementById('pauseCameraCanvas'),pauseCamCtx=pauseCamCanvas.getContext('2d');
