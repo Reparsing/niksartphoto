@@ -88,6 +88,12 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
 .warning-box p{color:#a1a1aa;font-size:1rem;line-height:1.6;margin-bottom:16px}
 .warning-box .btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .warning-box .btn{min-width:120px}
+
+.in-game-menu-btn{position:absolute;top:16px;left:16px;z-index:60;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 14px;border-radius:20px;font-size:.8rem;cursor:pointer;backdrop-filter:blur(4px);transition:all .3s;font-family:inherit}
+.in-game-menu-btn:hover{background:rgba(251,191,36,0.3);border-color:#fbbf24}
+.dodge-btn{position:absolute;bottom:20px;right:20px;z-index:60;background:rgba(220,38,38,0.7);border:2px solid #dc2626;color:#fff;padding:10px 20px;border-radius:40px;font-size:1rem;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);transition:all .3s;font-family:inherit}
+.dodge-btn:hover{background:#dc2626;transform:scale(1.05);box-shadow:0 0 30px rgba(220,38,38,.4)}
+.dodge-btn:active{transform:scale(.9)}
 </style>
 </head>
 <body>
@@ -96,7 +102,7 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
 <div style="position:relative;">
 <canvas id="gameCanvas" width="600" height="500"></canvas>
 
-<!-- МЕНЮ (5 карточек) -->
+<!-- МЕНЮ -->
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-container">
     <div class="menu-camera"><canvas id="menuCameraCanvas" width="100" height="100"></canvas></div>
@@ -106,7 +112,7 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
       <div class="game-card" id="game1Card"><span class="icon">🌀</span><h3>Лабиринт теней</h3><p>Проведи к флагу</p><button class="btn btn-primary" id="game1Btn">Играть</button></div>
       <div class="game-card" id="game2Card"><span class="icon">📦</span><h3>Доставка</h3><p>Управляй и доставляй</p><button class="btn btn-primary" id="game2Btn" style="background:#8b5cf6;border-color:#8b5cf6;">Играть</button></div>
       <div class="game-card" id="game3Card"><span class="icon">⭐</span><h3>Космический сбор</h3><p>Собирай звёзды</p><button class="btn btn-primary" id="game3Btn" style="background:#34d399;border-color:#34d399;">Играть</button></div>
-      <div class="game-card" id="game4Card"><span class="icon">🎢</span><h3>Американские горки</h3><p>Мчись по трассе</p><button class="btn btn-primary" id="game4Btn" style="background:#f472b6;border-color:#f472b6;">Играть</button></div>
+      <div class="game-card" id="game4Card"><span class="icon">💥</span><h3>Битва с боссом</h3><p>Уклоняйся от атак</p><button class="btn btn-primary" id="game4Btn" style="background:#f472b6;border-color:#f472b6;">Играть</button></div>
       <div class="game-card" id="game5Card" style="border-color:#dc2626;"><span class="icon">👻</span><h3 style="color:#f87171;">Ужас</h3><p style="color:#f87171;">Страшная игра</p><button class="btn btn-danger" id="game5Btn">Играть</button><span class="badge">18+</span></div>
     </div>
     <a href="https://reparsing.github.io/niksartphoto/" class="btn" style="margin-top:8px;display:inline-block;">🏠 На главную</a>
@@ -120,14 +126,7 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
 <div class="countdown-overlay" id="countdownOverlay"><div class="countdown-number" id="countdownNumber">3</div></div>
 </div>
 
-<!-- Панель управления -->
-<div class="controls">
-  <span style="color:#a1a1aa;font-size:.8rem;">🖱️ Управление: мышь / палец</span>
-  <button class="btn" id="rulesBtn">❓ Правила</button>
-  <button class="btn btn-sm" id="menuBtn">📋 Меню</button>
-</div>
-
-<!-- Кнопки управления для "Доставки" -->
+<!-- Кнопки для доставки -->
 <div id="directionControls" style="display:none;margin-top:10px;justify-content:center;">
   <div class="direction-controls">
     <button class="dir-btn" id="dirUp">▲</button>
@@ -140,7 +139,7 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
 </div>
 </div>
 
-<!-- ПРЕДУПРЕЖДЕНИЕ ДЛЯ СТРАШНОЙ ИГРЫ -->
+<!-- ПРЕДУПРЕЖДЕНИЕ ДЛЯ УЖАСА -->
 <div class="warning-overlay" id="warningOverlay">
   <div class="warning-box">
     <span class="icon">⚠️</span>
@@ -152,6 +151,10 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
     </div>
   </div>
 </div>
+
+<!-- Кнопки в играх -->
+<div id="inGameMenuBtn" class="in-game-menu-btn" style="display:none;">📋 Меню</div>
+<div id="dodgeBtn" class="dodge-btn" style="display:none;">🏃 Прыжок</div>
 
 <script>
 (function() {
@@ -201,6 +204,8 @@ const dirRight = document.getElementById('dirRight');
 const warningOverlay = document.getElementById('warningOverlay');
 const warningAccept = document.getElementById('warningAccept');
 const warningCancel = document.getElementById('warningCancel');
+const inGameMenuBtn = document.getElementById('inGameMenuBtn');
+const dodgeBtn = document.getElementById('dodgeBtn');
 
 const W = 600, H = 500;
 let gs = 'menu';
@@ -211,7 +216,7 @@ let bestScores = JSON.parse(localStorage.getItem('bestScores')) || {};
 let fc = 0;
 
 // ============================================================
-// 2. ЗВУКИ И МУЗЫКА
+// 2. ЗВУКИ (без музыки)
 // ============================================================
 let audioCtx = null;
 function initAudio() {
@@ -238,34 +243,16 @@ function soundWin() { playTone(523,0.15,'sine',0.1); setTimeout(()=>playTone(659
 function soundDeliver() { playTone(660,0.1,'sine',0.1); setTimeout(()=>playTone(880,0.1,'sine',0.1),120); }
 function scarySound() { playTone(100,0.5,'sawtooth',0.2); setTimeout(()=>playTone(80,0.6,'sawtooth',0.15),200); }
 
-const bgMusic = new Audio('https://raw.githubusercontent.com/Reparsing/niksartphoto/main/media/Nero_s_Day_At_Disneyland_-_Sprawling_Idiot_Effigy_(SkySound7.com).mp3');
-bgMusic.loop = true;
-bgMusic.volume = 0.15;
-
-function startMusic() {
-  bgMusic.play().catch(e=>{});
-}
-function stopMusic() {
-  bgMusic.pause();
-  bgMusic.currentTime = 0;
-}
-function pauseMusic() {
-  bgMusic.pause();
-}
-function resumeMusic() {
-  if (gs === 'playing') bgMusic.play().catch(e=>{});
-}
-
 // ============================================================
-// 3. ОБЩИЕ ФУНКЦИИ (камера, фон, встряска, скорость)
+// 3. ОБЩИЕ ФУНКЦИИ (камера, фон, встряска)
 // ============================================================
 let shakeX = 0, shakeY = 0, shakeIntensity = 0;
 function triggerShake(intensity=12) {
   shakeIntensity = Math.min(shakeIntensity + intensity, 25);
 }
 
-// Функция рисования камеры с окошком скорости
-function drawCamera(ctx, x, y, size, pulseSpeed=1, speed=0, extra={}) {
+// Функция рисования камеры (без окошка скорости)
+function drawCamera(ctx, x, y, size, pulseSpeed=1, extra={}) {
   const pulse = 1 + 0.06 * Math.sin(Date.now() * 0.003 * pulseSpeed);
   const sx = size * pulse;
   const sy = size / pulse;
@@ -277,33 +264,8 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, speed=0, extra={}) {
     ctx.translate(x, y);
     ctx.drawImage(CAM, -sx/2, -sy/2, sx, sy);
     
-    // Чёрное окошко СВЕРХУ (над камерой) для скорости
-    const speedKmh = Math.round(speed);
-    const showSpeed = speedKmh > 0 || isMoving; // показываем даже 0, если стоит
-    if (showSpeed) {
-      // Окошко над камерой
-      const offsetY = -sy/2 - 16;
-      const w = 60;
-      const h = 22;
-      const rx = 0;
-      const ry = offsetY;
-      ctx.fillStyle = 'rgba(0,0,0,0.85)';
-      ctx.shadowColor = 'rgba(0,0,0,0.6)';
-      ctx.shadowBlur = 12;
-      ctx.beginPath();
-      ctx.roundRect(rx - w/2, ry - h/2, w, h, 10);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 14px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${speedKmh} км/ч`, rx, ry + 1);
-    }
-    
-    // Дополнительное окошко (как было, для иконок, можно оставить)
+    // Дополнительное окошко (иконка)
     if (extra.windowText && isMoving) {
-      // маленькое окошко справа
       ctx.fillStyle = 'rgba(0,0,0,0.8)';
       ctx.shadowColor = 'rgba(0,0,0,0.5)';
       ctx.shadowBlur = 10;
@@ -318,7 +280,7 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, speed=0, extra={}) {
       ctx.fillText(extra.windowText || '📡', sx*0.3, sy*0.25);
     }
     
-    // Кровь (для страшной игры)
+    // Кровь (для ужаса)
     if (blood) {
       ctx.globalAlpha = 0.6 + 0.4 * Math.sin(Date.now()*0.005);
       ctx.fillStyle = '#dc2626';
@@ -339,7 +301,6 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, speed=0, extra={}) {
     }
     ctx.restore();
   } else {
-    // fallback
     ctx.fillStyle = '#fbbf24';
     ctx.shadowColor = '#fbbf24';
     ctx.shadowBlur = 20;
@@ -350,25 +311,11 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, speed=0, extra={}) {
   }
 }
 
-// Добавляем roundRect если нет
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-    if (r > w/2) r = w/2;
-    if (r > h/2) r = h/2;
-    this.moveTo(x + r, y);
-    this.arcTo(x + w, y, x + w, y + h, r);
-    this.arcTo(x + w, y + h, x, y + h, r);
-    this.arcTo(x, y + h, x, y, r);
-    this.arcTo(x, y, x + w, y, r);
-    return this;
-  };
-}
-
 // Меню камера
 function drawMenuCamera() {
   const w = menuCameraCanvas.width, h = menuCameraCanvas.height;
   menuCtx.clearRect(0,0,w,h);
-  drawCamera(menuCtx, w/2, h/2, 40, 1.2, 0, {});
+  drawCamera(menuCtx, w/2, h/2, 40, 1.2, {});
   requestAnimationFrame(drawMenuCamera);
 }
 drawMenuCamera();
@@ -377,7 +324,7 @@ drawMenuCamera();
 function drawPauseCamera() {
   const w = pauseCamCanvas.width, h = pauseCamCanvas.height;
   pauseCtx.clearRect(0,0,w,h);
-  drawCamera(pauseCtx, w/2, h/2, 30, 1.5, 0, {});
+  drawCamera(pauseCtx, w/2, h/2, 30, 1.5, {});
   requestAnimationFrame(drawPauseCamera);
 }
 drawPauseCamera();
@@ -419,7 +366,39 @@ function updateUI() {
 }
 
 // ============================================================
-// 4. ИГРА 1: ЛАБИРИНТ ТЕНЕЙ (с окошком скорости)
+// 4. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КНОПОК
+// ============================================================
+function showInGameMenu() { inGameMenuBtn.style.display = 'block'; }
+function hideInGameMenu() { inGameMenuBtn.style.display = 'none'; }
+function showDodgeBtn() { dodgeBtn.style.display = 'block'; }
+function hideDodgeBtn() { dodgeBtn.style.display = 'none'; }
+
+inGameMenuBtn.addEventListener('click', exitToMenu);
+
+dodgeBtn.addEventListener('click', function() {
+  if (gs !== 'playing' || gameMode !== 'game5') return;
+  if (game5.monsters.length === 0) return;
+  let nearest = null;
+  let minDist = Infinity;
+  const p = game5.player;
+  for (let mon of game5.monsters) {
+    const dx = p.x - mon.x, dy = p.y - mon.y;
+    const d = Math.sqrt(dx*dx+dy*dy);
+    if (d < minDist) { minDist = d; nearest = mon; }
+  }
+  if (nearest) {
+    const angle = Math.atan2(p.y - nearest.y, p.x - nearest.x);
+    const jumpPower = 60;
+    p.x += Math.cos(angle) * jumpPower;
+    p.y += Math.sin(angle) * jumpPower;
+    p.x = Math.min(Math.max(p.x, 10), W-10);
+    p.y = Math.min(Math.max(p.y, 10), H-10);
+    triggerShake(4);
+  }
+});
+
+// ============================================================
+// 5. ИГРА 1: ЛАБИРИНТ ТЕНЕЙ (без скорости)
 // ============================================================
 let game1 = {
   player: { x: 50, y: 50, size: 20 },
@@ -430,7 +409,6 @@ let game1 = {
   lives: 3,
   maxLives: 3,
   reached: false,
-  prevX: 50, prevY: 50,
 };
 
 function initGame1() {
@@ -438,7 +416,6 @@ function initGame1() {
   game1.player.x = 50; game1.player.y = 50;
   game1.targetX = 50; game1.targetY = 50;
   game1.score = 0; game1.lives = 3; game1.reached = false;
-  game1.prevX = 50; game1.prevY = 50;
   game1.walls = [
     { x: 100, y: 0, w: 20, h: 200 },
     { x: 200, y: 300, w: 20, h: 200 },
@@ -450,6 +427,8 @@ function initGame1() {
     { x: 400, y: 100, w: 200, h: 20 },
   ];
   startGame();
+  showInGameMenu();
+  hideDodgeBtn();
 }
 
 function updateGame1() {
@@ -458,13 +437,11 @@ function updateGame1() {
   const dx = game1.targetX - p.x, dy = game1.targetY - p.y;
   const dist = Math.sqrt(dx*dx+dy*dy);
   let moved = false;
-  let speed = 0;
   if (dist > 2) {
     const spd = Math.min(3.5, dist*0.08);
     p.x += (dx/dist)*spd;
     p.y += (dy/dist)*spd;
     moved = true;
-    speed = spd * 100; // масштаб для км/ч (условно)
   }
   // Стены
   for (let wall of game1.walls) {
@@ -485,7 +462,6 @@ function updateGame1() {
       }
     }
   }
-  // Финиш
   const g = game1.goal;
   if (p.x < g.x+g.size && p.x+p.size > g.x &&
       p.y < g.y+g.size && p.y+p.size > g.y) {
@@ -501,10 +477,10 @@ function updateGame1() {
       updateUI();
     }
   }
-  drawGame1(moved, speed);
+  drawGame1(moved);
 }
 
-function drawGame1(moved, speed) {
+function drawGame1(moved) {
   X.clearRect(0,0,W,H);
   drawBg();
   if (shakeIntensity > 0) {
@@ -530,7 +506,7 @@ function drawGame1(moved, speed) {
   X.textBaseline = 'middle';
   X.fillText('🏁', g.x+g.size/2, g.y+g.size/2);
   const p = game1.player;
-  drawCamera(X, p.x+p.size/2, p.y+p.size/2, 30, 1, speed, { isMoving: moved, windowText: '🌀' });
+  drawCamera(X, p.x+p.size/2, p.y+p.size/2, 30, 1, { isMoving: moved, windowText: '🌀' });
   for (let i=0; i<game1.lives; i++) {
     X.fillStyle = '#ef4444';
     X.shadowColor = '#ef4444';
@@ -542,7 +518,7 @@ function drawGame1(moved, speed) {
 }
 
 // ============================================================
-// 5. ИГРА 2: ДОСТАВКА (с окошком скорости)
+// 6. ИГРА 2: ДОСТАВКА (без скорости)
 // ============================================================
 let game2 = {
   player: { x: 60, y: 60 },
@@ -555,7 +531,6 @@ let game2 = {
   trail: [],
   windowText: '📦',
   obstacles: [],
-  prevX: 60, prevY: 60,
   moving: false,
 };
 
@@ -577,11 +552,11 @@ function initGame2() {
   game2.trail = [];
   game2.windowText = '📦';
   game2.obstacles = [];
-  game2.prevX = 60; game2.prevY = 60;
   game2.moving = false;
   dirControls.style.display = 'flex';
-  document.querySelector('.controls').style.display = 'none';
   startGame();
+  showInGameMenu();
+  hideDodgeBtn();
 }
 
 function updateGame2() {
@@ -590,13 +565,11 @@ function updateGame2() {
   const dx = game2.targetX - p.x, dy = game2.targetY - p.y;
   const dist = Math.sqrt(dx*dx+dy*dy);
   let moved = false;
-  let speed = 0;
   if (dist > 1) {
     const spd = 3.5;
     p.x += (dx/dist) * Math.min(spd, dist);
     p.y += (dy/dist) * Math.min(spd, dist);
     moved = true;
-    speed = spd * 80;
   } else {
     p.x = game2.targetX;
     p.y = game2.targetY;
@@ -652,17 +625,16 @@ function updateGame2() {
       if (game2.lives <= 0) { gameOver('💥 Вы столкнулись с препятствием'); return; }
     }
   }
-  // Хвост
   if (moved) {
     game2.trail.push({x: p.x, y: p.y});
     if (game2.trail.length > 30) game2.trail.shift();
   } else {
     if (game2.trail.length > 5) game2.trail.splice(0, 3);
   }
-  drawGame2(moved, speed);
+  drawGame2(moved);
 }
 
-function drawGame2(moved, speed) {
+function drawGame2(moved) {
   X.clearRect(0,0,W,H);
   drawBg();
   if (shakeIntensity > 0) {
@@ -670,7 +642,6 @@ function drawGame2(moved, speed) {
     if (shakeIntensity < 0.5) shakeIntensity = 0;
     X.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
   }
-  // Маршрут
   for (let i=0; i<game2.waypoints.length-1; i++) {
     const a = game2.waypoints[i];
     const b = game2.waypoints[i+1];
@@ -683,7 +654,6 @@ function drawGame2(moved, speed) {
     X.stroke();
     X.setLineDash([]);
   }
-  // Точки
   for (let i=0; i<game2.waypoints.length; i++) {
     const wp = game2.waypoints[i];
     const color = i < game2.currentTarget ? '#4ade80' : (i === game2.currentTarget ? '#fbbf24' : '#a1a1aa');
@@ -703,7 +673,6 @@ function drawGame2(moved, speed) {
     }
   }
   X.shadowBlur = 0;
-  // Хвост
   for (let i=0; i<game2.trail.length-1; i++) {
     const alpha = 0.6 * (i / game2.trail.length);
     const size = 4 + 14 * (i / game2.trail.length);
@@ -713,7 +682,6 @@ function drawGame2(moved, speed) {
     X.arc(game2.trail[i].x, game2.trail[i].y, size, 0, Math.PI*2);
     X.fill();
   }
-  // Препятствия
   for (let ob of game2.obstacles) {
     X.fillStyle = '#f87171';
     X.shadowColor = '#f87171';
@@ -723,7 +691,7 @@ function drawGame2(moved, speed) {
     X.fill();
   }
   const p = game2.player;
-  drawCamera(X, p.x, p.y, 35, 1, speed, { isMoving: moved, windowText: game2.windowText });
+  drawCamera(X, p.x, p.y, 35, 1, { isMoving: moved, windowText: game2.windowText });
   for (let i=0; i<game2.lives; i++) {
     X.fillStyle = '#ef4444';
     X.shadowColor = '#ef4444';
@@ -735,7 +703,7 @@ function drawGame2(moved, speed) {
 }
 
 // ============================================================
-// 6. ИГРА 3: КОСМИЧЕСКИЙ СБОР (с окошком скорости)
+// 7. ИГРА 3: КОСМИЧЕСКИЙ СБОР (без скорости)
 // ============================================================
 let game3 = {
   player: { x: 120, y: H/2, vy: 0, radius: 22 },
@@ -760,6 +728,8 @@ function initGame3() {
   game3.speedMult = 1;
   game3.prevY = H/2;
   startGame();
+  showInGameMenu();
+  hideDodgeBtn();
 }
 
 function updateGame3() {
@@ -781,8 +751,6 @@ function updateGame3() {
   }
   const r = p.radius;
   let moved = Math.abs(p.y - game3.prevY) > 0.3;
-  let speed = 0;
-  if (moved) speed = Math.abs(p.y - game3.prevY) * 50;
   game3.prevY = p.y;
   for (let i=game3.stars.length-1; i>=0; i--) {
     const star = game3.stars[i];
@@ -814,10 +782,10 @@ function updateGame3() {
   }
   if (game3.stars.length>30) game3.stars.splice(0, game3.stars.length-30);
   if (game3.asteroids.length>15) game3.asteroids.splice(0, game3.asteroids.length-15);
-  drawGame3(moved, speed);
+  drawGame3(moved);
 }
 
-function drawGame3(moved, speed) {
+function drawGame3(moved) {
   X.clearRect(0,0,W,H);
   drawBg();
   if (shakeIntensity > 0) {
@@ -826,7 +794,7 @@ function drawGame3(moved, speed) {
     X.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
   }
   const p = game3.player;
-  drawCamera(X, p.x, p.y, 38, 1, speed, { isMoving: moved, windowText: '⭐' });
+  drawCamera(X, p.x, p.y, 38, 1, { isMoving: moved, windowText: '⭐' });
   for (let star of game3.stars) {
     X.fillStyle = '#fbbf24';
     X.shadowColor = '#fbbf24';
@@ -854,88 +822,108 @@ function drawGame3(moved, speed) {
 }
 
 // ============================================================
-// 7. ИГРА 4: АМЕРИКАНСКИЕ ГОРКИ (с окошком скорости)
+// 8. НОВАЯ ИГРА 4: БИТВА С БОССОМ
 // ============================================================
 let game4 = {
-  player: { x: 80, y: 300, vy: 0 },
-  targetY: 300,
-  track: [],
-  obstacles: [],
+  player: { x: 300, y: 400 },
+  targetX: 300,
+  boss: { x: 300, y: 40, w: 80, h: 40, hp: 10 },
+  projectiles: [],
   score: 0,
   lives: 3,
   maxLives: 3,
-  speed: 2.5,
-  prevY: 300,
+  shootTimer: 0,
+  spawnRate: 40,
+  bossPhase: 0,
 };
 
 function initGame4() {
   gameMode = 'game4';
-  game4.player.x = 80; game4.player.y = 300; game4.player.vy = 0;
-  game4.targetY = 300;
-  game4.track = [];
-  game4.obstacles = [];
+  game4.player.x = 300; game4.player.y = 400;
+  game4.targetX = 300;
+  game4.boss = { x: 300, y: 40, w: 80, h: 40, hp: 10 };
+  game4.projectiles = [];
   game4.score = 0;
   game4.lives = 3;
-  game4.speed = 2.5;
-  game4.prevY = 300;
-  let y = 300;
-  for (let x=80; x<W+50; x+=10) {
-    y += (Math.random()-0.5)*5;
-    y = Math.min(Math.max(y, 80), H-80);
-    game4.track.push({x, y});
-  }
+  game4.shootTimer = 0;
+  game4.spawnRate = 40;
+  game4.bossPhase = 0;
   startGame();
+  showInGameMenu();
+  hideDodgeBtn();
 }
 
 function updateGame4() {
   if (!ga || gs!=='playing' || gameMode!=='game4') return;
   const p = game4.player;
-  const diff = game4.targetY - p.y;
-  p.vy += diff * 0.06;
-  p.vy *= 0.9;
-  p.y += p.vy;
-  if (p.y < 30) p.y = 30;
-  if (p.y > H-30) p.y = H-30;
-  let moved = Math.abs(p.y - game4.prevY) > 0.2;
-  let speed = 0;
-  if (moved) speed = Math.abs(p.y - game4.prevY) * 40;
-  game4.prevY = p.y;
-  const spd = game4.speed;
-  for (let point of game4.track) point.x -= spd;
-  if (game4.track.length > 0 && game4.track[0].x < -20) game4.track.shift();
-  const last = game4.track[game4.track.length-1];
-  if (last && last.x < W) {
-    let newY = last.y + (Math.random()-0.5)*4;
-    newY = Math.min(Math.max(newY, 80), H-80);
-    game4.track.push({ x: last.x + 10, y: newY });
+  // Управление
+  const dx = game4.targetX - p.x;
+  const dist = Math.abs(dx);
+  if (dist > 2) {
+    const spd = Math.min(4, dist * 0.08);
+    p.x += (dx/dist) * spd;
   }
-  if (Math.random() < 0.02 && game4.obstacles.length < 6) {
-    const y = 80 + Math.random()*(H-160);
-    game4.obstacles.push({ x: W+30, y: y, r: 15+Math.random()*10, speed: 1+Math.random() });
+  // Босс двигается
+  const boss = game4.boss;
+  boss.x += Math.sin(Date.now()*0.001) * 1.5;
+  boss.x = Math.min(Math.max(boss.x, boss.w/2), W-boss.w/2);
+  // Стрельба босса
+  game4.shootTimer++;
+  if (game4.shootTimer > game4.spawnRate) {
+    game4.shootTimer = 0;
+    const angle = Math.atan2(400 - boss.y, p.x - boss.x);
+    const speed = 3;
+    game4.projectiles.push({
+      x: boss.x,
+      y: boss.y + boss.h/2,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      r: 8
+    });
+    // Иногда двойной выстрел
+    if (Math.random() < 0.3) {
+      const angle2 = angle + 0.2;
+      game4.projectiles.push({
+        x: boss.x,
+        y: boss.y + boss.h/2,
+        vx: Math.cos(angle2) * speed,
+        vy: Math.sin(angle2) * speed,
+        r: 8
+      });
+    }
+    // Уменьшаем интервал с ростом счёта
+    game4.spawnRate = Math.max(15, 40 - Math.floor(game4.score / 10));
   }
-  for (let i=game4.obstacles.length-1; i>=0; i--) {
-    const ob = game4.obstacles[i];
-    ob.x -= spd * 1.2;
-    if (ob.x < -30) { game4.obstacles.splice(i,1); continue; }
-    const dx = p.x - ob.x, dy = p.y - ob.y;
-    if (Math.sqrt(dx*dx+dy*dy) < 25 + ob.r) {
+  // Движение снарядов
+  for (let i=game4.projectiles.length-1; i>=0; i--) {
+    const pr = game4.projectiles[i];
+    pr.x += pr.vx;
+    pr.y += pr.vy;
+    if (pr.y > H || pr.y < 0 || pr.x < 0 || pr.x > W) {
+      game4.projectiles.splice(i,1);
+      continue;
+    }
+    // Столкновение с игроком
+    const dxp = p.x - pr.x, dyp = p.y - pr.y;
+    if (Math.sqrt(dxp*dxp + dyp*dyp) < 25 + pr.r) {
       game4.lives--;
       triggerShake(14);
       soundHit();
-      game4.obstacles.splice(i,1);
-      if (game4.lives <= 0) { gameOver('💥 Вы врезались в препятствие'); return; }
+      game4.projectiles.splice(i,1);
+      if (game4.lives <= 0) { gameOver('💥 Вы погибли в бою'); return; }
     }
   }
-  game4.score += 0.1;
+  // Очки за выживание
+  game4.score += 0.02;
   if (Math.floor(game4.score) > (bestScores['game4']||0)) {
     bestScores['game4'] = Math.floor(game4.score);
     localStorage.setItem('bestScores', JSON.stringify(bestScores));
   }
   updateUI();
-  drawGame4(moved, speed);
+  drawGame4();
 }
 
-function drawGame4(moved, speed) {
+function drawGame4() {
   X.clearRect(0,0,W,H);
   drawBg();
   if (shakeIntensity > 0) {
@@ -943,31 +931,30 @@ function drawGame4(moved, speed) {
     if (shakeIntensity < 0.5) shakeIntensity = 0;
     X.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
   }
-  for (let i=0; i<game4.track.length-1; i++) {
-    const a = game4.track[i];
-    const b = game4.track[i+1];
-    const t = i / game4.track.length;
-    const hue = 200 + t * 160;
-    X.strokeStyle = `hsla(${hue}, 70%, 60%, 0.6)`;
-    X.lineWidth = 4;
-    X.shadowColor = `hsla(${hue}, 70%, 60%, 0.3)`;
-    X.shadowBlur = 15;
-    X.beginPath();
-    X.moveTo(a.x, a.y);
-    X.lineTo(b.x, b.y);
-    X.stroke();
-  }
+  // Босс
+  const boss = game4.boss;
+  X.fillStyle = '#dc2626';
+  X.shadowColor = '#dc2626';
+  X.shadowBlur = 30;
+  X.fillRect(boss.x - boss.w/2, boss.y - boss.h/2, boss.w, boss.h);
   X.shadowBlur = 0;
-  for (let ob of game4.obstacles) {
-    X.fillStyle = '#f87171';
-    X.shadowColor = '#f87171';
+  X.fillStyle = '#fff';
+  X.font = '16px sans-serif';
+  X.textAlign = 'center';
+  X.textBaseline = 'middle';
+  X.fillText('👾 БОСС', boss.x, boss.y);
+  // Снаряды
+  for (let pr of game4.projectiles) {
+    X.fillStyle = '#fbbf24';
+    X.shadowColor = '#fbbf24';
     X.shadowBlur = 20;
     X.beginPath();
-    X.arc(ob.x, ob.y, ob.r, 0, Math.PI*2);
+    X.arc(pr.x, pr.y, pr.r, 0, Math.PI*2);
     X.fill();
   }
+  // Игрок
   const p = game4.player;
-  drawCamera(X, p.x, p.y, 35, 1, speed, { isMoving: moved, windowText: '🎢' });
+  drawCamera(X, p.x, p.y, 35, 1, { isMoving: true, windowText: '💥' });
   for (let i=0; i<game4.lives; i++) {
     X.fillStyle = '#ef4444';
     X.shadowColor = '#ef4444';
@@ -979,7 +966,7 @@ function drawGame4(moved, speed) {
 }
 
 // ============================================================
-// 8. ИГРА 5: УЖАС (с окошком скорости)
+// 9. ИГРА 5: УЖАС (без скорости)
 // ============================================================
 let game5 = {
   player: { x: 300, y: 250 },
@@ -991,7 +978,6 @@ let game5 = {
   timer: 0,
   blood: false,
   lag: 0,
-  prevX: 300, prevY: 250,
 };
 
 function initGame5() {
@@ -1004,8 +990,9 @@ function initGame5() {
   game5.timer = 0;
   game5.blood = false;
   game5.lag = 0;
-  game5.prevX = 300; game5.prevY = 250;
   startGame();
+  showInGameMenu();
+  showDodgeBtn();
 }
 
 function updateGame5() {
@@ -1015,21 +1002,17 @@ function updateGame5() {
   const dy = game5.targetY - p.y;
   const dist = Math.sqrt(dx*dx+dy*dy);
   let moved = false;
-  let speed = 0;
   if (dist > 3) {
     const spd = Math.min(4, dist*0.06);
     p.x += (dx/dist)*spd;
     p.y += (dy/dist)*spd;
     moved = true;
-    speed = spd * 70;
   }
-  // Лаги
   game5.lag += 0.01;
   if (game5.lag > 0.3) {
     game5.lag = 0;
     return;
   }
-  // Монстры
   if (Math.random() < 0.02 && game5.monsters.length < 8) {
     const side = Math.floor(Math.random()*4);
     let x, y;
@@ -1063,12 +1046,11 @@ function updateGame5() {
     localStorage.setItem('bestScores', JSON.stringify(bestScores));
   }
   updateUI();
-  drawGame5(moved, speed);
+  drawGame5(moved);
 }
 
-function drawGame5(moved, speed) {
+function drawGame5(moved) {
   X.clearRect(0,0,W,H);
-  // Тёмный фон
   X.fillStyle = '#0a0a0c';
   X.fillRect(0,0,W,H);
   const grad = X.createRadialGradient(W/2, H/2, 50, W/2, H/2, 300);
@@ -1081,7 +1063,6 @@ function drawGame5(moved, speed) {
     if (shakeIntensity < 0.5) shakeIntensity = 0;
     X.translate((Math.random()-0.5)*shakeIntensity*1.5, (Math.random()-0.5)*shakeIntensity*1.5);
   }
-  // Монстры
   for (let mon of game5.monsters) {
     const pulse = 0.8 + 0.2 * Math.sin(Date.now()*0.005 + mon.phase);
     const size = mon.size * pulse;
@@ -1116,7 +1097,7 @@ function drawGame5(moved, speed) {
     X.shadowBlur = 0;
   }
   const p = game5.player;
-  drawCamera(X, p.x, p.y, 35, 1, speed, { isMoving: moved, windowText: '👻', blood: game5.blood });
+  drawCamera(X, p.x, p.y, 35, 1, { isMoving: moved, windowText: '👻', blood: game5.blood });
   for (let i=0; i<game5.lives; i++) {
     X.fillStyle = '#dc2626';
     X.shadowColor = '#dc2626';
@@ -1128,7 +1109,7 @@ function drawGame5(moved, speed) {
 }
 
 // ============================================================
-// 9. ОБЩИЕ МЕХАНИКИ ЗАПУСКА, ПАУЗЫ, ПРАВИЛ
+// 10. ОБЩИЕ МЕХАНИКИ
 // ============================================================
 function startGame() {
   gs = 'playing';
@@ -1137,7 +1118,6 @@ function startGame() {
   MO.classList.add('hidden');
   GO.style.display = 'none';
   PO.classList.remove('show');
-  startMusic();
   if (intervalId) clearInterval(intervalId);
   intervalId = setInterval(() => {
     fc++;
@@ -1164,7 +1144,6 @@ function gameOver(title) {
   GO.style.display = 'flex';
   GO.classList.add('show');
   if (intervalId) { clearInterval(intervalId); intervalId = null; }
-  stopMusic();
 }
 
 function togglePause() {
@@ -1177,7 +1156,6 @@ function togglePause() {
     else if (gameMode === 'game4') PS.textContent = Math.floor(game4.score);
     else if (gameMode === 'game5') PS.textContent = Math.floor(game5.score);
     if (intervalId) { clearInterval(intervalId); intervalId = null; }
-    pauseMusic();
   } else if (gs === 'paused') {
     gs = 'playing';
     PO.classList.remove('show');
@@ -1193,7 +1171,6 @@ function togglePause() {
         }
       }, 1000/60);
     }
-    resumeMusic();
   }
 }
 
@@ -1205,14 +1182,14 @@ function exitToMenu() {
   PO.classList.remove('show');
   MO.classList.remove('hidden');
   if (intervalId) { clearInterval(intervalId); intervalId = null; }
-  stopMusic();
   dirControls.style.display = 'none';
-  document.querySelector('.controls').style.display = 'flex';
+  hideInGameMenu();
+  hideDodgeBtn();
   updateUI();
 }
 
 // ============================================================
-// 10. ОБРАБОТЧИКИ СОБЫТИЙ
+// 11. ОБРАБОТЧИКИ СОБЫТИЙ
 // ============================================================
 C.addEventListener('mousemove', e => {
   if (gs !== 'playing') return;
@@ -1230,7 +1207,7 @@ C.addEventListener('mousemove', e => {
   } else if (gameMode === 'game3') {
     game3.targetY = Math.min(Math.max(my, 30), H-30);
   } else if (gameMode === 'game4') {
-    game4.targetY = Math.min(Math.max(my, 30), H-30);
+    game4.targetX = Math.min(Math.max(mx, 10), W-10);
   } else if (gameMode === 'game5') {
     game5.targetX = Math.min(Math.max(mx, 10), W-10);
     game5.targetY = Math.min(Math.max(my, 10), H-10);
@@ -1254,7 +1231,7 @@ C.addEventListener('touchmove', e => {
   } else if (gameMode === 'game3') {
     game3.targetY = Math.min(Math.max(my, 30), H-30);
   } else if (gameMode === 'game4') {
-    game4.targetY = Math.min(Math.max(my, 30), H-30);
+    game4.targetX = Math.min(Math.max(mx, 10), W-10);
   } else if (gameMode === 'game5') {
     game5.targetX = Math.min(Math.max(mx, 10), W-10);
     game5.targetY = Math.min(Math.max(my, 10), H-10);
@@ -1314,8 +1291,8 @@ const rulesData = {
   game1: { title: '🌀 Лабиринт теней', text: 'Управляй камерой мышью или пальцем.\nПроведи её к зелёному флагу, не касаясь стен.\nПри касании стены теряешь жизнь.\nУ тебя 3 жизни. Цель — набрать максимум очков!' },
   game2: { title: '📦 Доставка', text: 'Управляй камерой мышью (на ПК) или касанием (на телефоне).\nТакже можно использовать кнопки.\nСледуй по маршруту и доставляй заказы.\nИзбегай красных препятствий.\nЗа каждую доставку +1 очко.\nУ тебя 3 жизни. Цель — доставить как можно больше!' },
   game3: { title: '⭐ Космический сбор', text: 'Управляй камерой вверх-вниз.\nСобирай золотые звёзды, избегай астероидов.\nПри столкновении теряешь жизнь.\nУ тебя 3 жизни. Цель — набрать максимум очков!' },
-  game4: { title: '🎢 Американские горки', text: 'Управляй камерой вверх-вниз.\nСледуй по трассе, избегай красных препятствий.\nЧем дальше продвинешься, тем больше очков.\nУ тебя 3 жизни. Цель — пройти как можно дальше!' },
-  game5: { title: '👻 Ужас', text: '⚠️ Страшная игра!\nУправляй камерой мышью или пальцем, убегай от монстров.\nНе дай им коснуться тебя — иначе потеряешь жизнь.\nНа камере появляется кровь при столкновении.\nИгра может лагать и трястись.\nУ тебя 3 жизни. Цель — продержаться как можно дольше!' }
+  game4: { title: '💥 Битва с боссом', text: 'Управляй камерой влево-вправо.\nУклоняйся от снарядов, которые выпускает босс.\nЧем дольше продержишься, тем больше очков.\nПри попадании теряешь жизнь.\nУ тебя 3 жизни. Цель — набрать максимум очков!' },
+  game5: { title: '👻 Ужас', text: '⚠️ Страшная игра!\nУправляй камерой мышью или пальцем, убегай от монстров.\nИспользуй кнопку "Прыжок" для резкого рывка.\nНе дай монстрам коснуться тебя.\nНа камере появляется кровь при столкновении.\nУ тебя 3 жизни. Цель — продержаться как можно дольше!' }
 };
 
 RULESB.addEventListener('click', () => {
