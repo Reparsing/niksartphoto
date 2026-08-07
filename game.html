@@ -42,6 +42,15 @@
             touch-action: none;
             cursor: crosshair;
         }
+        
+        /* Фиксация контейнера на телефонах (чтобы разрыв не уходил под вырезы экрана) */
+        @media(max-width:600px) and (orientation: portrait) {
+            .game-container {
+                border-radius: 0;
+                max-width: 100vw;
+                aspect-ratio: 9/16;
+            }
+        }
 
         /* ----- HUD ----- */
         .hud {
@@ -165,7 +174,7 @@
         }
         .menu-footer button:hover { background: rgba(255,255,255,.08); color: #fff; }
 
-        /* ===== ЭФЕКТ РАЗРЫВА (добавляется динамически) ===== */
+        /* ===== ЭФФЕКТ РАЗРЫВА ===== */
         .split-overlay {
             position: absolute;
             inset: 0;
@@ -207,7 +216,6 @@
             transform: translateY(60%) scaleY(0.7);
             opacity: 0.7;
         }
-        /* Полоса разрыва */
         .split-gap {
             position: absolute;
             top: 50%;
@@ -225,7 +233,7 @@
             opacity: 1;
         }
 
-        /* ===== КРАСНЫЙ ЭКРАН ОШИБКИ (модальное окно) ===== */
+        /* ===== КРАСНЫЙ ЭКРАН ОШИБКИ ===== */
         .error-modal {
             position: absolute;
             inset: 0;
@@ -331,7 +339,7 @@
             100% { opacity: 0; transform: scale(1); }
         }
 
-        /* ===== ТОСТ ===== */
+        /* ===== ТОСТ И ЗВУК ===== */
         .toast {
             position: absolute;
             bottom: 80px;
@@ -355,22 +363,42 @@
             opacity: 1;
             transform: translateX(-50%) translateY(-10px);
         }
+        .sound-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: clamp(11px,.9vw,13px);
+            color: rgba(255,255,255,.4);
+        }
+        .sound-toggle {
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.06);
+            color: rgba(255,255,255,.7);
+            padding: 6px 12px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sound-toggle.muted .icon { opacity: 0.4; }
 
-        /* ===== АДАПТИВ ===== */
+        /* АДАПТИВ ДЛЯ ТЕЛЕФОНА */
         @media(max-width:600px) {
-            .game-container { border-radius: 0; max-width: 100%; aspect-ratio: 9/16; }
             .menu-grid { grid-template-columns: 1fr; max-width: 280px; }
             .error-modal { border-radius: 0; }
             .split-overlay { border-radius: 0; }
+            .hud { font-size: clamp(12px, 2.5vw, 18px); }
+            .hud-item { padding: 3px 12px; gap: 4px; }
         }
     </style>
 </head>
 <body>
-
 <div class="game-container" id="gameContainer">
     <!-- CANVAS -->
     <canvas id="gameCanvas"></canvas>
-
+    
     <!-- HUD -->
     <div class="hud" id="hud">
         <div class="hud-left">
@@ -407,6 +435,11 @@
         <div class="menu-footer">
             <button id="shopBtn">🏪 Магазин</button>
             <button id="rulesBtn">📖 Правила</button>
+            <div class="sound-controls">
+                <button class="sound-toggle" id="soundToggle">
+                    <span class="icon">🔊</span> Звук
+                </button>
+            </div>
         </div>
     </div>
 
@@ -430,30 +463,40 @@
     <div class="toast" id="toast"></div>
 </div>
 
+<!-- АУДИОФАЙЛЫ -->
+<audio id="bgMusic" loop>
+    <source src="https://assets.mixkit.co/active_storage/sfx/preview/preview_music-loop-ambient-space-exploration-1112.mp3" type="audio/mpeg">
+</audio>
+<audio id="lagSound">
+    <source src="https://assets.mixkit.co/active_storage/sfx/preview/preview_electronic-error-tone-1085.mp3" type="audio/mpeg">
+</audio>
+<audio id="crashSound">
+    <source src="https://assets.mixkit.co/active_storage/sfx/preview/preview_glitch-explosion-1072.mp3" type="audio/mpeg">
+</audio>
+
 <script>
     (function() {
         'use strict';
 
         // ============================================================
-        // 1. ПРОСТАЯ ИГРА (работает первые секунды)
+        // 1. ПРОСТАЯ ИГРА
         // ============================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('gameContainer');
-
         const scoreDisplay = document.getElementById('scoreDisplay');
         const bestDisplay = document.getElementById('bestDisplay');
         const livesDisplay = document.getElementById('livesDisplay');
         const menuOverlay = document.getElementById('menuOverlay');
         const errorModal = document.getElementById('errorModal');
         const toast = document.getElementById('toast');
-
         const splitOverlay = document.getElementById('splitOverlay');
         const splitTop = document.getElementById('splitTop');
         const splitBottom = document.getElementById('splitBottom');
         const splitGap = document.getElementById('splitGap');
 
         let W, H;
+
         function resizeCanvas() {
             const rect = container.getBoundingClientRect();
             canvas.width = rect.width * (devicePixelRatio || 1);
@@ -461,6 +504,7 @@
             W = canvas.width;
             H = canvas.height;
         }
+
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
@@ -477,6 +521,29 @@
         camImg.crossOrigin = 'Anonymous';
         camImg.src = 'https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png';
 
+        // Аудио
+        const bgMusic = document.getElementById('bgMusic');
+        const lagSound = document.getElementById('lagSound');
+        const crashSound = document.getElementById('crashSound');
+        let soundEnabled = localStorage.getItem('cosmicSound') !== 'false';
+
+        function setSoundState(state) {
+            soundEnabled = state;
+            localStorage.setItem('cosmicSound', state);
+            if (state) {
+                bgMusic.play().catch(()=>{});
+                document.getElementById('soundToggle').classList.remove('muted');
+            } else {
+                bgMusic.pause();
+                document.getElementById('soundToggle').classList.add('muted');
+            }
+        }
+
+        document.getElementById('soundToggle').addEventListener('click', () => {
+            setSoundState(!soundEnabled);
+        });
+        setSoundState(soundEnabled);
+
         function spawnStar() {
             stars.push({
                 x: W + 20,
@@ -492,9 +559,7 @@
             const diff = player.targetY - player.y;
             player.y += diff * 0.08;
             player.y = Math.max(30, Math.min(H - 30, player.y));
-
             if (frame % 20 === 0) spawnStar();
-
             for (let i = stars.length - 1; i >= 0; i--) {
                 const s = stars[i];
                 s.x -= s.speed;
@@ -546,13 +611,23 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Игрок
+            // Игрок (камера)
             const pulse = 1 + 0.06 * Math.sin(Date.now() * 0.003);
             const size = 56 * pulse;
             if (camImg.complete && camImg.naturalWidth > 0) {
                 ctx.save();
                 ctx.translate(player.x, player.y);
                 ctx.drawImage(camImg, -size/2, -size/2, size, size);
+                
+                // Добавляем красивое свечение вокруг камеры
+                ctx.shadowColor = '#fbbf24';
+                ctx.shadowBlur = 25;
+                ctx.strokeStyle = 'rgba(251,191,36,0.4)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, size/2 + 2, 0, Math.PI * 2);
+                ctx.stroke();
+                
                 ctx.restore();
             } else {
                 ctx.save();
@@ -567,7 +642,7 @@
                 ctx.restore();
             }
 
-            // Сердца
+            // Сердца (жизни)
             const hSize = 24;
             const total = 3 * hSize + 2 * 10;
             const startX = (W - total) / 2;
@@ -627,20 +702,36 @@
         let crashStarted = false;
         let glitchInterval = null;
         let redFlashInterval = null;
+        let shakeCount = 0;
+        let distortionTimeout = null;
+
+        function playLagSound() {
+            if (!soundEnabled) return;
+            lagSound.currentTime = 0;
+            lagSound.volume = 0.3;
+            lagSound.play().catch(()=>{});
+        }
+
+        function playCrashSound() {
+            if (!soundEnabled) return;
+            crashSound.currentTime = 0;
+            crashSound.volume = 0.8;
+            crashSound.play().catch(()=>{});
+        }
 
         function startCrashSequence() {
             if (crashStarted) return;
             crashStarted = true;
             stopGame();
 
-            // 1. Лаги: тряска, фильтры
-            let shakeCount = 0;
+            // 1. Лаги: тряска, фильтры, звук лага каждые 300мс
             const shakeInterval = setInterval(() => {
                 if (shakeCount > 30) { clearInterval(shakeInterval); return; }
                 const intensity = 10 + Math.random() * 20;
                 container.style.transform = `translate(${(Math.random()-0.5)*intensity}px, ${(Math.random()-0.5)*intensity}px)`;
-                container.style.filter = `blur(${Math.random()*3}px)`;
+                container.style.filter = `blur(${Math.random()*3}px) sepia(${Math.random()*0.3}) hue-rotate(${Math.random()*360}deg)`;
                 shakeCount++;
+                playLagSound();
             }, 50);
 
             // 2. Красные вспышки
@@ -699,42 +790,40 @@
                 }
             }, 80);
 
-            // 4. Через 1.5 секунды — РАЗРЫВ ПОПОЛАМ
-            setTimeout(() => {
-                // Останавливаем глитчи и тряску
-                clearInterval(shakeInterval);
-                clearInterval(redFlashInterval);
+            // Отключаем тяжелое искажение через 2 секунды, чтобы сохранить FPS перед крахом
+            distortionTimeout = setTimeout(() => {
                 clearInterval(glitchInterval);
                 document.querySelectorAll('.glitch-line, .glitch-block').forEach(el => el.remove());
+            }, 2000);
+
+            // 4. Через 1.5 секунды — РАЗРЫВ ПОПОЛАМ
+            setTimeout(() => {
+                clearInterval(shakeInterval);
+                clearInterval(redFlashInterval);
+                clearTimeout(distortionTimeout);
                 container.style.transform = '';
                 container.style.filter = '';
-
+                
                 // Активируем слой разрыва
                 splitOverlay.classList.add('active');
-
-                // Запускаем анимацию разрыва через requestAnimationFrame для плавности
+                
                 requestAnimationFrame(() => {
                     splitTop.classList.add('split');
                     splitBottom.classList.add('split');
                     splitGap.classList.add('active');
                 });
 
+                // Громкий звук взрыва
+                playCrashSound();
+
                 // Через 0.6 секунд показываем модальное окно ошибки
                 setTimeout(() => {
-                    // Прячем игру (делаем неактивной)
                     container.style.filter = 'brightness(0.2) contrast(0.5)';
                     container.style.transform = 'scale(0.95) rotate(1deg)';
-
-                    // Показываем ошибку
                     errorModal.classList.add('show');
-
-                    // Убираем меню (оно уже скрыто)
-                    menuOverlay.classList.add('hidden');
-
                     console.log('💀 Игра сломалась пополам!');
                 }, 700);
-
-            }, 1500); // 1.5 секунды лагов
+            }, 1500);
         }
 
         // ============================================================
@@ -770,6 +859,7 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
         });
+
         document.getElementById('rulesBtn').addEventListener('click', function() {
             toast.textContent = '📖 Правила: собирай звёзды, не теряй жизни!';
             toast.classList.add('show');
@@ -784,6 +874,7 @@
             const my = (e.clientY - rect.top) * scaleY;
             if (my > 0 && my < H) player.targetY = my;
         });
+
         canvas.addEventListener('touchmove', function(e) {
             e.preventDefault();
             if (!gameRunning) return;
@@ -801,15 +892,14 @@
         // ============================================================
         bestDisplay.textContent = best;
 
-        // Idle-рендер для меню
         function idleRender() {
             if (!gameRunning && !errorModal.classList.contains('show') && !crashStarted) {
                 drawGame();
                 requestAnimationFrame(idleRender);
             }
         }
-        idleRender();
 
+        idleRender();
         console.log('🌟 Cosmic Lens загружен! Через 4 секунды произойдёт сбой...');
         console.log('💀 Игра сломается пополам!');
     })();
