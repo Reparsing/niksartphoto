@@ -109,7 +109,7 @@ body{background:#0a0a0c;display:flex;justify-content:center;align-items:center;m
     <h1>🎮 <span>Игровой центр</span></h1>
     <p class="sub">Выберите игру</p>
     <div class="game-grid">
-      <div class="game-card" id="game1Card"><span class="icon">🌀</span><h3>Лабиринт теней</h3><p>Проведи к флагу</p><button class="btn btn-primary" id="game1Btn">Играть</button></div>
+      <div class="game-card" id="game1Card"><span class="icon">🪙</span><h3>Лабиринт-Собиратор</h3><p>Собери все монеты</p><button class="btn btn-primary" id="game1Btn">Играть</button></div>
       <div class="game-card" id="game2Card"><span class="icon">📦</span><h3>Доставка</h3><p>Управляй и доставляй</p><button class="btn btn-primary" id="game2Btn" style="background:#8b5cf6;border-color:#8b5cf6;">Играть</button></div>
       <div class="game-card" id="game3Card"><span class="icon">⭐</span><h3>Космический сбор</h3><p>Собирай звёзды</p><button class="btn btn-primary" id="game3Btn" style="background:#34d399;border-color:#34d399;">Играть</button></div>
       <div class="game-card" id="game4Card"><span class="icon">💥</span><h3>Битва с боссом</h3><p>Уклоняйся от атак</p><button class="btn btn-primary" id="game4Btn" style="background:#f472b6;border-color:#f472b6;">Играть</button></div>
@@ -251,7 +251,6 @@ function triggerShake(intensity=12) {
   shakeIntensity = Math.min(shakeIntensity + intensity, 25);
 }
 
-// Функция рисования камеры (без окошка скорости)
 function drawCamera(ctx, x, y, size, pulseSpeed=1, extra={}) {
   const pulse = 1 + 0.06 * Math.sin(Date.now() * 0.003 * pulseSpeed);
   const sx = size * pulse;
@@ -264,7 +263,6 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, extra={}) {
     ctx.translate(x, y);
     ctx.drawImage(CAM, -sx/2, -sy/2, sx, sy);
     
-    // Дополнительное окошко (иконка)
     if (extra.windowText && isMoving) {
       ctx.fillStyle = 'rgba(0,0,0,0.8)';
       ctx.shadowColor = 'rgba(0,0,0,0.5)';
@@ -280,7 +278,6 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, extra={}) {
       ctx.fillText(extra.windowText || '📡', sx*0.3, sy*0.25);
     }
     
-    // Кровь (для ужаса)
     if (blood) {
       ctx.globalAlpha = 0.6 + 0.4 * Math.sin(Date.now()*0.005);
       ctx.fillStyle = '#dc2626';
@@ -311,7 +308,6 @@ function drawCamera(ctx, x, y, size, pulseSpeed=1, extra={}) {
   }
 }
 
-// Меню камера
 function drawMenuCamera() {
   const w = menuCameraCanvas.width, h = menuCameraCanvas.height;
   menuCtx.clearRect(0,0,w,h);
@@ -320,7 +316,6 @@ function drawMenuCamera() {
 }
 drawMenuCamera();
 
-// Пауза камера
 function drawPauseCamera() {
   const w = pauseCamCanvas.width, h = pauseCamCanvas.height;
   pauseCtx.clearRect(0,0,w,h);
@@ -329,7 +324,6 @@ function drawPauseCamera() {
 }
 drawPauseCamera();
 
-// Фон
 let bgStars = [];
 function initBgStars() {
   bgStars = [];
@@ -365,9 +359,6 @@ function updateUI() {
   }
 }
 
-// ============================================================
-// 4. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КНОПОК
-// ============================================================
 function showInGameMenu() { inGameMenuBtn.style.display = 'block'; }
 function hideInGameMenu() { inGameMenuBtn.style.display = 'none'; }
 function showDodgeBtn() { dodgeBtn.style.display = 'block'; }
@@ -398,85 +389,198 @@ dodgeBtn.addEventListener('click', function() {
 });
 
 // ============================================================
-// 5. ИГРА 1: ЛАБИРИНТ ТЕНЕЙ (без скорости)
+// 4. ИГРА 1: ЛАБИРИНТ-СОБИРАТОР (НОВАЯ ВЕРСИЯ)
 // ============================================================
 let game1 = {
   player: { x: 50, y: 50, size: 20 },
   targetX: 50, targetY: 50,
   walls: [],
-  goal: { x: 530, y: 450, size: 30 },
+  coins: [],
+  traps: [],
   score: 0,
   lives: 3,
   maxLives: 3,
-  reached: false,
+  collectedCount: 0,
+  totalCoins: 0,
 };
 
 function initGame1() {
   gameMode = 'game1';
-  game1.player.x = 50; game1.player.y = 50;
+  const p = game1.player;
+  p.x = 50; p.y = 50;
   game1.targetX = 50; game1.targetY = 50;
-  game1.score = 0; game1.lives = 3; game1.reached = false;
-  game1.walls = [
-    { x: 100, y: 0, w: 20, h: 200 },
-    { x: 200, y: 300, w: 20, h: 200 },
-    { x: 300, y: 0, w: 20, h: 200 },
-    { x: 400, y: 300, w: 20, h: 200 },
-    { x: 0, y: 200, w: 200, h: 20 },
-    { x: 200, y: 100, w: 200, h: 20 },
-    { x: 300, y: 300, w: 200, h: 20 },
-    { x: 400, y: 100, w: 200, h: 20 },
-  ];
+  game1.score = 0;
+  game1.lives = 3;
+  game1.collectedCount = 0;
+  game1.totalCoins = 0;
+
+  // --- Генерация лабиринта ---
+  game1.walls = [];
+  // Внешние стены
+  game1.walls.push({ x: 0, y: 0, w: W, h: 10 });
+  game1.walls.push({ x: 0, y: H-10, w: W, h: 10 });
+  game1.walls.push({ x: 0, y: 0, w: 10, h: H });
+  game1.walls.push({ x: W-10, y: 0, w: 10, h: H });
+
+  // Внутренние перегородки
+  for (let i = 0; i < 16; i++) {
+    let wall;
+    let attempts = 0;
+    do {
+      const isHorizontal = Math.random() < 0.5;
+      const x = 40 + Math.random() * (W - 80);
+      const y = 40 + Math.random() * (H - 80);
+      const w = isHorizontal ? 60 + Math.random() * 120 : 12;
+      const h = isHorizontal ? 12 : 60 + Math.random() * 120;
+      wall = { x, y, w, h };
+      attempts++;
+    } while (attempts < 30 && isOverlappingWall1(wall));
+    game1.walls.push(wall);
+  }
+
+  // --- Монеты ---
+  game1.coins = [];
+  const coinCount = 25 + Math.floor(Math.random() * 20);
+  for (let i = 0; i < coinCount; i++) {
+    let coin;
+    let attempts = 0;
+    do {
+      const x = 30 + Math.random() * (W - 60);
+      const y = 30 + Math.random() * (H - 60);
+      coin = { x, y, r: 10, collected: false };
+      attempts++;
+    } while (attempts < 30 && (isInsideWall1(coin.x, coin.y) || isNearPlayer1(coin.x, coin.y)));
+    game1.coins.push(coin);
+  }
+  game1.totalCoins = game1.coins.length;
+
+  // --- Ловушки (красные круги) ---
+  game1.traps = [];
+  const trapCount = 6 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < trapCount; i++) {
+    let trap;
+    let attempts = 0;
+    do {
+      const x = 40 + Math.random() * (W - 80);
+      const y = 40 + Math.random() * (H - 80);
+      trap = { x, y, r: 14 + Math.random() * 10, active: true };
+      attempts++;
+    } while (attempts < 20 && (isInsideWall1(x, y) || isNearPlayer1(x, y)));
+    game1.traps.push(trap);
+  }
+
   startGame();
   showInGameMenu();
   hideDodgeBtn();
 }
 
-function updateGame1() {
-  if (!ga || gs!=='playing' || gameMode!=='game1') return;
-  const p = game1.player;
-  const dx = game1.targetX - p.x, dy = game1.targetY - p.y;
-  const dist = Math.sqrt(dx*dx+dy*dy);
-  let moved = false;
-  if (dist > 2) {
-    const spd = Math.min(3.5, dist*0.08);
-    p.x += (dx/dist)*spd;
-    p.y += (dy/dist)*spd;
-    moved = true;
-  }
-  // Стены
-  for (let wall of game1.walls) {
-    if (p.x < wall.x+wall.w && p.x+p.size > wall.x &&
-        p.y < wall.y+wall.h && p.y+p.size > wall.y) {
-      const overlapX = Math.min(p.x+p.size-wall.x, wall.x+wall.w-p.x);
-      const overlapY = Math.min(p.y+p.size-wall.y, wall.y+wall.h-p.y);
-      if (overlapX < overlapY) {
-        p.x = (p.x < wall.x) ? wall.x-p.size : wall.x+wall.w;
-      } else {
-        p.y = (p.y < wall.y) ? wall.y-p.size : wall.y+wall.h;
-      }
-      if (game1.lives > 0) {
-        game1.lives--;
-        triggerShake(14);
-        soundHit();
-        if (game1.lives <= 0) { gameOver('💥 Вы разбились о стену'); return; }
-      }
+// Вспомогательные функции для генерации
+function isOverlappingWall1(newWall) {
+  const margin = 20;
+  for (let w of game1.walls) {
+    if (newWall.x < w.x + w.w + margin && newWall.x + newWall.w + margin > w.x &&
+        newWall.y < w.y + w.h + margin && newWall.y + newWall.h + margin > w.y) {
+      return true;
     }
   }
-  const g = game1.goal;
-  if (p.x < g.x+g.size && p.x+p.size > g.x &&
-      p.y < g.y+g.size && p.y+p.size > g.y) {
-    if (!game1.reached) {
+  return false;
+}
+
+function isInsideWall1(x, y) {
+  const margin = 15;
+  for (let w of game1.walls) {
+    if (x > w.x - margin && x < w.x + w.w + margin &&
+        y > w.y - margin && y < w.y + w.h + margin) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isNearPlayer1(x, y) {
+  const p = game1.player;
+  const dist = Math.sqrt((x - p.x)**2 + (y - p.y)**2);
+  return dist < 80;
+}
+
+function updateGame1() {
+  if (!ga || gs !== 'playing' || gameMode !== 'game1') return;
+  const p = game1.player;
+  const dx = game1.targetX - p.x;
+  const dy = game1.targetY - p.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  let moved = false;
+
+  // Движение
+  if (dist > 2) {
+    const spd = Math.min(4, dist * 0.08);
+    p.x += (dx / dist) * spd;
+    p.y += (dy / dist) * spd;
+    moved = true;
+  } else {
+    p.x = game1.targetX;
+    p.y = game1.targetY;
+  }
+
+  // Столкновение со стенами
+  for (let wall of game1.walls) {
+    if (p.x < wall.x + wall.w && p.x + p.size > wall.x &&
+        p.y < wall.y + wall.h && p.y + p.size > wall.y) {
+      const overlapX = Math.min(p.x + p.size - wall.x, wall.x + wall.w - p.x);
+      const overlapY = Math.min(p.y + p.size - wall.y, wall.y + wall.h - p.y);
+      if (overlapX < overlapY) {
+        p.x = (p.x < wall.x) ? wall.x - p.size : wall.x + wall.w;
+        game1.targetX = p.x;
+      } else {
+        p.y = (p.y < wall.y) ? wall.y - p.size : wall.y + wall.h;
+        game1.targetY = p.y;
+      }
+      if (Math.random() < 0.05) triggerShake(3);
+    }
+  }
+
+  // Сбор монет
+  for (let coin of game1.coins) {
+    if (coin.collected) continue;
+    const dxc = p.x + p.size/2 - coin.x;
+    const dyc = p.y + p.size/2 - coin.y;
+    if (Math.sqrt(dxc * dxc + dyc * dyc) < p.size/2 + coin.r) {
+      coin.collected = true;
       game1.score++;
-      soundWin();
+      game1.collectedCount++;
+      soundCollect();
       if (!bestScores['game1'] || game1.score > bestScores['game1']) {
         bestScores['game1'] = game1.score;
         localStorage.setItem('bestScores', JSON.stringify(bestScores));
       }
-      game1.reached = true;
-      setTimeout(() => { game1.reached = false; }, 500);
       updateUI();
     }
   }
+
+  // Проверка на все монеты
+  if (game1.collectedCount >= game1.totalCoins) {
+    soundWin();
+    gameOver('🎉 Вы собрали все монеты! Победа!');
+    return;
+  }
+
+  // Ловушки
+  for (let trap of game1.traps) {
+    if (!trap.active) continue;
+    const dxc = p.x + p.size/2 - trap.x;
+    const dyc = p.y + p.size/2 - trap.y;
+    if (Math.sqrt(dxc * dxc + dyc * dyc) < p.size/2 + trap.r) {
+      trap.active = false;
+      game1.lives--;
+      triggerShake(14);
+      soundHit();
+      if (game1.lives <= 0) {
+        gameOver('💥 Вы наступили на ловушку');
+        return;
+      }
+    }
+  }
+
   drawGame1(moved);
 }
 
@@ -488,25 +592,59 @@ function drawGame1(moved) {
     if (shakeIntensity < 0.5) shakeIntensity = 0;
     X.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
   }
+
+  // Стены
   for (let wall of game1.walls) {
     X.fillStyle = 'rgba(120,120,180,0.5)';
     X.shadowColor = 'rgba(120,120,180,0.2)';
     X.shadowBlur = 10;
     X.fillRect(wall.x, wall.y, wall.w, wall.h);
   }
-  const g = game1.goal;
-  X.fillStyle = '#4ade80';
-  X.shadowColor = '#4ade80';
-  X.shadowBlur = 25;
-  X.fillRect(g.x, g.y, g.size, g.size);
   X.shadowBlur = 0;
-  X.fillStyle = '#fff';
-  X.font = '24px sans-serif';
-  X.textAlign = 'center';
-  X.textBaseline = 'middle';
-  X.fillText('🏁', g.x+g.size/2, g.y+g.size/2);
+
+  // Ловушки
+  for (let trap of game1.traps) {
+    if (!trap.active) continue;
+    X.fillStyle = '#dc2626';
+    X.shadowColor = '#dc2626';
+    X.shadowBlur = 20;
+    X.beginPath();
+    X.arc(trap.x, trap.y, trap.r, 0, Math.PI*2);
+    X.fill();
+    X.shadowBlur = 0;
+    X.fillStyle = '#fff';
+    X.font = '16px sans-serif';
+    X.textAlign = 'center';
+    X.textBaseline = 'middle';
+    X.fillText('⚠️', trap.x, trap.y);
+  }
+
+  // Монеты
+  for (let coin of game1.coins) {
+    if (coin.collected) continue;
+    const pulse = 1 + 0.1 * Math.sin(Date.now()*0.004 + coin.x);
+    X.fillStyle = '#fbbf24';
+    X.shadowColor = '#fbbf24';
+    X.shadowBlur = 25;
+    X.beginPath();
+    X.arc(coin.x, coin.y, coin.r * pulse, 0, Math.PI*2);
+    X.fill();
+    X.shadowBlur = 0;
+    X.fillStyle = '#0a0a0c';
+    X.font = '14px sans-serif';
+    X.textAlign = 'center';
+    X.textBaseline = 'middle';
+    X.fillText('$', coin.x, coin.y + 1);
+  }
+
+  // Игрок (камера)
   const p = game1.player;
-  drawCamera(X, p.x+p.size/2, p.y+p.size/2, 30, 1, { isMoving: moved, windowText: '🌀' });
+  drawCamera(X, p.x + p.size/2, p.y + p.size/2, 30, 1, { 
+    isMoving: moved, 
+    windowText: `🪙 ${game1.collectedCount}/${game1.totalCoins}`
+  });
+
+  // Жизни
   for (let i=0; i<game1.lives; i++) {
     X.fillStyle = '#ef4444';
     X.shadowColor = '#ef4444';
@@ -518,7 +656,7 @@ function drawGame1(moved) {
 }
 
 // ============================================================
-// 6. ИГРА 2: ДОСТАВКА (без скорости)
+// 5. ИГРА 2: ДОСТАВКА
 // ============================================================
 let game2 = {
   player: { x: 60, y: 60 },
@@ -604,7 +742,6 @@ function updateGame2() {
       updateUI();
     }
   }
-  // Препятствия
   if (Math.random() < 0.01 && game2.obstacles.length < 5) {
     const side = Math.random() < 0.5 ? 0 : W;
     const y = 50 + Math.random()*(H-100);
@@ -703,7 +840,7 @@ function drawGame2(moved) {
 }
 
 // ============================================================
-// 7. ИГРА 3: КОСМИЧЕСКИЙ СБОР (без скорости)
+// 6. ИГРА 3: КОСМИЧЕСКИЙ СБОР
 // ============================================================
 let game3 = {
   player: { x: 120, y: H/2, vy: 0, radius: 22 },
@@ -822,7 +959,7 @@ function drawGame3(moved) {
 }
 
 // ============================================================
-// 8. НОВАЯ ИГРА 4: БИТВА С БОССОМ
+// 7. ИГРА 4: БИТВА С БОССОМ
 // ============================================================
 let game4 = {
   player: { x: 300, y: 400 },
@@ -856,18 +993,15 @@ function initGame4() {
 function updateGame4() {
   if (!ga || gs!=='playing' || gameMode!=='game4') return;
   const p = game4.player;
-  // Управление
   const dx = game4.targetX - p.x;
   const dist = Math.abs(dx);
   if (dist > 2) {
     const spd = Math.min(4, dist * 0.08);
     p.x += (dx/dist) * spd;
   }
-  // Босс двигается
   const boss = game4.boss;
   boss.x += Math.sin(Date.now()*0.001) * 1.5;
   boss.x = Math.min(Math.max(boss.x, boss.w/2), W-boss.w/2);
-  // Стрельба босса
   game4.shootTimer++;
   if (game4.shootTimer > game4.spawnRate) {
     game4.shootTimer = 0;
@@ -880,7 +1014,6 @@ function updateGame4() {
       vy: Math.sin(angle) * speed,
       r: 8
     });
-    // Иногда двойной выстрел
     if (Math.random() < 0.3) {
       const angle2 = angle + 0.2;
       game4.projectiles.push({
@@ -891,10 +1024,8 @@ function updateGame4() {
         r: 8
       });
     }
-    // Уменьшаем интервал с ростом счёта
     game4.spawnRate = Math.max(15, 40 - Math.floor(game4.score / 10));
   }
-  // Движение снарядов
   for (let i=game4.projectiles.length-1; i>=0; i--) {
     const pr = game4.projectiles[i];
     pr.x += pr.vx;
@@ -903,7 +1034,6 @@ function updateGame4() {
       game4.projectiles.splice(i,1);
       continue;
     }
-    // Столкновение с игроком
     const dxp = p.x - pr.x, dyp = p.y - pr.y;
     if (Math.sqrt(dxp*dxp + dyp*dyp) < 25 + pr.r) {
       game4.lives--;
@@ -913,7 +1043,6 @@ function updateGame4() {
       if (game4.lives <= 0) { gameOver('💥 Вы погибли в бою'); return; }
     }
   }
-  // Очки за выживание
   game4.score += 0.02;
   if (Math.floor(game4.score) > (bestScores['game4']||0)) {
     bestScores['game4'] = Math.floor(game4.score);
@@ -931,7 +1060,6 @@ function drawGame4() {
     if (shakeIntensity < 0.5) shakeIntensity = 0;
     X.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
   }
-  // Босс
   const boss = game4.boss;
   X.fillStyle = '#dc2626';
   X.shadowColor = '#dc2626';
@@ -943,7 +1071,6 @@ function drawGame4() {
   X.textAlign = 'center';
   X.textBaseline = 'middle';
   X.fillText('👾 БОСС', boss.x, boss.y);
-  // Снаряды
   for (let pr of game4.projectiles) {
     X.fillStyle = '#fbbf24';
     X.shadowColor = '#fbbf24';
@@ -952,7 +1079,6 @@ function drawGame4() {
     X.arc(pr.x, pr.y, pr.r, 0, Math.PI*2);
     X.fill();
   }
-  // Игрок
   const p = game4.player;
   drawCamera(X, p.x, p.y, 35, 1, { isMoving: true, windowText: '💥' });
   for (let i=0; i<game4.lives; i++) {
@@ -966,7 +1092,7 @@ function drawGame4() {
 }
 
 // ============================================================
-// 9. ИГРА 5: УЖАС (без скорости)
+// 8. ИГРА 5: УЖАС
 // ============================================================
 let game5 = {
   player: { x: 300, y: 250 },
@@ -1109,7 +1235,7 @@ function drawGame5(moved) {
 }
 
 // ============================================================
-// 10. ОБЩИЕ МЕХАНИКИ
+// 9. ОБЩИЕ МЕХАНИКИ
 // ============================================================
 function startGame() {
   gs = 'playing';
@@ -1189,7 +1315,7 @@ function exitToMenu() {
 }
 
 // ============================================================
-// 11. ОБРАБОТЧИКИ СОБЫТИЙ
+// 10. ОБРАБОТЧИКИ СОБЫТИЙ
 // ============================================================
 C.addEventListener('mousemove', e => {
   if (gs !== 'playing') return;
@@ -1238,7 +1364,6 @@ C.addEventListener('touchmove', e => {
   }
 }, { passive: false });
 
-// Кнопки управления для доставки
 function setupDirectionButtons() {
   const speed = 4;
   const move = (dx, dy) => {
@@ -1253,7 +1378,6 @@ function setupDirectionButtons() {
 }
 setupDirectionButtons();
 
-// Запуск игр
 game1Btn.addEventListener('click', initGame1);
 game2Btn.addEventListener('click', initGame2);
 game3Btn.addEventListener('click', initGame3);
@@ -1286,9 +1410,8 @@ PauseBtn.addEventListener('click', togglePause);
 ResumeBtn.addEventListener('click', togglePause);
 PauseMenuBtn.addEventListener('click', exitToMenu);
 
-// Правила
 const rulesData = {
-  game1: { title: '🌀 Лабиринт теней', text: 'Управляй камерой мышью или пальцем.\nПроведи её к зелёному флагу, не касаясь стен.\nПри касании стены теряешь жизнь.\nУ тебя 3 жизни. Цель — набрать максимум очков!' },
+  game1: { title: '🪙 Лабиринт-Собиратор', text: 'Управляй камерой мышью или пальцем.\nСобирай все золотые монеты ($).\nИзбегай красных ловушек (⚠️).\nПри попадании в ловушку теряешь жизнь.\nУ тебя 3 жизни. Цель — собрать все монеты!' },
   game2: { title: '📦 Доставка', text: 'Управляй камерой мышью (на ПК) или касанием (на телефоне).\nТакже можно использовать кнопки.\nСледуй по маршруту и доставляй заказы.\nИзбегай красных препятствий.\nЗа каждую доставку +1 очко.\nУ тебя 3 жизни. Цель — доставить как можно больше!' },
   game3: { title: '⭐ Космический сбор', text: 'Управляй камерой вверх-вниз.\nСобирай золотые звёзды, избегай астероидов.\nПри столкновении теряешь жизнь.\nУ тебя 3 жизни. Цель — набрать максимум очков!' },
   game4: { title: '💥 Битва с боссом', text: 'Управляй камерой влево-вправо.\nУклоняйся от снарядов, которые выпускает босс.\nЧем дольше продержишься, тем больше очков.\nПри попадании теряешь жизнь.\nУ тебя 3 жизни. Цель — набрать максимум очков!' },
