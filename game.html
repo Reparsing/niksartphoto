@@ -353,8 +353,8 @@ function updateUI() {
     if (gameMode === 'game1') S.textContent = game1.score;
     else if (gameMode === 'game2') S.textContent = game2.deliveries;
     else if (gameMode === 'game3') S.textContent = game3.score;
-    else if (gameMode === 'game4') S.textContent = game4.score;
-    else if (gameMode === 'game5') S.textContent = game5.score;
+    else if (gameMode === 'game4') S.textContent = Math.floor(game4.score);
+    else if (gameMode === 'game5') S.textContent = Math.floor(game5.score);
     B.textContent = bestScores[gameMode] || 0;
   }
 }
@@ -389,7 +389,7 @@ dodgeBtn.addEventListener('click', function() {
 });
 
 // ============================================================
-// 4. ИГРА 1: ЛАБИРИНТ-СОБИРАТОР (НОВАЯ ВЕРСИЯ)
+// 4. ИГРА 1: ЛАБИРИНТ-СОБИРАТОР (ИСПРАВЛЕННАЯ)
 // ============================================================
 let game1 = {
   player: { x: 50, y: 50, size: 20 },
@@ -405,6 +405,7 @@ let game1 = {
 };
 
 function initGame1() {
+  if (intervalId) { clearInterval(intervalId); intervalId = null; }
   gameMode = 'game1';
   const p = game1.player;
   p.x = 50; p.y = 50;
@@ -413,9 +414,11 @@ function initGame1() {
   game1.lives = 3;
   game1.collectedCount = 0;
   game1.totalCoins = 0;
+  game1.walls = [];
+  game1.coins = [];
+  game1.traps = [];
 
   // --- Генерация лабиринта ---
-  game1.walls = [];
   // Внешние стены
   game1.walls.push({ x: 0, y: 0, w: W, h: 10 });
   game1.walls.push({ x: 0, y: H-10, w: W, h: 10 });
@@ -439,7 +442,6 @@ function initGame1() {
   }
 
   // --- Монеты ---
-  game1.coins = [];
   const coinCount = 25 + Math.floor(Math.random() * 20);
   for (let i = 0; i < coinCount; i++) {
     let coin;
@@ -454,8 +456,7 @@ function initGame1() {
   }
   game1.totalCoins = game1.coins.length;
 
-  // --- Ловушки (красные круги) ---
-  game1.traps = [];
+  // --- Ловушки ---
   const trapCount = 6 + Math.floor(Math.random() * 5);
   for (let i = 0; i < trapCount; i++) {
     let trap;
@@ -511,7 +512,6 @@ function updateGame1() {
   const dist = Math.sqrt(dx * dx + dy * dy);
   let moved = false;
 
-  // Движение
   if (dist > 2) {
     const spd = Math.min(4, dist * 0.08);
     p.x += (dx / dist) * spd;
@@ -557,14 +557,12 @@ function updateGame1() {
     }
   }
 
-  // Проверка на все монеты
   if (game1.collectedCount >= game1.totalCoins) {
     soundWin();
     gameOver('🎉 Вы собрали все монеты! Победа!');
     return;
   }
 
-  // Ловушки
   for (let trap of game1.traps) {
     if (!trap.active) continue;
     const dxc = p.x + p.size/2 - trap.x;
@@ -593,7 +591,6 @@ function drawGame1(moved) {
     X.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
   }
 
-  // Стены
   for (let wall of game1.walls) {
     X.fillStyle = 'rgba(120,120,180,0.5)';
     X.shadowColor = 'rgba(120,120,180,0.2)';
@@ -602,7 +599,6 @@ function drawGame1(moved) {
   }
   X.shadowBlur = 0;
 
-  // Ловушки
   for (let trap of game1.traps) {
     if (!trap.active) continue;
     X.fillStyle = '#dc2626';
@@ -619,7 +615,6 @@ function drawGame1(moved) {
     X.fillText('⚠️', trap.x, trap.y);
   }
 
-  // Монеты
   for (let coin of game1.coins) {
     if (coin.collected) continue;
     const pulse = 1 + 0.1 * Math.sin(Date.now()*0.004 + coin.x);
@@ -637,14 +632,12 @@ function drawGame1(moved) {
     X.fillText('$', coin.x, coin.y + 1);
   }
 
-  // Игрок (камера)
   const p = game1.player;
   drawCamera(X, p.x + p.size/2, p.y + p.size/2, 30, 1, { 
     isMoving: moved, 
     windowText: `🪙 ${game1.collectedCount}/${game1.totalCoins}`
   });
 
-  // Жизни
   for (let i=0; i<game1.lives; i++) {
     X.fillStyle = '#ef4444';
     X.shadowColor = '#ef4444';
@@ -656,7 +649,7 @@ function drawGame1(moved) {
 }
 
 // ============================================================
-// 5. ИГРА 2: ДОСТАВКА
+// 5. ИГРА 2: ДОСТАВКА (ИСПРАВЛЕННАЯ)
 // ============================================================
 let game2 = {
   player: { x: 60, y: 60 },
@@ -673,6 +666,7 @@ let game2 = {
 };
 
 function initGame2() {
+  if (intervalId) { clearInterval(intervalId); intervalId = null; }
   gameMode = 'game2';
   game2.player.x = 60; game2.player.y = 60;
   game2.targetX = 60; game2.targetY = 60;
@@ -840,7 +834,7 @@ function drawGame2(moved) {
 }
 
 // ============================================================
-// 6. ИГРА 3: КОСМИЧЕСКИЙ СБОР
+// 6. ИГРА 3: КОСМИЧЕСКИЙ СБОР (ИСПРАВЛЕННАЯ)
 // ============================================================
 let game3 = {
   player: { x: 120, y: H/2, vy: 0, radius: 22 },
@@ -855,6 +849,7 @@ let game3 = {
 };
 
 function initGame3() {
+  if (intervalId) { clearInterval(intervalId); intervalId = null; }
   gameMode = 'game3';
   game3.player.x = 120; game3.player.y = H/2; game3.player.vy = 0;
   game3.targetY = H/2;
@@ -891,7 +886,7 @@ function updateGame3() {
   game3.prevY = p.y;
   for (let i=game3.stars.length-1; i>=0; i--) {
     const star = game3.stars[i];
-    star.x -= star.speed * (3/3) * game3.speedMult;
+    star.x -= star.speed * game3.speedMult;
     const dx = p.x - star.x, dy = p.y - star.y;
     if (Math.sqrt(dx*dx+dy*dy) < r + star.r) {
       game3.score++;
@@ -907,7 +902,7 @@ function updateGame3() {
   }
   for (let i=game3.asteroids.length-1; i>=0; i--) {
     const ast = game3.asteroids[i];
-    ast.x -= ast.speed * (3/3) * game3.speedMult;
+    ast.x -= ast.speed * game3.speedMult;
     const dx = p.x - ast.x, dy = p.y - ast.y;
     if (Math.sqrt(dx*dx+dy*dy) < r + ast.r) {
       game3.lives--;
@@ -959,7 +954,7 @@ function drawGame3(moved) {
 }
 
 // ============================================================
-// 7. ИГРА 4: БИТВА С БОССОМ
+// 7. ИГРА 4: БИТВА С БОССОМ (ИСПРАВЛЕННАЯ)
 // ============================================================
 let game4 = {
   player: { x: 300, y: 400 },
@@ -975,6 +970,7 @@ let game4 = {
 };
 
 function initGame4() {
+  if (intervalId) { clearInterval(intervalId); intervalId = null; }
   gameMode = 'game4';
   game4.player.x = 300; game4.player.y = 400;
   game4.targetX = 300;
@@ -1092,7 +1088,7 @@ function drawGame4() {
 }
 
 // ============================================================
-// 8. ИГРА 5: УЖАС
+// 8. ИГРА 5: УЖАС (ИСПРАВЛЕННАЯ)
 // ============================================================
 let game5 = {
   player: { x: 300, y: 250 },
@@ -1107,6 +1103,7 @@ let game5 = {
 };
 
 function initGame5() {
+  if (intervalId) { clearInterval(intervalId); intervalId = null; }
   gameMode = 'game5';
   game5.player.x = 300; game5.player.y = 250;
   game5.targetX = 300; game5.targetY = 250;
@@ -1315,7 +1312,7 @@ function exitToMenu() {
 }
 
 // ============================================================
-// 10. ОБРАБОТЧИКИ СОБЫТИЙ
+// 10. ОБРАБОТЧИКИ СОБЫТИЙ (ИСПРАВЛЕННЫЕ)
 // ============================================================
 C.addEventListener('mousemove', e => {
   if (gs !== 'playing') return;
