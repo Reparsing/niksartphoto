@@ -387,16 +387,10 @@
             display: none;
             justify-content: center;
             align-items: center;
-            animation: fadeIn 0.3s ease;
             padding: 20px;
         }
         .modal-overlay.show {
             display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes shakeModal {
@@ -451,13 +445,7 @@
             font-size: 56px;
             display: block;
             margin-bottom: 16px;
-            animation: pulseIcon 2s ease-in-out infinite;
         }
-        @keyframes pulseIcon {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-
         .modal-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -724,7 +712,7 @@
                     </div>
 
                     <!-- КНОПКА -->
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" class="submit-btn" id="submitBtn">
                         📸 Отправить заявку
                     </button>
 
@@ -848,7 +836,7 @@
         });
     </script>
 
-    <!-- 3. ЛОГИКА ЗАПИСИ (ПРОВЕРКА ТОЛЬКО ДЛЯ СЕГОДНЯ) -->
+    <!-- 3. ЛОГИКА ЗАПИСИ -->
     <script>
         (function() {
             // === ДАТЫ ===
@@ -860,7 +848,7 @@
             const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
             const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 
-            let selectedDate = null;
+            let selectedDate = todayStr;
 
             for (let i = 0; i < 60; i++) {
                 const date = new Date(today);
@@ -883,7 +871,6 @@
 
                 if (i === 0) {
                     btn.classList.add('active');
-                    selectedDate = dateStr;
                     selectedDateInput.value = dateStr;
                 }
 
@@ -892,12 +879,23 @@
                     this.classList.add('active');
                     selectedDate = this.dataset.date;
                     selectedDateInput.value = selectedDate;
+
+                    // Обновляем подсказку
+                    const hint = document.getElementById('timeHint');
+                    if (selectedDate === todayStr) {
+                        hint.innerHTML = '🕐 Сегодня доступное время: <strong>11:20 — 17:00</strong>';
+                    } else {
+                        hint.innerHTML = '🕐 Доступное время: <strong>11:20 — 17:00</strong>';
+                    }
                 });
 
                 dateGrid.appendChild(btn);
             }
 
-            // === ЭЛЕМЕНТЫ МОДАЛЬНОГО ОКНА ===
+            // Устанавливаем начальное значение
+            selectedDateInput.value = todayStr;
+
+            // === МОДАЛЬНОЕ ОКНО ===
             const modalOverlay = document.getElementById('modalOverlay');
             const modalContent = document.getElementById('modalContent');
             const modalClose = document.getElementById('modalClose');
@@ -926,38 +924,41 @@
                 if (e.key === 'Escape' && modalOverlay.classList.contains('show')) hideModal();
             });
 
-            // === ОТПРАВКА С ПРОВЕРКОЙ ТОЛЬКО ДЛЯ СЕГОДНЯ ===
+            // === ОТПРАВКА ЗАЯВКИ ===
             const form = document.getElementById('bookingForm');
             const successMessage = document.getElementById('successMessage');
-            const timeHint = document.getElementById('timeHint');
-
-            // Обновляем подсказку в зависимости от выбранной даты
-            document.querySelectorAll('.date-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const dateStr = this.dataset.date;
-                    if (dateStr === todayStr) {
-                        timeHint.innerHTML = '🕐 Сегодня доступное время: <strong>11:20 — 17:00</strong>';
-                    } else {
-                        timeHint.innerHTML = '🕐 Доступное время: <strong>11:20 — 17:00</strong>';
-                    }
-                });
-            });
+            const submitBtn = document.getElementById('submitBtn');
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
+                // Собираем данные
                 const name = document.getElementById('userName').value.trim();
                 const telegram = document.getElementById('userTelegram').value.trim();
                 const time = document.getElementById('selectedTime').value;
                 const comment = document.getElementById('userComment').value.trim();
+                const date = selectedDate;
 
-                if (!selectedDate) { alert('Выбери дату!'); return; }
-                if (!name) { alert('Введи своё имя!'); return; }
-                if (!telegram) { alert('Укажи Telegram!'); return; }
-                if (!time) { alert('Выбери время!'); return; }
+                // Валидация
+                if (!date) { 
+                    alert('Выбери дату!'); 
+                    return; 
+                }
+                if (!name) { 
+                    alert('Введи своё имя!'); 
+                    return; 
+                }
+                if (!telegram) { 
+                    alert('Укажи Telegram!'); 
+                    return; 
+                }
+                if (!time) { 
+                    alert('Выбери время!'); 
+                    return; 
+                }
 
                 // === ПРОВЕРКА ТОЛЬКО ДЛЯ СЕГОДНЯ ===
-                if (selectedDate === todayStr) {
+                if (date === todayStr) {
                     const now = new Date();
                     const hours = now.getHours();
                     const minutes = now.getMinutes();
@@ -976,17 +977,19 @@
                 const botToken = '8987479768:AAE6ZmRVA3AWo0nzL2O5eUrnefCnaZ33vVo';
                 const chatId = '7709067838';
 
-                const message = `
-    📸 НОВАЯ ЗАЯВКА НА СЪЁМКУ!
+                const message = `📸 НОВАЯ ЗАЯВКА НА СЪЁМКУ!
 
-    📅 Дата: ${selectedDate}
-    ⏰ Время: ${time}
-    👤 Имя: ${name}
-    💬 Telegram: ${telegram}
-    📝 Комментарий: ${comment || '—'}
-                `;
+📅 Дата: ${date}
+⏰ Время: ${time}
+👤 Имя: ${name}
+💬 Telegram: ${telegram}
+📝 Комментарий: ${comment || '—'}`;
 
                 const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+                // Блокируем кнопку
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Отправка...';
 
                 fetch(url, {
                     method: 'POST',
@@ -1000,17 +1003,22 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
+                        // Скрываем форму, показываем успех
                         successMessage.classList.add('show');
-                        form.querySelector('.submit-btn').style.display = 'none';
                         form.querySelectorAll('.form-group').forEach(el => el.style.display = 'none');
+                        submitBtn.style.display = 'none';
                     } else {
                         alert('Ошибка отправки. Попробуй ещё раз.');
                         console.error('Telegram error:', data);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '📸 Отправить заявку';
                     }
                 })
                 .catch(error => {
                     alert('Ошибка соединения. Попробуй ещё раз.');
                     console.error('Network error:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '📸 Отправить заявку';
                 });
             });
 
