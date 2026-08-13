@@ -339,6 +339,17 @@
             display: block;
         }
 
+        /* ===== ВРЕМЯ С ПОДСКАЗКОЙ ===== */
+        .time-hint {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 6px;
+            display: block;
+        }
+        .time-hint strong {
+            color: var(--brand);
+        }
+
         /* ============================================
                    КНОПКА ОТПРАВКИ
                    ============================================ */
@@ -365,6 +376,148 @@
         }
 
         /* ============================================
+                   МОДАЛЬНОЕ ОКНО
+                   ============================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+            padding: 20px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes shakeModal {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            10% { transform: translateX(-15px) rotate(-1deg); }
+            20% { transform: translateX(15px) rotate(1deg); }
+            30% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            50% { transform: translateX(-6px); }
+            60% { transform: translateX(6px); }
+            70% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+            90% { transform: translateX(-1px); }
+        }
+
+        .modal-content {
+            background: #1a1a1e;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 24px;
+            padding: 40px 36px;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(239, 68, 68, 0.15);
+            text-align: center;
+        }
+        .modal-content.shake {
+            animation: shakeModal 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #71717a;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+        .modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            transform: rotate(90deg);
+        }
+
+        .modal-icon {
+            font-size: 56px;
+            display: block;
+            margin-bottom: 16px;
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f87171;
+            margin-bottom: 12px;
+        }
+        .modal-text {
+            color: #a1a1aa;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .modal-text strong {
+            color: #fbbf24;
+        }
+        .modal-time {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.12);
+            color: var(--brand);
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 8px 0 16px;
+        }
+        .modal-divider {
+            height: 1px;
+            background: var(--hairline);
+            margin: 20px 0;
+        }
+        .modal-footer-text {
+            color: #71717a;
+            font-size: 0.85rem;
+        }
+        .modal-footer-text a {
+            color: var(--brand);
+            font-weight: 600;
+        }
+        .modal-footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-btn {
+            margin-top: 20px;
+            padding: 12px 40px;
+            border-radius: 40px;
+            border: none;
+            background: var(--brand);
+            color: #0a0a0c;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.3);
+        }
+
+        /* ============================================
                    СООБЩЕНИЯ
                    ============================================ */
         .success-message {
@@ -385,26 +538,6 @@
             font-size: 3rem;
             display: block;
             margin-bottom: 8px;
-        }
-
-        .error-message {
-            display: none;
-            text-align: center;
-            padding: 16px 20px;
-            margin-top: 16px;
-            border-radius: 12px;
-            background: rgba(239, 68, 68, .1);
-            border: 1px solid rgba(239, 68, 68, .2);
-            color: #f87171;
-            font-size: .95rem;
-        }
-        .error-message.show {
-            display: block;
-        }
-        .error-message .icon {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 4px;
         }
 
         /* ============================================
@@ -453,6 +586,8 @@
             .date-grid { gap: 4px; }
             .date-grid .date-btn { padding: 6px 0; font-size: .65rem; min-height: 40px; }
             .date-grid .date-btn .number { font-size: .85rem; }
+            .modal-content { padding: 32px 24px; margin: 20px; }
+            .modal-title { font-size: 1.2rem; }
         }
         @media(max-width:480px) {
             .booking-card { padding: 24px 16px; }
@@ -460,6 +595,8 @@
             .date-grid { gap: 3px; }
             .date-grid .date-btn { padding: 4px 0; font-size: .6rem; min-height: 34px; }
             .date-grid .date-btn .number { font-size: .75rem; }
+            .modal-content { padding: 24px 16px; }
+            .modal-icon { font-size: 40px; }
         }
     </style>
 </head>
@@ -467,6 +604,27 @@
 
     <!-- ===== ФОН: ЧАСТИЦЫ ===== -->
     <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <button class="modal-close" id="modalClose">✕</button>
+            <span class="modal-icon">⏰</span>
+            <h2 class="modal-title">Сегодня фотограф не работает</h2>
+            <p class="modal-text">
+                Заказы на <strong>сегодня</strong> принимаются <strong>с 11:20 до 17:00</strong>
+            </p>
+            <span class="modal-time">🕐 11:20 — 17:00</span>
+            <div class="modal-divider"></div>
+            <p class="modal-text" style="font-size:0.95rem; color:#a1a1aa;">
+                Сейчас приём заявок закрыт.<br>
+                Выберите другую дату или вернитесь в рабочее время.<br>
+                Или напишите в
+                <a href="https://t.me/objektivniksa" target="_blank" style="color:var(--brand); font-weight:600;">Telegram</a>
+            </p>
+            <button class="modal-btn" id="modalOkBtn">Понятно 👌</button>
+        </div>
+    </div>
 
     <!-- ===== НАВИГАЦИЯ ===== -->
     <nav class="navbar" id="navbar">
@@ -520,7 +678,7 @@
             </header>
 
             <!-- КАРТОЧКА С ФОРМОЙ -->
-            <div class="booking-card">
+            <div class="booking-card" id="bookingCard">
 
                 <form id="bookingForm">
 
@@ -544,6 +702,7 @@
                             <option value="16:00">16:00</option>
                             <option value="17:00">17:00</option>
                         </select>
+                        <span class="time-hint" id="timeHint">🕐 Доступное время: <strong>11:20 — 17:00</strong></span>
                     </div>
 
                     <!-- ИМЯ -->
@@ -574,13 +733,6 @@
                         <span class="icon">✅</span>
                         <strong>Заявка отправлена!</strong><br>
                         Я свяжусь с тобой в ближайшее время 🤘
-                    </div>
-
-                    <!-- СООБЩЕНИЕ ОБ ОШИБКЕ -->
-                    <div class="error-message" id="errorMessage">
-                        <span class="icon">⏰</span>
-                        <strong>Заказы принимаются с 11:20 до 17:00</strong><br>
-                        После 17:00 фотограф не работает. Пожалуйста, вернитесь в рабочее время или напишите мне в Telegram.
                     </div>
 
                 </form>
@@ -696,13 +848,14 @@
         });
     </script>
 
-    <!-- 3. ЛОГИКА ЗАПИСИ (С ПРОВЕРКОЙ ВРЕМЕНИ) -->
+    <!-- 3. ЛОГИКА ЗАПИСИ (ПРОВЕРКА ТОЛЬКО ДЛЯ СЕГОДНЯ) -->
     <script>
         (function() {
             // === ДАТЫ ===
             const dateGrid = document.getElementById('dateGrid');
             const selectedDateInput = document.getElementById('selectedDate');
             const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
 
             const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
             const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
@@ -744,31 +897,54 @@
                 dateGrid.appendChild(btn);
             }
 
-            // === ОТПРАВКА С ПРОВЕРКОЙ ВРЕМЕНИ ===
+            // === ЭЛЕМЕНТЫ МОДАЛЬНОГО ОКНА ===
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalContent = document.getElementById('modalContent');
+            const modalClose = document.getElementById('modalClose');
+            const modalOkBtn = document.getElementById('modalOkBtn');
+
+            function showModal() {
+                modalContent.classList.remove('shake');
+                void modalContent.offsetWidth;
+                modalContent.classList.add('shake');
+                modalOverlay.classList.add('show');
+                setTimeout(() => {
+                    modalContent.classList.remove('shake');
+                }, 600);
+            }
+
+            function hideModal() {
+                modalOverlay.classList.remove('show');
+            }
+
+            modalClose.addEventListener('click', hideModal);
+            modalOkBtn.addEventListener('click', hideModal);
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === this) hideModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalOverlay.classList.contains('show')) hideModal();
+            });
+
+            // === ОТПРАВКА С ПРОВЕРКОЙ ТОЛЬКО ДЛЯ СЕГОДНЯ ===
             const form = document.getElementById('bookingForm');
             const successMessage = document.getElementById('successMessage');
-            const errorMessage = document.getElementById('errorMessage');
+            const timeHint = document.getElementById('timeHint');
+
+            // Обновляем подсказку в зависимости от выбранной даты
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const dateStr = this.dataset.date;
+                    if (dateStr === todayStr) {
+                        timeHint.innerHTML = '🕐 Сегодня доступное время: <strong>11:20 — 17:00</strong>';
+                    } else {
+                        timeHint.innerHTML = '🕐 Доступное время: <strong>11:20 — 17:00</strong>';
+                    }
+                });
+            });
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                // Проверяем время
-                const now = new Date();
-                const hours = now.getHours();
-                const minutes = now.getMinutes();
-                const currentTime = hours + minutes / 60;
-
-                const startWork = 11 + 20/60; // 11:20
-                const endWork = 17;           // 17:00
-
-                if (currentTime < startWork || currentTime >= endWork) {
-                    errorMessage.classList.add('show');
-                    successMessage.classList.remove('show');
-                    return;
-                }
-
-                // Скрываем ошибку, если была
-                errorMessage.classList.remove('show');
 
                 const name = document.getElementById('userName').value.trim();
                 const telegram = document.getElementById('userTelegram').value.trim();
@@ -780,6 +956,23 @@
                 if (!telegram) { alert('Укажи Telegram!'); return; }
                 if (!time) { alert('Выбери время!'); return; }
 
+                // === ПРОВЕРКА ТОЛЬКО ДЛЯ СЕГОДНЯ ===
+                if (selectedDate === todayStr) {
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const currentTime = hours + minutes / 60;
+
+                    const startWork = 11 + 20/60;
+                    const endWork = 17;
+
+                    if (currentTime < startWork || currentTime >= endWork) {
+                        showModal();
+                        return;
+                    }
+                }
+
+                // === ОТПРАВКА В TELEGRAM ===
                 const botToken = '8987479768:AAE6ZmRVA3AWo0nzL2O5eUrnefCnaZ33vVo';
                 const chatId = '7709067838';
 
