@@ -536,18 +536,13 @@
                         <label>⏰ Выбери время <span class="required">*</span></label>
                         <select id="selectedTime" name="time" required>
                             <option value="">— Выбери время —</option>
-                            <option value="10:00">10:00</option>
-                            <option value="11:00">11:00</option>
+                            <option value="11:20">11:20</option>
                             <option value="12:00">12:00</option>
                             <option value="13:00">13:00</option>
                             <option value="14:00">14:00</option>
                             <option value="15:00">15:00</option>
                             <option value="16:00">16:00</option>
                             <option value="17:00">17:00</option>
-                            <option value="18:00">18:00</option>
-                            <option value="19:00">19:00</option>
-                            <option value="20:00">20:00</option>
-                            <option value="21:00">21:00</option>
                         </select>
                     </div>
 
@@ -584,8 +579,8 @@
                     <!-- СООБЩЕНИЕ ОБ ОШИБКЕ -->
                     <div class="error-message" id="errorMessage">
                         <span class="icon">⏰</span>
-                        <strong>Заказы принимаются с 10:00 до 21:00</strong><br>
-                        Пожалуйста, вернитесь в рабочее время или напишите мне в Telegram.
+                        <strong>Заказы принимаются с 11:20 до 17:00</strong><br>
+                        После 17:00 фотограф не работает. Пожалуйста, вернитесь в рабочее время или напишите мне в Telegram.
                     </div>
 
                 </form>
@@ -763,8 +758,8 @@
                 const minutes = now.getMinutes();
                 const currentTime = hours + minutes / 60;
 
-                const startWork = 10; // 10:00
-                const endWork = 21;   // 21:00
+                const startWork = 11 + 20/60; // 11:20
+                const endWork = 17;           // 17:00
 
                 if (currentTime < startWork || currentTime >= endWork) {
                     errorMessage.classList.add('show');
