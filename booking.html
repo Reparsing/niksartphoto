@@ -542,6 +542,76 @@
         }
 
         /* =========================
+           КНОПКА ЛИЧНЫХ СООБЩЕНИЙ
+        ========================= */
+
+        .contact-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 9px;
+
+            margin-top: 28px;
+
+            padding: 14px 25px;
+
+            border: 1px solid rgba(255, 181, 46, .45);
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 181, 46, .12),
+                    rgba(255, 181, 46, .04)
+                );
+
+            color: #ffb52e;
+
+            font-size: 15px;
+            font-weight: 650;
+
+            text-decoration: none;
+
+            box-shadow:
+                0 0 25px rgba(255, 166, 0, .08),
+                inset 0 0 20px rgba(255, 166, 0, .03);
+
+            transition:
+                transform .25s ease,
+                background .25s ease,
+                box-shadow .25s ease,
+                border-color .25s ease;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 181, 46, .2),
+                    rgba(255, 181, 46, .07)
+                );
+
+            border-color: rgba(255, 181, 46, .75);
+
+            box-shadow:
+                0 8px 35px rgba(255, 166, 0, .18),
+                inset 0 0 25px rgba(255, 166, 0, .05);
+        }
+
+        .contact-btn:active {
+            transform: scale(.96);
+        }
+
+        .telegram-icon {
+            font-size: 18px;
+        }
+
+        /* =========================
            НИЖНЯЯ НАДПИСЬ
         ========================= */
 
@@ -605,6 +675,14 @@
                 line-height: 1.65;
             }
 
+            .contact-btn {
+                margin-top: 24px;
+
+                padding: 13px 21px;
+
+                font-size: 14px;
+            }
+
             .brand {
                 margin-top: 32px;
             }
@@ -649,9 +727,10 @@
         <span class="particle"></span>
     </div>
 
-    <!-- Сообщение -->
+    <!-- Основной блок -->
     <main class="container">
 
+        <!-- Иконка -->
         <div class="icon-wrap">
 
             <div class="ring"></div>
@@ -663,18 +742,34 @@
 
         </div>
 
+        <!-- Заголовок -->
         <h1>
-            Запись на съёмку<br>
+            Запись через сайт<br>
             временно недоступна
         </h1>
 
+        <!-- Описание -->
         <p>
-            Мы знаем о проблеме и уже разбираемся с ней.
-            Пожалуйста, попробуйте записаться немного позже.
+            В данный момент запись через сайт временно недоступна.
+            Если вы хотите записаться на съёмку,
+            напишите мне в личные сообщения.
         </p>
 
+        <!-- Линия -->
         <div class="line"></div>
 
+        <!-- Кнопка -->
+        <a
+            class="contact-btn"
+            href="https://t.me/tylenevv"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <span class="telegram-icon">✈</span>
+            Написать мне в личные сообщения
+        </a>
+
+        <!-- Бренд -->
         <div class="brand">
             Съёмка
         </div>
