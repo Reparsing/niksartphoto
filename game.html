@@ -2,8 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
 <title>Небесный объектив — Игровой центр</title>
 
@@ -27,12 +26,7 @@ body{
         radial-gradient(circle at 80% 90%,#4c1d95 0,transparent 35%),
         #050509;
     color:white;
-    font-family:
-        Inter,
-        "Segoe UI",
-        system-ui,
-        sans-serif;
-
+    font-family:Inter,"Segoe UI",system-ui,sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -60,33 +54,20 @@ body::before{
 }
 
 @keyframes rotateBackground{
-    to{
-        transform:rotate(360deg);
-    }
+    to{transform:rotate(360deg)}
 }
 
 .app{
     position:relative;
     width:min(950px,100%);
     min-height:650px;
-
     padding:22px;
-
     border-radius:42px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(25,25,35,.94),
-            rgba(7,7,14,.96)
-        );
-
+    background:linear-gradient(145deg,rgba(25,25,35,.94),rgba(7,7,14,.96));
     border:1px solid rgba(255,255,255,.1);
-
     box-shadow:
         0 40px 100px rgba(0,0,0,.7),
         inset 0 1px rgba(255,255,255,.06);
-
     overflow:hidden;
 }
 
@@ -94,7 +75,6 @@ body::before{
     content:"";
     position:absolute;
     inset:0;
-
     background:
         linear-gradient(
             120deg,
@@ -102,20 +82,16 @@ body::before{
             rgba(255,255,255,.04),
             transparent 70%
         );
-
     pointer-events:none;
 }
 
 .header{
     position:relative;
     z-index:5;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     padding:4px 8px 18px;
-
     border-bottom:1px solid rgba(255,255,255,.08);
 }
 
@@ -123,7 +99,6 @@ body::before{
     display:flex;
     align-items:center;
     gap:10px;
-
     font-size:1.15rem;
     font-weight:800;
 }
@@ -131,51 +106,33 @@ body::before{
 .logo-icon{
     width:42px;
     height:42px;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     border-radius:14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #ff0080,
-            #7c3aed,
-            #00e5ff
-        );
-
-    box-shadow:
-        0 0 25px rgba(168,85,247,.35);
-
+    background:linear-gradient(135deg,#ff0080,#7c3aed,#00e5ff);
+    box-shadow:0 0 25px rgba(168,85,247,.35);
     font-size:22px;
 }
 
 .logo-text span{
-    background:
-        linear-gradient(
-            90deg,
-            #ff4ecd,
-            #7c7cff,
-            #00e5ff,
-            #5dffb0,
-            #ffe45c,
-            #ff6b6b
-        );
-
+    background:linear-gradient(
+        90deg,
+        #ff4ecd,
+        #7c7cff,
+        #00e5ff,
+        #5dffb0,
+        #ffe45c,
+        #ff6b6b
+    );
     background-size:300%;
-
     -webkit-background-clip:text;
     color:transparent;
-
     animation:rainbowText 5s linear infinite;
 }
 
 @keyframes rainbowText{
-    to{
-        background-position:300%;
-    }
+    to{background-position:300%}
 }
 
 .stats{
@@ -186,10 +143,8 @@ body::before{
 .stat{
     padding:8px 13px;
     border-radius:18px;
-
     background:rgba(255,255,255,.045);
     border:1px solid rgba(255,255,255,.07);
-
     font-size:.8rem;
     color:#aaa;
 }
@@ -199,16 +154,11 @@ body::before{
     margin-left:4px;
 }
 
-/* SCREEN */
-
 .screen{
     position:relative;
     z-index:2;
-
     margin-top:18px;
 }
-
-/* MENU */
 
 .menu{
     display:block;
@@ -225,57 +175,43 @@ body::before{
 
 .camera-logo{
     position:relative;
-
     width:125px;
     height:125px;
-
     margin:0 auto 10px;
 }
 
 .camera-logo::before{
     content:"";
-
     position:absolute;
     inset:5px;
-
     border-radius:50%;
-
-    background:
-        conic-gradient(
-            #ff006e,
-            #ff8a00,
-            #ffe600,
-            #00ff88,
-            #00e5ff,
-            #754cff,
-            #ff00c8,
-            #ff006e
-        );
-
+    background:conic-gradient(
+        #ff006e,
+        #ff8a00,
+        #ffe600,
+        #00ff88,
+        #00e5ff,
+        #754cff,
+        #ff00c8,
+        #ff006e
+    );
     filter:blur(14px);
     opacity:.6;
-
     animation:spin 7s linear infinite;
 }
 
 @keyframes spin{
-    to{
-        transform:rotate(360deg);
-    }
+    to{transform:rotate(360deg)}
 }
 
 .camera-logo img{
     position:relative;
-
     width:100%;
     height:100%;
-
     object-fit:contain;
-
     filter:
         drop-shadow(0 0 12px rgba(255,255,255,.15))
         drop-shadow(0 0 35px rgba(0,220,255,.25));
-
     animation:cameraFloat 2.8s ease-in-out infinite;
 }
 
@@ -283,7 +219,6 @@ body::before{
     0%,100%{
         transform:translateY(0) rotate(-2deg);
     }
-
     50%{
         transform:translateY(-8px) rotate(2deg);
     }
@@ -300,42 +235,25 @@ body::before{
     margin-top:7px;
 }
 
-/* GAMES */
-
 .games{
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(190px,1fr)
-        );
-
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
     gap:14px;
 }
 
 .game{
     position:relative;
-
     padding:20px;
-
     min-height:190px;
-
     border-radius:28px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.075),
-            rgba(255,255,255,.025)
-        );
-
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.075),
+        rgba(255,255,255,.025)
+    );
     border:1px solid rgba(255,255,255,.08);
-
     cursor:pointer;
-
     overflow:hidden;
-
     transition:
         transform .35s,
         border-color .35s,
@@ -344,32 +262,21 @@ body::before{
 
 .game::before{
     content:"";
-
     position:absolute;
     width:150px;
     height:150px;
-
     right:-60px;
     top:-60px;
-
     border-radius:50%;
-
     background:var(--game-color);
-
     filter:blur(55px);
-
     opacity:.18;
-
     transition:.4s;
 }
 
 .game:hover{
-    transform:
-        translateY(-7px)
-        scale(1.015);
-
+    transform:translateY(-7px) scale(1.015);
     border-color:var(--game-color);
-
     box-shadow:
         0 25px 60px rgba(0,0,0,.4),
         0 0 35px color-mix(
@@ -386,14 +293,8 @@ body::before{
 .game-icon{
     font-size:2.8rem;
     margin-bottom:12px;
-
     display:block;
-
-    filter:
-        drop-shadow(
-            0 0 12px
-            var(--game-color)
-        );
+    filter:drop-shadow(0 0 12px var(--game-color));
 }
 
 .game h2{
@@ -409,39 +310,93 @@ body::before{
 
 .play{
     display:inline-flex;
-
     margin-top:15px;
-
     padding:8px 15px;
-
     border-radius:30px;
-
     color:white;
-
-    background:
-        linear-gradient(
-            90deg,
-            var(--game-color),
-            color-mix(
-                in srgb,
-                var(--game-color),
-                white 20%
-            )
-        );
-
-    font-size:.78rem;
-    font-weight:800;
-
-    box-shadow:
-        0 8px 20px
+    background:linear-gradient(
+        90deg,
+        var(--game-color),
         color-mix(
             in srgb,
             var(--game-color),
-            transparent 70%
-        );
+            white 20%
+        )
+    );
+    font-size:.78rem;
+    font-weight:800;
 }
 
-/* GAME AREA */
+/* PROFILE BUTTON */
+
+.profile-button{
+    position:relative;
+    margin-top:20px;
+    width:100%;
+    padding:18px;
+    border-radius:25px;
+    border:1px solid rgba(255,255,255,.09);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,58,237,.18),
+            rgba(0,229,255,.08)
+        );
+    color:white;
+    cursor:pointer;
+    text-align:left;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.profile-button:hover{
+    transform:translateY(-3px);
+    border-color:rgba(124,58,237,.6);
+    box-shadow:0 15px 40px rgba(124,58,237,.2);
+}
+
+.profile-button::after{
+    content:"";
+    position:absolute;
+    width:130px;
+    height:130px;
+    right:-40px;
+    top:-60px;
+    border-radius:50%;
+    background:#7c3aed;
+    filter:blur(45px);
+    opacity:.18;
+}
+
+.profile-mini{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.profile-mini-avatar{
+    width:55px;
+    height:55px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    background:linear-gradient(135deg,#ff0080,#7c3aed,#00e5ff);
+    box-shadow:0 0 25px rgba(124,58,237,.35);
+}
+
+.profile-mini-info strong{
+    display:block;
+    font-size:1rem;
+}
+
+.profile-mini-info span{
+    color:#9999a5;
+    font-size:.78rem;
+}
+
+/* GAME */
 
 .game-screen{
     display:none;
@@ -455,7 +410,6 @@ body::before{
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     margin-bottom:12px;
 }
 
@@ -465,37 +419,25 @@ body::before{
 
 .game-score{
     padding:7px 14px;
-
     border-radius:20px;
-
     background:rgba(255,255,255,.06);
-
     font-size:.8rem;
 }
 
 .canvas-wrap{
     position:relative;
-
     width:100%;
-
     border-radius:30px;
-
     overflow:hidden;
-
     border:1px solid rgba(255,255,255,.08);
-
     background:#02020a;
-
-    box-shadow:
-        0 20px 70px rgba(0,0,0,.55);
+    box-shadow:0 20px 70px rgba(0,0,0,.55);
 }
 
 canvas{
     width:100%;
     height:auto;
-
     display:block;
-
     touch-action:none;
 }
 
@@ -503,59 +445,439 @@ canvas{
     display:flex;
     justify-content:center;
     flex-wrap:wrap;
-
     gap:9px;
-
     margin-top:13px;
 }
 
 .btn{
     border:1px solid rgba(255,255,255,.1);
-
     color:white;
-
-    background:
-        rgba(255,255,255,.06);
-
+    background:rgba(255,255,255,.06);
     padding:10px 18px;
-
     border-radius:30px;
-
     font-family:inherit;
     font-weight:700;
-
     cursor:pointer;
-
     transition:.25s;
 }
 
 .btn:hover{
     transform:translateY(-2px);
-
     background:rgba(255,255,255,.12);
 }
 
 .btn.primary{
-    background:
-        linear-gradient(
-            90deg,
-            #ff0080,
-            #7c3aed,
-            #00d9ff
-        );
-
+    background:linear-gradient(
+        90deg,
+        #ff0080,
+        #7c3aed,
+        #00d9ff
+    );
     border:0;
-
-    box-shadow:
-        0 8px 30px
-        rgba(124,58,237,.3);
+    box-shadow:0 8px 30px rgba(124,58,237,.3);
 }
 
 .btn:active{
     transform:scale(.94);
 }
 
-/* MOBILE */
+/* MODAL */
+
+.modal{
+    position:absolute;
+    inset:0;
+    z-index:100;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(15px);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:min(420px,100%);
+    padding:28px;
+    border-radius:30px;
+    text-align:center;
+    background:linear-gradient(145deg,#20202b,#111118);
+    border:1px solid rgba(255,255,255,.1);
+    animation:modalIn .35s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes modalIn{
+    from{
+        transform:scale(.8) translateY(20px);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.modal-icon{
+    font-size:3.5rem;
+    margin-bottom:10px;
+}
+
+.modal-box h2{
+    margin-bottom:7px;
+}
+
+.modal-box p{
+    color:#9999a5;
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+/* TOUCH */
+
+.touch-controls{
+    position:absolute;
+    bottom:14px;
+    left:14px;
+    display:none;
+    gap:8px;
+    z-index:20;
+}
+
+.touch-controls button{
+    width:52px;
+    height:52px;
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:50%;
+    color:white;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(8px);
+    font-size:1.1rem;
+}
+
+@media(max-width:700px){
+    .touch-controls{
+        display:flex;
+    }
+}
+
+/* PROFILE MODAL */
+
+.profile-overlay{
+    position:absolute;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(124,58,237,.25),
+            transparent 40%
+        ),
+        rgba(0,0,0,.82);
+    backdrop-filter:blur(18px);
+}
+
+.profile-overlay.show{
+    display:flex;
+}
+
+.profile-card{
+    position:relative;
+    width:min(470px,100%);
+    padding:28px;
+    border-radius:35px;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(31,31,46,.98),
+            rgba(9,9,18,.98)
+        );
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:
+        0 40px 100px rgba(0,0,0,.75),
+        0 0 60px rgba(124,58,237,.15);
+    animation:profileIn .55s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes profileIn{
+    0%{
+        opacity:0;
+        transform:
+            translateY(70px)
+            scale(.82)
+            rotateX(12deg);
+    }
+    70%{
+        transform:
+            translateY(-5px)
+            scale(1.02)
+            rotateX(0);
+    }
+    100%{
+        opacity:1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+.profile-card::before{
+    content:"";
+    position:absolute;
+    width:230px;
+    height:230px;
+    left:50%;
+    top:-120px;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:
+        conic-gradient(
+            #ff0080,
+            #7c3aed,
+            #00e5ff,
+            #5dffb0,
+            #ffe45c,
+            #ff0080
+        );
+    filter:blur(55px);
+    opacity:.25;
+    animation:profileGlow 6s linear infinite;
+}
+
+@keyframes profileGlow{
+    to{transform:translateX(-50%) rotate(360deg)}
+}
+
+.profile-close{
+    position:absolute;
+    top:15px;
+    right:15px;
+    width:40px;
+    height:40px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:50%;
+    background:rgba(255,255,255,.06);
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+    z-index:4;
+}
+
+.profile-avatar{
+    position:relative;
+    width:110px;
+    height:110px;
+    margin:5px auto 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:32px;
+    font-size:52px;
+    background:
+        linear-gradient(
+            135deg,
+            #ff0080,
+            #7c3aed,
+            #00e5ff
+        );
+    box-shadow:
+        0 0 0 5px rgba(255,255,255,.04),
+        0 0 45px rgba(124,58,237,.45);
+    animation:avatarFloat 3s ease-in-out infinite;
+}
+
+.profile-avatar::before,
+.profile-avatar::after{
+    content:"";
+    position:absolute;
+    inset:-10px;
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:38px;
+    animation:avatarRing 2.8s ease-out infinite;
+}
+
+.profile-avatar::after{
+    animation-delay:1.4s;
+}
+
+@keyframes avatarRing{
+    0%{
+        opacity:.8;
+        transform:scale(.9);
+    }
+    100%{
+        opacity:0;
+        transform:scale(1.25);
+    }
+}
+
+@keyframes avatarFloat{
+    0%,100%{
+        transform:translateY(0) rotate(-2deg);
+    }
+    50%{
+        transform:translateY(-7px) rotate(2deg);
+    }
+}
+
+.profile-name{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    font-size:1.7rem;
+    font-weight:900;
+}
+
+.profile-subtitle{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    margin-top:5px;
+    color:#9999a5;
+    font-size:.82rem;
+}
+
+.level-box{
+    position:relative;
+    z-index:2;
+    margin-top:22px;
+    padding:15px;
+    border-radius:22px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.07);
+}
+
+.level-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+    font-size:.82rem;
+}
+
+.level-row strong{
+    font-size:1rem;
+}
+
+.xp-bar{
+    width:100%;
+    height:9px;
+    border-radius:20px;
+    overflow:hidden;
+    background:rgba(255,255,255,.08);
+}
+
+.xp-fill{
+    height:100%;
+    width:68%;
+    border-radius:20px;
+    background:
+        linear-gradient(
+            90deg,
+            #ff0080,
+            #7c3aed,
+            #00e5ff
+        );
+    box-shadow:
+        0 0 15px rgba(0,229,255,.5);
+    transition:width 1s ease;
+}
+
+.profile-stats{
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-top:12px;
+}
+
+.profile-stat{
+    padding:16px;
+    border-radius:21px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.07);
+    transition:.25s;
+}
+
+.profile-stat:hover{
+    transform:translateY(-3px);
+    background:rgba(255,255,255,.07);
+}
+
+.profile-stat-icon{
+    font-size:1.4rem;
+}
+
+.profile-stat-value{
+    margin-top:5px;
+    font-size:1.1rem;
+    font-weight:900;
+}
+
+.profile-stat-label{
+    color:#888894;
+    font-size:.7rem;
+    margin-top:2px;
+}
+
+.profile-actions{
+    position:relative;
+    z-index:2;
+    display:flex;
+    gap:8px;
+    margin-top:15px;
+}
+
+.profile-actions .btn{
+    flex:1;
+}
+
+.name-input{
+    width:100%;
+    margin-top:15px;
+    padding:14px 16px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.12);
+    outline:none;
+    background:rgba(0,0,0,.35);
+    color:white;
+    font-family:inherit;
+    font-size:1rem;
+    text-align:center;
+}
+
+.name-input:focus{
+    border-color:#7c3aed;
+    box-shadow:0 0 20px rgba(124,58,237,.2);
+}
+
+/* RAINBOW */
+
+.rainbow{
+    background:
+        linear-gradient(
+            90deg,
+            #ff0080,
+            #ff8a00,
+            #ffe600,
+            #00ff9d,
+            #00d9ff,
+            #7c3aed,
+            #ff0080
+        );
+    background-size:300%;
+    -webkit-background-clip:text;
+    color:transparent;
+    animation:rainbowText 4s linear infinite;
+}
 
 @media(max-width:600px){
 
@@ -598,144 +920,11 @@ canvas{
     .canvas-wrap{
         border-radius:22px;
     }
-}
 
-/* MODAL */
-
-.modal{
-    position:absolute;
-
-    inset:0;
-
-    z-index:100;
-
-    display:none;
-
-    justify-content:center;
-    align-items:center;
-
-    padding:20px;
-
-    background:
-        rgba(0,0,0,.72);
-
-    backdrop-filter:blur(15px);
-}
-
-.modal.show{
-    display:flex;
-}
-
-.modal-box{
-    width:min(420px,100%);
-
-    padding:28px;
-
-    border-radius:30px;
-
-    text-align:center;
-
-    background:
-        linear-gradient(
-            145deg,
-            #20202b,
-            #111118
-        );
-
-    border:1px solid rgba(255,255,255,.1);
-
-    animation:modalIn .35s cubic-bezier(.2,.8,.2,1);
-}
-
-@keyframes modalIn{
-    from{
-        transform:scale(.8) translateY(20px);
-        opacity:0;
+    .profile-card{
+        padding:22px;
+        border-radius:30px;
     }
-
-    to{
-        transform:scale(1);
-        opacity:1;
-    }
-}
-
-.modal-icon{
-    font-size:3.5rem;
-    margin-bottom:10px;
-}
-
-.modal-box h2{
-    margin-bottom:7px;
-}
-
-.modal-box p{
-    color:#9999a5;
-    line-height:1.5;
-    margin-bottom:20px;
-}
-
-/* CONTROLS */
-
-.touch-controls{
-    position:absolute;
-
-    bottom:14px;
-    left:14px;
-
-    display:none;
-
-    gap:8px;
-
-    z-index:20;
-}
-
-.touch-controls button{
-    width:52px;
-    height:52px;
-
-    border:1px solid rgba(255,255,255,.15);
-
-    border-radius:50%;
-
-    color:white;
-
-    background:
-        rgba(0,0,0,.45);
-
-    backdrop-filter:blur(8px);
-
-    font-size:1.1rem;
-}
-
-@media(max-width:700px){
-    .touch-controls{
-        display:flex;
-    }
-}
-
-/* RAINBOW TEXT */
-
-.rainbow{
-    background:
-        linear-gradient(
-            90deg,
-            #ff0080,
-            #ff8a00,
-            #ffe600,
-            #00ff9d,
-            #00d9ff,
-            #7c3aed,
-            #ff0080
-        );
-
-    background-size:300%;
-
-    -webkit-background-clip:text;
-
-    color:transparent;
-
-    animation:
-        rainbowText 4s linear infinite;
 }
 </style>
 </head>
@@ -744,303 +933,464 @@ canvas{
 
 <div class="app">
 
-    <header class="header">
+<header class="header">
 
-        <div class="logo">
+    <div class="logo">
 
-            <div class="logo-icon">
-                📸
-            </div>
+        <div class="logo-icon">
+            📸
+        </div>
 
-            <div class="logo-text">
-                Небесный <span>объектив</span>
-            </div>
+        <div class="logo-text">
+            Небесный <span>объектив</span>
+        </div>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            🏆 <strong id="best">0</strong>
+        </div>
+
+        <div class="stat">
+            ⭐ <strong id="total">0</strong>
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- MENU -->
+
+<main class="screen menu" id="menu">
+
+<section class="hero">
+
+    <div class="camera-logo">
+
+        <img
+            src="https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png"
+            alt="camera"
+        >
+
+    </div>
+
+    <h1>
+        Игровой
+        <span class="rainbow">
+            объектив
+        </span>
+    </h1>
+
+    <p>
+        Фотоаппарат отправляется в большое приключение 🌌
+    </p>
+
+</section>
+
+
+<section class="games">
+
+<article
+    class="game"
+    style="--game-color:#ffbf00"
+    onclick="startGame('coins')"
+>
+
+    <span class="game-icon">🪙</span>
+
+    <h2>Золотой объектив</h2>
+
+    <p>
+        Собирай золотые монеты,
+        не врезаясь в препятствия.
+    </p>
+
+    <span class="play">
+        ИГРАТЬ →
+    </span>
+
+</article>
+
+
+<article
+    class="game"
+    style="--game-color:#00e5ff"
+    onclick="startGame('space')"
+>
+
+    <span class="game-icon">🌌</span>
+
+    <h2>Космический фотограф</h2>
+
+    <p>
+        Лети сквозь космос,
+        собирай звёзды и уклоняйся
+        от астероидов.
+    </p>
+
+    <span class="play">
+        ИГРАТЬ →
+    </span>
+
+</article>
+
+
+<article
+    class="game"
+    style="--game-color:#ff3cac"
+    onclick="startGame('rainbow')"
+>
+
+    <span class="game-icon">🌈</span>
+
+    <h2>Радужный след</h2>
+
+    <p>
+        Разгоняй фотоаппарат
+        и создавай невероятный
+        радужный шлейф.
+    </p>
+
+    <span class="play">
+        ИГРАТЬ →
+    </span>
+
+</article>
+
+
+<article
+    class="game"
+    style="--game-color:#8b5cf6"
+    onclick="startGame('stars')"
+>
+
+    <span class="game-icon">✨</span>
+
+    <h2>Охота за светом</h2>
+
+    <p>
+        Лови появляющиеся
+        световые точки на скорость.
+    </p>
+
+    <span class="play">
+        ИГРАТЬ →
+    </span>
+
+</article>
+
+</section>
+
+
+<!-- PROFILE BUTTON -->
+
+<button class="profile-button" onclick="openProfile()">
+
+    <div class="profile-mini">
+
+        <div class="profile-mini-avatar">
+            📸
+        </div>
+
+        <div class="profile-mini-info">
+
+            <strong id="miniName">
+                Игрок
+            </strong>
+
+            <span id="miniLevel">
+                ⭐ Уровень 1 · открыть профиль →
+            </span>
 
         </div>
 
-        <div class="stats">
+    </div>
 
-            <div class="stat">
-                🏆 <strong id="best">0</strong>
-            </div>
+</button>
 
-            <div class="stat">
-                ⭐ <strong id="total">0</strong>
-            </div>
+</main>
 
-        </div>
 
-    </header>
+<!-- GAME -->
 
+<main
+    class="screen game-screen"
+    id="gameScreen"
+>
 
-    <!-- MENU -->
-
-    <main class="screen menu" id="menu">
-
-        <section class="hero">
-
-            <div class="camera-logo">
-
-                <img
-                    src="https://raw.githubusercontent.com/Reparsing/niksartphoto/main/images/camera.png"
-                    alt="camera"
-                >
-
-            </div>
-
-            <h1>
-                Игровой
-                <span class="rainbow">
-                    объектив
-                </span>
-            </h1>
-
-            <p>
-                Фотоаппарат отправляется в большое приключение 🌌
-            </p>
-
-        </section>
-
-
-        <section class="games">
-
-            <article
-                class="game"
-                style="--game-color:#ffbf00"
-                onclick="startGame('coins')"
-            >
-
-                <span class="game-icon">
-                    🪙
-                </span>
-
-                <h2>
-                    Золотой объектив
-                </h2>
-
-                <p>
-                    Собирай золотые монеты,
-                    не врезаясь в препятствия.
-                </p>
-
-                <span class="play">
-                    ИГРАТЬ →
-                </span>
-
-            </article>
-
-
-            <article
-                class="game"
-                style="--game-color:#00e5ff"
-                onclick="startGame('space')"
-            >
-
-                <span class="game-icon">
-                    🌌
-                </span>
-
-                <h2>
-                    Космический фотограф
-                </h2>
-
-                <p>
-                    Лети сквозь космос,
-                    собирай звёзды и уклоняйся
-                    от астероидов.
-                </p>
-
-                <span class="play">
-                    ИГРАТЬ →
-                </span>
-
-            </article>
-
-
-            <article
-                class="game"
-                style="--game-color:#ff3cac"
-                onclick="startGame('rainbow')"
-            >
-
-                <span class="game-icon">
-                    🌈
-                </span>
-
-                <h2>
-                    Радужный след
-                </h2>
-
-                <p>
-                    Разгоняй фотоаппарат
-                    и создавай невероятный
-                    радужный шлейф.
-                </p>
-
-                <span class="play">
-                    ИГРАТЬ →
-                </span>
-
-            </article>
-
-
-            <article
-                class="game"
-                style="--game-color:#8b5cf6"
-                onclick="startGame('stars')"
-            >
-
-                <span class="game-icon">
-                    ✨
-                </span>
-
-                <h2>
-                    Охота за светом
-                </h2>
-
-                <p>
-                    Лови появляющиеся
-                    световые точки на скорость.
-                </p>
-
-                <span class="play">
-                    ИГРАТЬ →
-                </span>
-
-            </article>
-
-        </section>
-
-    </main>
-
-
-    <!-- GAME -->
-
-    <main
-        class="screen game-screen"
-        id="gameScreen"
-    >
-
-        <div class="game-top">
-
-            <div
-                class="game-title"
-                id="gameTitle"
-            >
-                Игра
-            </div>
-
-            <div class="game-score">
-                Счёт:
-                <strong id="score">
-                    0
-                </strong>
-            </div>
-
-        </div>
-
-
-        <div class="canvas-wrap">
-
-            <canvas
-                id="gameCanvas"
-                width="900"
-                height="560"
-            ></canvas>
-
-            <div
-                class="touch-controls"
-                id="touchControls"
-            >
-
-                <button id="left">
-                    ◀
-                </button>
-
-                <button id="up">
-                    ▲
-                </button>
-
-                <button id="down">
-                    ▼
-                </button>
-
-                <button id="right">
-                    ▶
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div class="game-controls">
-
-            <button
-                class="btn primary"
-                onclick="restartGame()"
-            >
-                🔄 Заново
-            </button>
-
-            <button
-                class="btn"
-                onclick="backMenu()"
-            >
-                🏠 Меню
-            </button>
-
-        </div>
-
-    </main>
-
-
-    <!-- MODAL -->
+<div class="game-top">
 
     <div
-        class="modal"
-        id="modal"
+        class="game-title"
+        id="gameTitle"
     >
+        Игра
+    </div>
 
-        <div class="modal-box">
+    <div class="game-score">
 
-            <div
-                class="modal-icon"
-                id="modalIcon"
-            >
-                📸
-            </div>
-
-            <h2 id="modalTitle">
-                Отлично!
-            </h2>
-
-            <p id="modalText">
-                Игра окончена.
-            </p>
-
-            <button
-                class="btn primary"
-                onclick="restartGame()"
-            >
-                🔄 Ещё раз
-            </button>
-
-            <button
-                class="btn"
-                onclick="backMenu()"
-            >
-                🏠 Меню
-            </button>
-
-        </div>
+        Счёт:
+        <strong id="score">
+            0
+        </strong>
 
     </div>
 
 </div>
 
 
+<div class="canvas-wrap">
+
+    <canvas
+        id="gameCanvas"
+        width="900"
+        height="560"
+    ></canvas>
+
+    <div
+        class="touch-controls"
+        id="touchControls"
+    >
+
+        <button id="left">◀</button>
+        <button id="up">▲</button>
+        <button id="down">▼</button>
+        <button id="right">▶</button>
+
+    </div>
+
+</div>
+
+
+<div class="game-controls">
+
+    <button
+        class="btn primary"
+        onclick="restartGame()"
+    >
+        🔄 Заново
+    </button>
+
+    <button
+        class="btn"
+        onclick="backMenu()"
+    >
+        🏠 Меню
+    </button>
+
+</div>
+
+</main>
+
+
+<!-- GAME MODAL -->
+
+<div
+    class="modal"
+    id="modal"
+>
+
+<div class="modal-box">
+
+    <div
+        class="modal-icon"
+        id="modalIcon"
+    >
+        📸
+    </div>
+
+    <h2 id="modalTitle">
+        Отлично!
+    </h2>
+
+    <p id="modalText">
+        Игра окончена.
+    </p>
+
+    <button
+        class="btn primary"
+        onclick="restartGame()"
+    >
+        🔄 Ещё раз
+    </button>
+
+    <button
+        class="btn"
+        onclick="backMenu()"
+    >
+        🏠 Меню
+    </button>
+
+</div>
+
+</div>
+
+
+<!-- PROFILE -->
+
+<div
+    class="profile-overlay"
+    id="profileOverlay"
+>
+
+<div class="profile-card">
+
+    <button
+        class="profile-close"
+        onclick="closeProfile()"
+    >
+        ×
+    </button>
+
+    <div class="profile-avatar">
+        📸
+    </div>
+
+    <div
+        class="profile-name"
+        id="profileName"
+    >
+        Игрок
+    </div>
+
+    <div class="profile-subtitle">
+        ✨ Владелец Небесного объектива
+    </div>
+
+
+    <div class="level-box">
+
+        <div class="level-row">
+
+            <strong id="levelText">
+                ⭐ Уровень 1
+            </strong>
+
+            <span id="xpText">
+                0 / 100 XP
+            </span>
+
+        </div>
+
+        <div class="xp-bar">
+
+            <div
+                class="xp-fill"
+                id="xpFill"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="profile-stats">
+
+        <div class="profile-stat">
+
+            <div class="profile-stat-icon">
+                🏆
+            </div>
+
+            <div
+                class="profile-stat-value"
+                id="profileBest"
+            >
+                0
+            </div>
+
+            <div class="profile-stat-label">
+                Лучший результат
+            </div>
+
+        </div>
+
+
+        <div class="profile-stat">
+
+            <div class="profile-stat-icon">
+                🪙
+            </div>
+
+            <div
+                class="profile-stat-value"
+                id="profileCoins"
+            >
+                0
+            </div>
+
+            <div class="profile-stat-label">
+                Монеты
+            </div>
+
+        </div>
+
+
+        <div class="profile-stat">
+
+            <div class="profile-stat-icon">
+                🎮
+            </div>
+
+            <div
+                class="profile-stat-value"
+                id="profileGames"
+            >
+                0
+            </div>
+
+            <div class="profile-stat-label">
+                Игр сыграно
+            </div>
+
+        </div>
+
+
+        <div class="profile-stat">
+
+            <div class="profile-stat-icon">
+                🏅
+            </div>
+
+            <div
+                class="profile-stat-value"
+                id="profileAchievements"
+            >
+                0
+            </div>
+
+            <div class="profile-stat-label">
+                Достижений
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="profile-actions">
+
+        <button
+            class="btn primary"
+            onclick="editName()"
+        >
+            ✏️ Изменить имя
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
+
 /* =========================================================
    CAMERA
 ========================================================= */
@@ -1069,18 +1419,303 @@ const H = canvas.height;
 
 
 /* =========================================================
-   STATE
+   PLAYER PROFILE
 ========================================================= */
 
-let currentGame = null;
+let playerName =
+    localStorage.getItem("cameraPlayerName") || "Игрок";
 
-let running = false;
+let playerXP =
+    Number(localStorage.getItem("cameraXP") || 0);
 
-let score = 0;
+let playerCoins =
+    Number(localStorage.getItem("cameraCoins") || 0);
+
+let gamesPlayed =
+    Number(localStorage.getItem("cameraGames") || 0);
+
+let achievements =
+    Number(localStorage.getItem("cameraAchievements") || 0);
 
 let best =
-Number(localStorage.getItem("cameraBest") || 0);
+    Number(localStorage.getItem("cameraBest") || 0);
 
+
+function saveProfile(){
+
+    localStorage.setItem(
+        "cameraPlayerName",
+        playerName
+    );
+
+    localStorage.setItem(
+        "cameraXP",
+        playerXP
+    );
+
+    localStorage.setItem(
+        "cameraCoins",
+        playerCoins
+    );
+
+    localStorage.setItem(
+        "cameraGames",
+        gamesPlayed
+    );
+
+    localStorage.setItem(
+        "cameraAchievements",
+        achievements
+    );
+
+    localStorage.setItem(
+        "cameraBest",
+        best
+    );
+
+}
+
+
+function getLevel(){
+
+    return Math.floor(playerXP / 100) + 1;
+
+}
+
+
+function getLevelXP(){
+
+    return playerXP % 100;
+
+}
+
+
+function updateProfileUI(){
+
+    const level =
+        getLevel();
+
+    const xp =
+        getLevelXP();
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        playerName;
+
+    document.getElementById(
+        "miniName"
+    ).textContent =
+        playerName;
+
+    document.getElementById(
+        "miniLevel"
+    ).textContent =
+        `⭐ Уровень ${level} · открыть профиль →`;
+
+    document.getElementById(
+        "levelText"
+    ).textContent =
+        `⭐ Уровень ${level}`;
+
+    document.getElementById(
+        "xpText"
+    ).textContent =
+        `${xp} / 100 XP`;
+
+    document.getElementById(
+        "xpFill"
+    ).style.width =
+        `${xp}%`;
+
+    document.getElementById(
+        "profileBest"
+    ).textContent =
+        best;
+
+    document.getElementById(
+        "profileCoins"
+    ).textContent =
+        playerCoins;
+
+    document.getElementById(
+        "profileGames"
+    ).textContent =
+        gamesPlayed;
+
+    document.getElementById(
+        "profileAchievements"
+    ).textContent =
+        achievements;
+
+    document.getElementById(
+        "best"
+    ).textContent =
+        best;
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        playerCoins;
+
+}
+
+
+function addXP(amount){
+
+    const oldLevel =
+        getLevel();
+
+    playerXP += amount;
+
+    const newLevel =
+        getLevel();
+
+    if(newLevel > oldLevel){
+
+        achievements++;
+
+        setTimeout(()=>{
+
+            alert(
+                `🎉 Новый уровень!\n\n⭐ Уровень ${newLevel}`
+            );
+
+        },100);
+
+    }
+
+    saveProfile();
+    updateProfileUI();
+
+}
+
+
+function openProfile(){
+
+    updateProfileUI();
+
+    document
+        .getElementById("profileOverlay")
+        .classList.add("show");
+
+}
+
+
+function closeProfile(){
+
+    document
+        .getElementById("profileOverlay")
+        .classList.remove("show");
+
+}
+
+
+function editName(){
+
+    const overlay =
+        document.getElementById("profileOverlay");
+
+    const card =
+        overlay.querySelector(".profile-card");
+
+    const oldInput =
+        document.getElementById("nameEditor");
+
+    if(oldInput){
+
+        oldInput.remove();
+
+        return;
+
+    }
+
+    const input =
+        document.createElement("input");
+
+    input.id="nameEditor";
+
+    input.className="name-input";
+
+    input.maxLength=20;
+
+    input.placeholder="Введи имя...";
+
+    input.value =
+        playerName === "Игрок"
+        ? ""
+        : playerName;
+
+    card
+        .querySelector(".profile-actions")
+        .before(input);
+
+    input.focus();
+
+    input.addEventListener(
+        "keydown",
+        e=>{
+
+            if(e.key==="Enter"){
+
+                saveName(input.value);
+
+            }
+
+        }
+    );
+
+    const button =
+        card.querySelector(
+            ".profile-actions .primary"
+        );
+
+    button.textContent =
+        "💾 Сохранить";
+
+    button.onclick =
+        ()=>saveName(input.value);
+
+}
+
+
+function saveName(value){
+
+    value =
+        value.trim();
+
+    if(!value){
+
+        value="Игрок";
+
+    }
+
+    playerName =
+        value.substring(0,20);
+
+    saveProfile();
+
+    updateProfileUI();
+
+    const input =
+        document.getElementById("nameEditor");
+
+    if(input){
+
+        input.remove();
+
+    }
+
+}
+
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+let currentGame=null;
+let running=false;
+let score=0;
 let animation;
 
 
@@ -1088,47 +1723,38 @@ let animation;
    PLAYER
 ========================================================= */
 
-const player = {
+const player={
     x:W/2,
     y:H/2,
-
     vx:0,
     vy:0,
-
     targetX:W/2,
     targetY:H/2,
-
     size:65
 };
 
 
 /* =========================================================
-   RAINBOW TRAIL
+   TRAIL
 ========================================================= */
 
-let trail = [];
+let trail=[];
 
-const MAX_TRAIL = 70;
+const MAX_TRAIL=70;
 
 function addTrail(){
 
     trail.push({
         x:player.x,
         y:player.y,
-
-        size:
-            7 +
-            Math.random()*8,
-
-        hue:
-            (Date.now()/5) % 360
+        size:7+Math.random()*8,
+        hue:(Date.now()/5)%360
     });
 
-    if(trail.length > MAX_TRAIL){
-
+    if(trail.length>MAX_TRAIL){
         trail.shift();
-
     }
+
 }
 
 
@@ -1136,20 +1762,20 @@ function drawTrail(){
 
     for(let i=0;i<trail.length;i++){
 
-        const p = trail[i];
+        const p=trail[i];
 
-        const progress =
-            i / trail.length;
+        const progress=
+            i/trail.length;
 
-        const alpha =
-            progress * .8;
+        const alpha=
+            progress*.8;
 
-        const size =
-            p.size * progress;
+        const size=
+            p.size*progress;
 
         ctx.beginPath();
 
-        ctx.fillStyle =
+        ctx.fillStyle=
             `hsla(
                 ${p.hue},
                 100%,
@@ -1157,15 +1783,14 @@ function drawTrail(){
                 ${alpha}
             )`;
 
-        ctx.shadowColor =
+        ctx.shadowColor=
             `hsl(
                 ${p.hue},
                 100%,
                 60%
             )`;
 
-        ctx.shadowBlur =
-            18;
+        ctx.shadowBlur=18;
 
         ctx.arc(
             p.x,
@@ -1176,9 +1801,11 @@ function drawTrail(){
         );
 
         ctx.fill();
+
     }
 
     ctx.shadowBlur=0;
+
 }
 
 
@@ -1188,22 +1815,15 @@ function drawTrail(){
 
 let particles=[];
 
-function particle(
-    x,
-    y,
-    color
-){
+function particle(x,y,color){
 
     particles.push({
 
         x,
         y,
 
-        vx:
-            (Math.random()-.5)*5,
-
-        vy:
-            (Math.random()-.5)*5,
+        vx:(Math.random()-.5)*5,
+        vy:(Math.random()-.5)*5,
 
         life:1,
 
@@ -1224,10 +1844,10 @@ function updateParticles(){
 
         const p=particles[i];
 
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x+=p.vx;
+        p.y+=p.vy;
 
-        p.life -= .025;
+        p.life-=.025;
 
         if(p.life<=0){
 
@@ -1263,6 +1883,7 @@ function drawParticles(){
     }
 
     ctx.globalAlpha=1;
+
 }
 
 
@@ -1272,8 +1893,8 @@ function drawParticles(){
 
 function drawCamera(){
 
-    const pulse =
-        1 +
+    const pulse=
+        1+
         Math.sin(Date.now()*.006)*.035;
 
     ctx.save();
@@ -1331,6 +1952,7 @@ function drawCamera(){
     ctx.restore();
 
     ctx.shadowBlur=0;
+
 }
 
 
@@ -1347,11 +1969,9 @@ for(let i=0;i<180;i++){
         x:Math.random()*W,
         y:Math.random()*H,
 
-        r:
-            Math.random()*2+.4,
+        r:Math.random()*2+.4,
 
-        speed:
-            Math.random()*.7+.15
+        speed:Math.random()*.7+.15
 
     });
 
@@ -1360,7 +1980,7 @@ for(let i=0;i<180;i++){
 
 function background(){
 
-    const g =
+    const g=
         ctx.createRadialGradient(
             W*.5,
             H*.5,
@@ -1370,20 +1990,9 @@ function background(){
             600
         );
 
-    g.addColorStop(
-        0,
-        "#111d42"
-    );
-
-    g.addColorStop(
-        .5,
-        "#070b1b"
-    );
-
-    g.addColorStop(
-        1,
-        "#02030a"
-    );
+    g.addColorStop(0,"#111d42");
+    g.addColorStop(.5,"#070b1b");
+    g.addColorStop(1,"#02030a");
 
     ctx.fillStyle=g;
 
@@ -1394,10 +2003,9 @@ function background(){
         H
     );
 
-
     for(const s of stars){
 
-        s.x -= s.speed;
+        s.x-=s.speed;
 
         if(s.x<0){
 
@@ -1407,7 +2015,7 @@ function background(){
         }
 
         ctx.globalAlpha=
-            .3 +
+            .3+
             Math.sin(
                 Date.now()*.002+s.x
             )*.25;
@@ -1429,24 +2037,21 @@ function background(){
     }
 
     ctx.globalAlpha=1;
+
 }
 
 
 /* =========================================================
-   GAMES DATA
+   GAME DATA
 ========================================================= */
 
 let coins=[];
-
 let asteroids=[];
-
 let targets=[];
-
-let rainbowObjects=[];
 
 
 /* =========================================================
-   START
+   START GAME
 ========================================================= */
 
 function startGame(type){
@@ -1481,6 +2086,11 @@ function startGame(type){
     trail=[];
     particles=[];
 
+    gamesPlayed++;
+
+    saveProfile();
+    updateProfileUI();
+
     if(type==="coins"){
 
         document.getElementById(
@@ -1509,8 +2119,6 @@ function startGame(type){
             "gameTitle"
         ).textContent=
             "🌈 Радужный след";
-
-        rainbowObjects=[];
 
     }
 
@@ -1547,11 +2155,8 @@ function createCoins(){
         coins.push({
 
             x:40+Math.random()*(W-80),
-
             y:40+Math.random()*(H-80),
-
             r:11,
-
             taken:false
 
         });
@@ -1580,6 +2185,10 @@ function updateCoins(){
             c.taken=true;
 
             score++;
+
+            playerCoins++;
+
+            addXP(3);
 
             updateScore();
 
@@ -1628,13 +2237,11 @@ function updateSpace(){
 
             r:15+Math.random()*22,
 
-            speed:
-                2+Math.random()*3
+            speed:2+Math.random()*3
 
         });
 
     }
-
 
     for(
         let i=asteroids.length-1;
@@ -1652,7 +2259,10 @@ function updateSpace(){
                 player.y-a.y
             );
 
-        if(d<player.size/2+a.r){
+        if(
+            d<
+            player.size/2+a.r
+        ){
 
             finish(
                 "💥 Столкновение!",
@@ -1669,6 +2279,8 @@ function updateSpace(){
 
             score++;
 
+            addXP(1);
+
             updateScore();
 
         }
@@ -1679,7 +2291,7 @@ function updateSpace(){
 
 
 /* =========================================================
-   RAINBOW GAME
+   RAINBOW
 ========================================================= */
 
 function updateRainbow(){
@@ -1776,6 +2388,10 @@ function updateStars(){
 
         score++;
 
+        playerCoins+=2;
+
+        addXP(5);
+
         updateScore();
 
         for(let i=0;i<15;i++){
@@ -1802,7 +2418,7 @@ function updateStars(){
 
 
 /* =========================================================
-   PLAYER CONTROL
+   MOVEMENT
 ========================================================= */
 
 function movePlayer(){
@@ -1813,9 +2429,8 @@ function movePlayer(){
     const dy=
         player.targetY-player.y;
 
-    player.x += dx*.07;
-
-    player.y += dy*.07;
+    player.x+=dx*.07;
+    player.y+=dy*.07;
 
     player.x=
         Math.max(
@@ -1839,7 +2454,7 @@ function movePlayer(){
 
 
 /* =========================================================
-   DRAW
+   DRAW OBJECTS
 ========================================================= */
 
 function drawCoins(){
@@ -1879,7 +2494,6 @@ function drawCoins(){
         ctx.font="bold 13px Arial";
 
         ctx.textAlign="center";
-
         ctx.textBaseline="middle";
 
         ctx.fillText(
@@ -1901,14 +2515,18 @@ function drawAsteroids(){
 
         ctx.save();
 
-        ctx.translate(a.x,a.y);
+        ctx.translate(
+            a.x,
+            a.y
+        );
 
-        ctx.rotate(Date.now()*.0004+a.x);
+        ctx.rotate(
+            Date.now()*.0004+a.x
+        );
 
         ctx.fillStyle="#777b91";
 
         ctx.shadowColor="#8b5cf6";
-
         ctx.shadowBlur=15;
 
         ctx.beginPath();
@@ -1919,8 +2537,7 @@ function drawAsteroids(){
                 Math.PI*2*i/8;
 
             const r=
-                a.r*
-                (.75+Math.random()*.3);
+                a.r*(.75+Math.random()*.3);
 
             const x=
                 Math.cos(ang)*r;
@@ -1958,17 +2575,30 @@ function drawTarget(){
 
     ctx.save();
 
-    ctx.translate(t.x,t.y);
+    ctx.translate(
+        t.x,
+        t.y
+    );
 
-    ctx.rotate(Date.now()*.002);
+    ctx.rotate(
+        Date.now()*.002
+    );
 
     ctx.strokeStyle=
-        `hsl(${Date.now()/5%360},100%,65%)`;
+        `hsl(
+            ${Date.now()/5%360},
+            100%,
+            65%
+        )`;
 
     ctx.lineWidth=4;
 
     ctx.shadowColor=
-        `hsl(${Date.now()/5%360},100%,65%)`;
+        `hsl(
+            ${Date.now()/5%360},
+            100%,
+            65%
+        )`;
 
     ctx.shadowBlur=30;
 
@@ -2002,7 +2632,7 @@ function drawTarget(){
 
 
 /* =========================================================
-   MAIN DRAW
+   DRAW
 ========================================================= */
 
 function draw(){
@@ -2076,25 +2706,21 @@ function setTarget(e){
     if(e.touches){
 
         x=
-            (e.touches[0].clientX-
-            rect.left)*
+            (e.touches[0].clientX-rect.left)*
             W/rect.width;
 
         y=
-            (e.touches[0].clientY-
-            rect.top)*
+            (e.touches[0].clientY-rect.top)*
             H/rect.height;
 
     }else{
 
         x=
-            (e.clientX-
-            rect.left)*
+            (e.clientX-rect.left)*
             W/rect.width;
 
         y=
-            (e.clientY-
-            rect.top)*
+            (e.clientY-rect.top)*
             H/rect.height;
 
     }
@@ -2130,14 +2756,13 @@ canvas.addEventListener(
 
 
 /* =========================================================
-   ARROW BUTTONS
+   BUTTON CONTROL
 ========================================================= */
 
 function moveButton(dx,dy){
 
-    player.targetX += dx*80;
-
-    player.targetY += dy*80;
+    player.targetX+=dx*80;
+    player.targetY+=dy*80;
 
     player.targetX=
         Math.max(
@@ -2160,24 +2785,16 @@ function moveButton(dx,dy){
 }
 
 
-document
-    .getElementById("left")
-    .onclick=
+document.getElementById("left").onclick=
     ()=>moveButton(-1,0);
 
-document
-    .getElementById("right")
-    .onclick=
+document.getElementById("right").onclick=
     ()=>moveButton(1,0);
 
-document
-    .getElementById("up")
-    .onclick=
+document.getElementById("up").onclick=
     ()=>moveButton(0,-1);
 
-document
-    .getElementById("down")
-    .onclick=
+document.getElementById("down").onclick=
     ()=>moveButton(0,1);
 
 
@@ -2238,26 +2855,25 @@ function finish(title,text){
 
         best=final;
 
-        localStorage.setItem(
-            "cameraBest",
-            best
-        );
+        playerXP+=25;
 
     }
 
-    document.getElementById(
-        "best"
-    ).textContent=best;
+    playerXP+=10;
+
+    saveProfile();
+    updateProfileUI();
 
     document.getElementById(
         "modalTitle"
-    ).textContent=title;
+    ).textContent=
+        title;
 
     document.getElementById(
         "modalText"
     ).textContent=
         text+
-        ` Счёт: ${final}`;
+        ` Счёт: ${final}. +10 XP`;
 
     document
         .getElementById("modal")
@@ -2302,6 +2918,8 @@ function backMenu(){
     document
         .getElementById("menu")
         .classList.remove("hidden");
+
+    updateProfileUI();
 
 }
 
@@ -2362,16 +2980,10 @@ function sound(freq){
 
 
 /* =========================================================
-   INITIAL UI
+   INITIALIZE
 ========================================================= */
 
-document.getElementById(
-    "best"
-).textContent=best;
-
-document.getElementById(
-    "total"
-).textContent=best;
+updateProfileUI();
 
 </script>
 
