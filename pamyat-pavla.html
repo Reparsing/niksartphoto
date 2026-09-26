@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Памяти Павла Мищерякова</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #06060a;
+        color: #d4d4d8;
+        min-height: 100vh;
+        overflow-x: hidden;
+        line-height: 1.9;
+        position: relative;
+    }
+
+    /* ФОН: ДЫХАНИЕ */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 50% 30%, rgba(120, 0, 0, 0.10), transparent 60%),
+            radial-gradient(circle at 15% 80%, rgba(60, 0, 0, 0.08), transparent 55%),
+            radial-gradient(circle at 85% 15%, rgba(60, 0, 0, 0.06), transparent 55%);
+        animation: breathe 11s ease-in-out infinite;
+    }
+    @keyframes breathe {
+        0%, 100% { opacity: .6; transform: scale(1); }
+        50%      { opacity: 1;  transform: scale(1.06); }
+    }
+
+    /* ШУМ-ПЛЁНКА */
+    body::after {
+        content: '';
+        position: fixed;
+        inset: -50%;
+        z-index: 1;
+        pointer-events: none;
+        opacity: .035;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        animation: grain 0.6s steps(3) infinite;
+    }
+    @keyframes grain {
+        0%   { transform: translate(0,0); }
+        33%  { transform: translate(-3%, 2%); }
+        66%  { transform: translate(2%, -3%); }
+        100% { transform: translate(0,0); }
+    }
+
+    .vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,.85) 100%);
+    }
+
+    /* МЕЛЬКАЮЩЕЕ ЛИЦО */
+    .ghost-face {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        width: 140px;
+        height: 180px;
+        z-index: 5;
+        pointer-events: none;
+        opacity: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cg fill='%23d4d4d8' opacity='0.9'%3E%3Cellipse cx='50' cy='45' rx='26' ry='34'/%3E%3Cellipse cx='50' cy='95' rx='34' ry='24'/%3E%3Ccircle cx='40' cy='42' r='3.2' fill='%23000'/%3E%3Ccircle cx='60' cy='42' r='3.2' fill='%23000'/%3E%3Cpath d='M42 62 Q50 66 58 62' stroke='%23000' stroke-width='1.5' fill='none'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain;
+        filter: grayscale(1) contrast(1.4) brightness(0.9) blur(0.3px) drop-shadow(0 0 20px rgba(180,0,0,.5));
+    }
+    .ghost-face.flash {
+        animation: ghostFlash 0.16s steps(2) 1;
+    }
+    @keyframes ghostFlash {
+        0%   { opacity: 0; transform: scale(.96) translateY(6px); }
+        40%  { opacity: .85; transform: scale(1) translateY(0); }
+        60%  { opacity: .4; transform: scale(1.02); }
+        100% { opacity: 0; transform: scale(.98); }
+    }
+
+    .wrap {
+        position: relative;
+        z-index: 3;
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 100px 28px 140px;
+    }
+
+    .head {
+        text-align: center;
+        margin-bottom: 60px;
+        opacity: 0;
+        animation: fadeHead 2s ease forwards;
+    }
+    @keyframes fadeHead { to { opacity: 1; } }
+
+    .head .mark {
+        font-size: .7rem;
+        letter-spacing: .5em;
+        text-transform: uppercase;
+        color: #7f1d1d;
+        margin-bottom: 22px;
+        font-weight: 600;
+        text-shadow: 0 0 20px rgba(180,0,0,.6);
+        animation: ghostPulse 4s ease-in-out infinite;
+    }
+    @keyframes ghostPulse {
+        0%, 100% { opacity: .55; }
+        50%      { opacity: 1; }
+    }
+
+    .head h1 {
+        font-family: 'Special Elite', monospace;
+        font-size: 2.3rem;
+        font-weight: 400;
+        line-height: 1.25;
+        color: #e4e4e7;
+        text-shadow: 0 0 30px rgba(180,0,0,.35);
+        margin-bottom: 16px;
+    }
+    .head .sub {
+        font-size: .85rem;
+        color: #52525b;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+    }
+
+    /* ПЕЧАТНАЯ МАШИНКА */
+    .typeline {
+        font-size: 1.08rem;
+        color: #a1a1aa;
+        line-height: 2;
+        margin-bottom: 22px;
+        min-height: 1em;
+    }
+    .typeline strong { color: #fafafa; font-weight: 600; }
+    .typeline .blood {
+        color: #ef4444;
+        font-weight: 600;
+        text-shadow: 0 0 20px rgba(220,38,38,.6);
+    }
+    .typeline .whisper {
+        color: #52525b;
+        font-style: italic;
+        font-size: .95rem;
+    }
+    .cursor-blink {
+        display: inline-block;
+        width: 2px;
+        height: 1.05em;
+        background: #ef4444;
+        margin-left: 2px;
+        vertical-align: text-bottom;
+        box-shadow: 0 0 10px rgba(220,38,38,.8);
+        animation: blink 1s steps(2) infinite;
+    }
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+    }
+
+    .sep {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin: 52px 0;
+        color: #7f1d1d;
+        font-size: .75rem;
+        letter-spacing: .4em;
+        text-transform: uppercase;
+    }
+    .sep::before,
+    .sep::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(180,0,0,.5), transparent);
+    }
+
+    .typelist {
+        list-style: none;
+        margin: 0 0 22px 0;
+        padding: 0;
+    }
+    .typelist li {
+        position: relative;
+        padding-left: 26px;
+        font-size: 1.05rem;
+        color: #a1a1aa;
+        line-height: 1.9;
+        margin-bottom: 8px;
+    }
+    .typelist li::before {
+        content: '—';
+        position: absolute;
+        left: 0;
+        color: #7f1d1d;
+        font-weight: 700;
+    }
+
+    .quote {
+        margin: 40px 0;
+        padding: 26px 24px;
+        border-left: 2px solid #7f1d1d;
+        background: linear-gradient(90deg, rgba(120,0,0,.08), transparent);
+        font-family: 'Special Elite', monospace;
+        font-size: 1.08rem;
+        color: #e4e4e7;
+        line-height: 1.8;
+    }
+    .quote .author {
+        display: block;
+        margin-top: 14px;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-size: .72rem;
+        letter-spacing: .3em;
+        text-transform: uppercase;
+        color: #7f1d1d;
+    }
+
+    .final {
+        text-align: center;
+        margin-top: 80px;
+    }
+    .final .candle {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 24px rgba(251,191,36,.8));
+        animation: flickerCandle 3s ease-in-out infinite;
+    }
+    @keyframes flickerCandle {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        40%      { opacity: .6; transform: scale(1.1); }
+        60%      { opacity: .85; transform: scale(.95); }
+        80%      { opacity: .7; }
+    }
+    .final .name {
+        font-family: 'Special Elite', monospace;
+        font-size: 1.4rem;
+        color: #e4e4e7;
+        margin-bottom: 12px;
+        text-shadow: 0 0 30px rgba(180,0,0,.4);
+    }
+    .final .dates {
+        font-size: .8rem;
+        letter-spacing: .4em;
+        color: #7f1d1d;
+        text-transform: uppercase;
+    }
+
+    .back {
+        text-align: center;
+        margin-top: 70px;
+    }
+    .back a {
+        color: #52525b;
+        text-decoration: none;
+        font-size: .75rem;
+        letter-spacing: .3em;
+        text-transform: uppercase;
+        transition: color .4s, text-shadow .4s;
+    }
+    .back a:hover {
+        color: #ef4444;
+        text-shadow: 0 0 20px rgba(220,38,38,.6);
+    }
+
+    .sound-toggle {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 10;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(20,20,24,.7);
+        border: 1px solid rgba(180,0,0,.35);
+        color: #ef4444;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        transition: all .3s;
+        box-shadow: 0 0 24px rgba(180,0,0,.2);
+    }
+    .sound-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 36px rgba(180,0,0,.5);
+    }
+    .sound-toggle.off {
+        color: #52525b;
+        border-color: rgba(255,255,255,.08);
+        box-shadow: none;
+    }
+
+    @media (max-width: 600px) {
+        .head h1 { font-size: 1.7rem; }
+        .wrap { padding: 70px 22px 100px; }
+        .typeline { font-size: 1rem; }
+        .ghost-face { width: 100px; height: 130px; bottom: 20px; right: 20px; }
+        .sound-toggle { top: 16px; right: 16px; width: 40px; height: 40px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="vignette"></div>
+<div class="ghost-face" id="ghostFace"></div>
+<button class="sound-toggle" id="soundToggle" title="Включить звук">🔇</button>
+
+<div class="wrap">
+
+    <div class="head">
+        <div class="mark">29 · 07 · 2025</div>
+        <h1>Памяти Павла Мищерякова</h1>
+        <div class="sub">Светлогорск · Калининград</div>
+    </div>
+
+    <div class="typeline" data-text="17-летний тхэквондист, член сборной Калининградской области, умер в летнем лагере в Светлогорске 29 июля 2025 года."></div>
+
+    <div class="sep">• • •</div>
+
+    <div class="typeline" data-text="29 июля отцу Павла позвонил главный тренер сборной Алексей Самохин. Он сообщил, что Паше стало плохо и пришлось вызвать скорую."></div>
+
+    <div class="typeline" data-text="Юношу нашли лежащим без сознания. Тренеры и фельдшер лагеря пытались откачать его, делали массаж сердца. Приехали две бригады скорой помощи, проводилась реанимация. Но спасти его не удалось."></div>
+
+    <div class="typeline" data-text="По предварительным данным, подросток резко упал и посинел. Точную причину смерти установит судебно-медицинская экспертиза. Следователи начали проверку инцидента."></div>
+
+    <div class="typeline" data-text="Отец отмечает: у Павла не было заболеваний, которые могли бы препятствовать занятиям спортом. Он уверен, что наставники и медики сделали всё возможное, чтобы спасти сына."></div>
+
+    <div class="sep">• • •</div>
+
+    <div class="typeline" data-text="Кем был Павел"></div>
+
+    <ul class="typelist">
+        <li class="typeline" data-text="Член Федерации тхэквондо и сборной Калининградской области"></li>
+        <li class="typeline" data-text="Призёр и победитель городских и областных соревнований"></li>
+        <li class="typeline" data-text="Призёр СЗФО"></li>
+        <li class="typeline" data-text="Призёр международных фестивалей по тхэквондо и боевым искусствам"></li>
+    </ul>
+
+    <div class="typeline" data-text="По словам отца, в лагере Павлу нравилось: «Он просто жил этим спортом, всегда восторженно рассказывал о лагере и занятиях, любил и уважал своих тренеров — Тимура Мнацаканяна и Дениса Веселова»."></div>
+
+    <blockquote class="quote typeline" data-text="Ему не нужно было ничего взамен. Очень ответственный, не как обычно подростки. Однажды он подошёл ко мне и говорит: «Тимур Эдуардович, можно я на день рождения к другу схожу?» Он за две недели спросил! Конечно, я его тогда отпустил отдохнуть... Знаете, рассказываю и аж ком в горле встаёт...">
+        <span class="author">— Тимур Мнацаканян, тренер</span>
+    </blockquote>
+
+    <div class="sep">• • •</div>
+
+    <div class="typeline" data-text="Семья"></div>
+
+    <div class="typeline" data-text="Родители Паши вместе 25 лет. Отец Александр занимается вопросами безопасности. Мама Марина работала акушером в областном перинатальном центре, сейчас — дома с младшим ребёнком."></div>
+
+    <div class="typeline" data-text="У них большая семья — пятеро детей: старшая Элина, двойняшки Павел и Злата, средняя дочь Дарина и самый младший — Демид."></div>
+
+    <div class="typeline" data-text="Последняя встреча с Пашей произошла накануне трагедии:"></div>
+
+    <blockquote class="quote typeline" data-text="Это был обычный день. Мы встретились в Светлогорске, стояли под дождём, спрашивали, как у него дела, как настроение...">
+        <span class="author">— отец, Александр Матвеевич</span>
+    </blockquote>
+
+    <div class="final">
+        <span class="candle">🕯️</span>
+        <div class="name">Павел Мищеряков</div>
+        <div class="dates">2008 — 2025</div>
+    </div>
+
+    <div class="back">
+        <a href="index.html">← вернуться на главную</a>
+    </div>
+
+</div>
+
+<script>
+/* ПЕЧАТНАЯ МАШИНКА */
+(function(){
+    const lines = document.querySelectorAll('.typeline');
+    let queue = [];
+    let isTyping = false;
+
+    function typeLine(el, done){
+        const html = el.dataset.text || '';
+        el.innerHTML = '';
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor-blink';
+        el.appendChild(cursor);
+
+        let i = 0;
+        const speed = 28;
+
+        function step(){
+            if (i < html.length){
+                const ch = html[i];
+                cursor.insertAdjacentText('beforebegin', ch);
+                i++;
+                let delay = speed;
+                if (ch === '.' || ch === '!' || ch === '?') delay = 380;
+                else if (ch === ',' || ch === ';' || ch === ':') delay = 180;
+                setTimeout(step, delay);
+            } else {
+                cursor.remove();
+                done && done();
+            }
+        }
+        step();
+    }
+
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.typed){
+                entry.target.dataset.typed = '1';
+                queue.push(entry.target);
+                processQueue();
+            }
+        });
+    }, { threshold: 0.2 });
+
+    lines.forEach(el => obs.observe(el));
+
+    function processQueue(){
+        if (isTyping) return;
+        if (queue.length === 0) return;
+        isTyping = true;
+        const next = queue.shift();
+        typeLine(next, () => {
+            isTyping = false;
+            setTimeout(processQueue, 250);
+        });
+    }
+})();
+
+/* МЕЛЬКАЮЩЕЕ ЛИЦО */
+(function(){
+    const face = document.getElementById('ghostFace');
+    if (!face) return;
+
+    function flash(){
+        face.classList.remove('flash');
+        void face.offsetWidth;
+        face.classList.add('flash');
+    }
+
+    function scheduleNext(){
+        const delay = 18000 + Math.random() * 22000;
+        setTimeout(() => {
+            flash();
+            if (Math.random() < 0.3) setTimeout(flash, 250);
+            scheduleNext();
+        }, delay);
+    }
+
+    setTimeout(() => {
+        flash();
+        scheduleNext();
+    }, 8000 + Math.random() * 6000);
+})();
+
+/* ТИХИЙ ГУЛ */
+(function(){
+    const btn = document.getElementById('soundToggle');
+    let ctx = null;
+    let nodes = [];
+    let isPlaying = false;
+
+    function createDrone(){
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        ctx = new AudioCtx();
+
+        const master = ctx.createGain();
+        master.gain.value = 0;
+        master.connect(ctx.destination);
+        nodes.push(master);
+
+        const osc1 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.value = 55;
+        const g1 = ctx.createGain();
+        g1.gain.value = 0.35;
+        osc1.connect(g1).connect(master);
+        osc1.start();
+        nodes.push(osc1, g1);
+
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'sine';
+        osc2.frequency.value = 58;
+        const g2 = ctx.createGain();
+        g2.gain.value = 0.25;
+        osc2.connect(g2).connect(master);
+        osc2.start();
+        nodes.push(osc2, g2);
+
+        const osc3 = ctx.createOscillator();
+        osc3.type = 'triangle';
+        osc3.frequency.value = 220;
+        const g3 = ctx.createGain();
+        g3.gain.value = 0.02;
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 0.15;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 3;
+        lfo.connect(lfoGain).connect(osc3.frequency);
+        lfo.start();
+        osc3.connect(g3).connect(master);
+        osc3.start();
+        nodes.push(osc3, g3, lfo, lfoGain);
+
+        const bufferSize = 2 * ctx.sampleRate;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++){
+            data[i] = (Math.random() * 2 - 1) * 0.5;
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        noise.loop = true;
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.value = 400;
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.value = 0.04;
+        noise.connect(noiseFilter).connect(noiseGain).connect(master);
+        noise.start();
+        nodes.push(noise, noiseFilter, noiseGain);
+
+        return master;
+    }
+
+    function start(){
+        if (isPlaying) return;
+        if (!ctx) createDrone();
+        if (ctx.state === 'suspended') ctx.resume();
+        const master = nodes[0];
+        master.gain.cancelScheduledValues(ctx.currentTime);
+        master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+        master.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 3);
+        isPlaying = true;
+        btn.textContent = '🔊';
+        btn.classList.remove('off');
+    }
+
+    function stop(){
+        if (!isPlaying) return;
+        const master = nodes[0];
+        master.gain.cancelScheduledValues(ctx.currentTime);
+        master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+        master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+        isPlaying = false;
+        btn.textContent = '🔇';
+        btn.classList.add('off');
+    }
+
+    btn.addEventListener('click', () => {
+        if (isPlaying) stop();
+        else start();
+    });
+})();
+</script>
+
+</body>
+</html>
