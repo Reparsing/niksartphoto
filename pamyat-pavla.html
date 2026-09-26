@@ -1,573 +1,1816 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Памяти Павла Мищерякова</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-        font-family: 'Inter', sans-serif;
-        background: #06060a;
-        color: #d4d4d8;
-        min-height: 100vh;
-        overflow-x: hidden;
-        line-height: 1.9;
-        position: relative;
+
+/* =========================================================
+   ОСНОВА
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+
+    background:#030304;
+
+    color:#b8b8bd;
+
+    min-height:100vh;
+
+    overflow-x:hidden;
+
+    line-height:1.9;
+
+    position:relative;
+}
+
+
+/* =========================================================
+   ТЁМНЫЙ "ДЫШАЩИЙ" ФОН
+========================================================= */
+
+body::before{
+    content:"";
+
+    position:fixed;
+
+    inset:-20%;
+
+    z-index:0;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 20%,
+            rgba(255,255,255,.035),
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 50% 100%,
+            rgba(120,0,0,.10),
+            transparent 45%
+        ),
+        radial-gradient(
+            ellipse at 10% 60%,
+            rgba(70,0,0,.05),
+            transparent 40%
+        );
+
+    animation:
+        darkBreath 14s ease-in-out infinite;
+}
+
+@keyframes darkBreath{
+
+    0%,100%{
+        opacity:.45;
+        transform:scale(1);
     }
 
-    /* ФОН: ДЫХАНИЕ */
-    body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        background:
-            radial-gradient(circle at 50% 30%, rgba(120, 0, 0, 0.10), transparent 60%),
-            radial-gradient(circle at 15% 80%, rgba(60, 0, 0, 0.08), transparent 55%),
-            radial-gradient(circle at 85% 15%, rgba(60, 0, 0, 0.06), transparent 55%);
-        animation: breathe 11s ease-in-out infinite;
+    50%{
+        opacity:1;
+        transform:scale(1.05);
     }
-    @keyframes breathe {
-        0%, 100% { opacity: .6; transform: scale(1); }
-        50%      { opacity: 1;  transform: scale(1.06); }
+}
+
+
+/* =========================================================
+   ПЛЁНОЧНЫЙ ШУМ
+========================================================= */
+
+body::after{
+    content:"";
+
+    position:fixed;
+
+    inset:-50%;
+
+    z-index:20;
+
+    pointer-events:none;
+
+    opacity:.035;
+
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+
+    animation:grain .7s steps(3) infinite;
+}
+
+@keyframes grain{
+
+    0%{
+        transform:translate(0,0);
     }
 
-    /* ШУМ-ПЛЁНКА */
-    body::after {
-        content: '';
-        position: fixed;
-        inset: -50%;
-        z-index: 1;
-        pointer-events: none;
-        opacity: .035;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        animation: grain 0.6s steps(3) infinite;
-    }
-    @keyframes grain {
-        0%   { transform: translate(0,0); }
-        33%  { transform: translate(-3%, 2%); }
-        66%  { transform: translate(2%, -3%); }
-        100% { transform: translate(0,0); }
+    25%{
+        transform:translate(-2%,2%);
     }
 
-    .vignette {
-        position: fixed;
-        inset: 0;
-        z-index: 2;
-        pointer-events: none;
-        background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,.85) 100%);
+    50%{
+        transform:translate(2%,-1%);
     }
 
-    /* МЕЛЬКАЮЩЕЕ ЛИЦО */
-    .ghost-face {
-        position: fixed;
-        bottom: 40px;
-        right: 40px;
-        width: 140px;
-        height: 180px;
-        z-index: 5;
-        pointer-events: none;
-        opacity: 0;
-        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cg fill='%23d4d4d8' opacity='0.9'%3E%3Cellipse cx='50' cy='45' rx='26' ry='34'/%3E%3Cellipse cx='50' cy='95' rx='34' ry='24'/%3E%3Ccircle cx='40' cy='42' r='3.2' fill='%23000'/%3E%3Ccircle cx='60' cy='42' r='3.2' fill='%23000'/%3E%3Cpath d='M42 62 Q50 66 58 62' stroke='%23000' stroke-width='1.5' fill='none'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain;
-        filter: grayscale(1) contrast(1.4) brightness(0.9) blur(0.3px) drop-shadow(0 0 20px rgba(180,0,0,.5));
-    }
-    .ghost-face.flash {
-        animation: ghostFlash 0.16s steps(2) 1;
-    }
-    @keyframes ghostFlash {
-        0%   { opacity: 0; transform: scale(.96) translateY(6px); }
-        40%  { opacity: .85; transform: scale(1) translateY(0); }
-        60%  { opacity: .4; transform: scale(1.02); }
-        100% { opacity: 0; transform: scale(.98); }
+    75%{
+        transform:translate(-1%,-2%);
     }
 
-    .wrap {
-        position: relative;
-        z-index: 3;
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 100px 28px 140px;
+    100%{
+        transform:translate(0,0);
+    }
+}
+
+
+/* =========================================================
+   ВИНЬЕТКА
+========================================================= */
+
+.vignette{
+    position:fixed;
+
+    inset:0;
+
+    z-index:2;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 25%,
+            rgba(0,0,0,.4) 65%,
+            rgba(0,0,0,.92) 100%
+        );
+}
+
+
+/* =========================================================
+   КОНТЕЙНЕР
+========================================================= */
+
+.wrap{
+
+    position:relative;
+
+    z-index:5;
+
+    width:min(680px,100%);
+
+    margin:auto;
+
+    padding:
+        110px
+        28px
+        180px;
+}
+
+
+/* =========================================================
+   ЗАГОЛОВОК
+========================================================= */
+
+.head{
+
+    text-align:center;
+
+    margin-bottom:100px;
+
+    opacity:0;
+
+    transform:translateY(25px);
+
+    animation:
+        headerAppear 2.5s ease forwards;
+}
+
+@keyframes headerAppear{
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+.head .mark{
+
+    font-size:.68rem;
+
+    letter-spacing:.55em;
+
+    text-transform:uppercase;
+
+    color:#751d1d;
+
+    margin-bottom:25px;
+
+    animation:
+        markPulse 5s ease-in-out infinite;
+}
+
+@keyframes markPulse{
+
+    0%,100%{
+        opacity:.35;
     }
 
-    .head {
-        text-align: center;
-        margin-bottom: 60px;
-        opacity: 0;
-        animation: fadeHead 2s ease forwards;
+    50%{
+        opacity:1;
     }
-    @keyframes fadeHead { to { opacity: 1; } }
+}
 
-    .head .mark {
-        font-size: .7rem;
-        letter-spacing: .5em;
-        text-transform: uppercase;
-        color: #7f1d1d;
-        margin-bottom: 22px;
-        font-weight: 600;
-        text-shadow: 0 0 20px rgba(180,0,0,.6);
-        animation: ghostPulse 4s ease-in-out infinite;
-    }
-    @keyframes ghostPulse {
-        0%, 100% { opacity: .55; }
-        50%      { opacity: 1; }
+
+.head h1{
+
+    font-family:'Special Elite',monospace;
+
+    font-size:2.35rem;
+
+    font-weight:400;
+
+    line-height:1.3;
+
+    color:#e5e5e7;
+
+    margin-bottom:18px;
+
+    text-shadow:
+        0 0 35px rgba(150,0,0,.18);
+}
+
+
+.head .sub{
+
+    color:#45454b;
+
+    font-size:.72rem;
+
+    letter-spacing:.35em;
+
+    text-transform:uppercase;
+}
+
+
+/* =========================================================
+   НОВЫЙ ЭФФЕКТ ТЕКСТА
+   НЕ ПЕЧАТЬ!
+========================================================= */
+
+.typeline{
+
+    font-size:1.05rem;
+
+    line-height:2;
+
+    color:#96969d;
+
+    margin-bottom:32px;
+
+    /*
+       Сначала текст почти невидим.
+    */
+
+    opacity:0;
+
+    transform:
+        translateY(35px)
+        scale(.985);
+
+    filter:blur(8px);
+
+    /*
+       Переход происходит,
+       когда JS добавляет .visible
+    */
+
+    transition:
+        opacity 1.4s cubic-bezier(.2,.7,.2,1),
+        transform 1.4s cubic-bezier(.2,.7,.2,1),
+        filter 1.6s ease;
+}
+
+
+.typeline.visible{
+
+    opacity:1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    filter:blur(0);
+}
+
+
+/*
+   При появлении текст слегка
+   подсвечивается.
+*/
+
+.typeline.visible{
+    text-shadow:
+        0 0 25px rgba(255,255,255,.025);
+}
+
+
+/* =========================================================
+   РАЗДЕЛИТЕЛИ
+========================================================= */
+
+.sep{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin:70px 0;
+
+    color:#641919;
+
+    font-size:.65rem;
+
+    letter-spacing:.5em;
+
+    opacity:0;
+
+    transform:translateY(20px);
+
+    filter:blur(5px);
+
+    transition:
+        opacity 1.4s ease,
+        transform 1.4s ease,
+        filter 1.4s ease;
+}
+
+.sep.visible{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+    filter:blur(0);
+}
+
+
+.sep::before,
+.sep::after{
+
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(130,0,0,.5),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   СПИСОК
+========================================================= */
+
+.typelist{
+
+    list-style:none;
+
+    margin:
+        10px
+        0
+        35px;
+
+    padding:0;
+}
+
+
+.typelist li{
+
+    position:relative;
+
+    padding-left:25px;
+
+    color:#94949b;
+
+    margin-bottom:11px;
+
+    opacity:0;
+
+    transform:
+        translateY(25px);
+
+    filter:blur(5px);
+
+    transition:
+        opacity 1s ease,
+        transform 1s ease,
+        filter 1s ease;
+}
+
+
+.typelist li.visible{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+    filter:blur(0);
+}
+
+
+.typelist li::before{
+
+    content:"—";
+
+    position:absolute;
+
+    left:0;
+
+    color:#751b1b;
+}
+
+
+/* =========================================================
+   ЦИТАТЫ
+========================================================= */
+
+.quote{
+
+    margin:50px 0;
+
+    padding:
+        30px
+        25px;
+
+    border-left:
+        2px solid
+        #641919;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(100,0,0,.09),
+            transparent
+        );
+
+    font-family:'Special Elite',monospace;
+
+    font-size:1.05rem;
+
+    color:#d2d2d5;
+
+    line-height:1.9;
+
+    position:relative;
+
+    opacity:0;
+
+    transform:
+        translateY(35px);
+
+    filter:blur(7px);
+
+    transition:
+        opacity 1.5s ease,
+        transform 1.5s ease,
+        filter 1.5s ease;
+}
+
+
+.quote.visible{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+    filter:blur(0);
+}
+
+
+.quote::before{
+
+    content:"“";
+
+    position:absolute;
+
+    left:10px;
+
+    top:-15px;
+
+    font-size:5rem;
+
+    color:rgba(130,0,0,.12);
+}
+
+
+.quote .author{
+
+    display:block;
+
+    margin-top:18px;
+
+    font-family:'Inter',sans-serif;
+
+    font-size:.68rem;
+
+    letter-spacing:.28em;
+
+    text-transform:uppercase;
+
+    color:#681b1b;
+}
+
+
+/* =========================================================
+   БЛОК СВЕЧИ
+========================================================= */
+
+.candle-area{
+
+    margin-top:100px;
+
+    padding:
+        45px
+        20px
+        40px;
+
+    text-align:center;
+
+    border-top:
+        1px solid
+        rgba(120,0,0,.18);
+
+    border-bottom:
+        1px solid
+        rgba(120,0,0,.12);
+
+    opacity:0;
+
+    transform:translateY(35px);
+
+    filter:blur(6px);
+
+    transition:
+        opacity 1.5s ease,
+        transform 1.5s ease,
+        filter 1.5s ease;
+}
+
+
+.candle-area.visible{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+    filter:blur(0);
+}
+
+
+.candle-title{
+
+    font-family:'Special Elite',monospace;
+
+    color:#d0d0d3;
+
+    font-size:1.15rem;
+
+    margin-bottom:10px;
+}
+
+
+.candle-description{
+
+    color:#55555b;
+
+    font-size:.78rem;
+
+    margin-bottom:28px;
+}
+
+
+/* =========================================================
+   КНОПКА СВЕЧИ
+========================================================= */
+
+.light-candle{
+
+    border:
+        1px solid
+        rgba(160,30,30,.45);
+
+    background:
+        rgba(20,15,15,.7);
+
+    color:#aaa;
+
+    padding:
+        13px
+        23px;
+
+    border-radius:5px;
+
+    font-family:'Inter',sans-serif;
+
+    font-size:.75rem;
+
+    letter-spacing:.14em;
+
+    cursor:pointer;
+
+    transition:
+        .4s;
+
+    backdrop-filter:blur(10px);
+}
+
+
+.light-candle:hover{
+
+    color:white;
+
+    border-color:#a12a2a;
+
+    box-shadow:
+        0 0 30px
+        rgba(130,0,0,.3);
+
+    transform:
+        translateY(-2px);
+}
+
+
+.light-candle:active{
+
+    transform:
+        translateY(1px)
+        scale(.98);
+}
+
+
+/* =========================================================
+   КОНТЕЙНЕР СВЕЧЕЙ
+========================================================= */
+
+.candles{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    align-items:flex-end;
+
+    gap:22px;
+
+    min-height:100px;
+
+    margin-top:40px;
+}
+
+
+/* =========================================================
+   СВЕЧА
+========================================================= */
+
+.candle{
+
+    position:relative;
+
+    width:18px;
+
+    height:48px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #666,
+            #ddd 45%,
+            #777
+        );
+
+    border-radius:
+        3px
+        3px
+        2px
+        2px;
+
+    box-shadow:
+        0 0 18px
+        rgba(255,180,70,.13);
+
+    animation:
+        candleAppear .8s ease;
+}
+
+
+@keyframes candleAppear{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(25px)
+            scale(.8);
     }
 
-    .head h1 {
-        font-family: 'Special Elite', monospace;
-        font-size: 2.3rem;
-        font-weight: 400;
-        line-height: 1.25;
-        color: #e4e4e7;
-        text-shadow: 0 0 30px rgba(180,0,0,.35);
-        margin-bottom: 16px;
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0)
+            scale(1);
     }
-    .head .sub {
-        font-size: .85rem;
-        color: #52525b;
-        letter-spacing: .2em;
-        text-transform: uppercase;
+}
+
+
+/* Фитиль */
+
+.candle::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    top:-4px;
+
+    width:2px;
+
+    height:7px;
+
+    background:#222;
+
+    transform:
+        translateX(-50%);
+}
+
+
+/* Пламя */
+
+.candle::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    top:-24px;
+
+    width:10px;
+
+    height:24px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse at center bottom,
+            #fff7c7 0%,
+            #ffd15b 32%,
+            #d85c16 62%,
+            transparent 76%
+        );
+
+    filter:
+        blur(.3px)
+        drop-shadow(
+            0 0 9px
+            rgba(255,170,50,.8)
+        );
+
+    animation:
+        flame .14s
+        infinite
+        alternate;
+}
+
+
+@keyframes flame{
+
+    from{
+
+        transform:
+            translateX(-50%)
+            scale(.9)
+            rotate(-2deg);
     }
 
-    /* ПЕЧАТНАЯ МАШИНКА */
-    .typeline {
-        font-size: 1.08rem;
-        color: #a1a1aa;
-        line-height: 2;
-        margin-bottom: 22px;
-        min-height: 1em;
+    to{
+
+        transform:
+            translateX(-50%)
+            scale(1.12)
+            rotate(2deg);
     }
-    .typeline strong { color: #fafafa; font-weight: 600; }
-    .typeline .blood {
-        color: #ef4444;
-        font-weight: 600;
-        text-shadow: 0 0 20px rgba(220,38,38,.6);
-    }
-    .typeline .whisper {
-        color: #52525b;
-        font-style: italic;
-        font-size: .95rem;
-    }
-    .cursor-blink {
-        display: inline-block;
-        width: 2px;
-        height: 1.05em;
-        background: #ef4444;
-        margin-left: 2px;
-        vertical-align: text-bottom;
-        box-shadow: 0 0 10px rgba(220,38,38,.8);
-        animation: blink 1s steps(2) infinite;
-    }
-    @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
+}
+
+
+/* =========================================================
+   ФИНАЛ
+========================================================= */
+
+.final{
+
+    text-align:center;
+
+    margin-top:120px;
+
+    opacity:0;
+
+    transform:translateY(30px);
+
+    filter:blur(6px);
+
+    transition:
+        opacity 1.8s ease,
+        transform 1.8s ease,
+        filter 1.8s ease;
+}
+
+
+.final.visible{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+    filter:blur(0);
+}
+
+
+.final .candle-icon{
+
+    font-size:2.3rem;
+
+    display:block;
+
+    margin-bottom:25px;
+
+    filter:
+        grayscale(.3)
+        drop-shadow(
+            0 0 25px
+            rgba(255,180,60,.35)
+        );
+
+    animation:
+        candleGlow 3s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes candleGlow{
+
+    0%,100%{
+
+        opacity:.7;
+
+        transform:scale(1);
     }
 
-    .sep {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
-        margin: 52px 0;
-        color: #7f1d1d;
-        font-size: .75rem;
-        letter-spacing: .4em;
-        text-transform: uppercase;
+    50%{
+
+        opacity:1;
+
+        transform:scale(1.05);
     }
-    .sep::before,
-    .sep::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(180,0,0,.5), transparent);
+}
+
+
+.final .name{
+
+    font-family:'Special Elite',monospace;
+
+    font-size:1.45rem;
+
+    color:#dedee1;
+
+    margin-bottom:12px;
+}
+
+
+.final .dates{
+
+    color:#681b1b;
+
+    font-size:.75rem;
+
+    letter-spacing:.5em;
+}
+
+
+/* =========================================================
+   НАЗАД
+========================================================= */
+
+.back{
+
+    text-align:center;
+
+    margin-top:75px;
+
+    opacity:0;
+
+    transition:
+        opacity 1.5s ease;
+}
+
+
+.back.visible{
+    opacity:1;
+}
+
+
+.back a{
+
+    color:#44444a;
+
+    text-decoration:none;
+
+    font-size:.7rem;
+
+    letter-spacing:.3em;
+
+    text-transform:uppercase;
+
+    transition:.4s;
+}
+
+
+.back a:hover{
+
+    color:#a72b2b;
+
+    text-shadow:
+        0 0 15px
+        rgba(160,0,0,.4);
+}
+
+
+/* =========================================================
+   КНОПКА ЗВУКА
+========================================================= */
+
+.sound-toggle{
+
+    position:fixed;
+
+    top:22px;
+
+    right:22px;
+
+    z-index:30;
+
+    width:44px;
+
+    height:44px;
+
+    border-radius:50%;
+
+    border:
+        1px solid
+        rgba(130,0,0,.35);
+
+    background:
+        rgba(12,12,15,.8);
+
+    color:#9d2929;
+
+    cursor:pointer;
+
+    backdrop-filter:blur(12px);
+
+    transition:.35s;
+}
+
+
+.sound-toggle:hover{
+
+    transform:scale(1.08);
+
+    box-shadow:
+        0 0 25px
+        rgba(120,0,0,.3);
+}
+
+
+.sound-toggle.off{
+
+    color:#55555b;
+
+    border-color:
+        rgba(255,255,255,.08);
+}
+
+
+/* =========================================================
+   МОБИЛЬНЫЕ
+========================================================= */
+
+@media(max-width:600px){
+
+    .wrap{
+
+        padding:
+            80px
+            21px
+            130px;
     }
 
-    .typelist {
-        list-style: none;
-        margin: 0 0 22px 0;
-        padding: 0;
-    }
-    .typelist li {
-        position: relative;
-        padding-left: 26px;
-        font-size: 1.05rem;
-        color: #a1a1aa;
-        line-height: 1.9;
-        margin-bottom: 8px;
-    }
-    .typelist li::before {
-        content: '—';
-        position: absolute;
-        left: 0;
-        color: #7f1d1d;
-        font-weight: 700;
+
+    .head{
+
+        margin-bottom:75px;
     }
 
-    .quote {
-        margin: 40px 0;
-        padding: 26px 24px;
-        border-left: 2px solid #7f1d1d;
-        background: linear-gradient(90deg, rgba(120,0,0,.08), transparent);
-        font-family: 'Special Elite', monospace;
-        font-size: 1.08rem;
-        color: #e4e4e7;
-        line-height: 1.8;
-    }
-    .quote .author {
-        display: block;
-        margin-top: 14px;
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-size: .72rem;
-        letter-spacing: .3em;
-        text-transform: uppercase;
-        color: #7f1d1d;
+
+    .head h1{
+
+        font-size:1.75rem;
     }
 
-    .final {
-        text-align: center;
-        margin-top: 80px;
-    }
-    .final .candle {
-        font-size: 2rem;
-        display: block;
-        margin-bottom: 20px;
-        filter: drop-shadow(0 0 24px rgba(251,191,36,.8));
-        animation: flickerCandle 3s ease-in-out infinite;
-    }
-    @keyframes flickerCandle {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        40%      { opacity: .6; transform: scale(1.1); }
-        60%      { opacity: .85; transform: scale(.95); }
-        80%      { opacity: .7; }
-    }
-    .final .name {
-        font-family: 'Special Elite', monospace;
-        font-size: 1.4rem;
-        color: #e4e4e7;
-        margin-bottom: 12px;
-        text-shadow: 0 0 30px rgba(180,0,0,.4);
-    }
-    .final .dates {
-        font-size: .8rem;
-        letter-spacing: .4em;
-        color: #7f1d1d;
-        text-transform: uppercase;
+
+    .head .sub{
+
+        font-size:.62rem;
+
+        letter-spacing:.22em;
     }
 
-    .back {
-        text-align: center;
-        margin-top: 70px;
-    }
-    .back a {
-        color: #52525b;
-        text-decoration: none;
-        font-size: .75rem;
-        letter-spacing: .3em;
-        text-transform: uppercase;
-        transition: color .4s, text-shadow .4s;
-    }
-    .back a:hover {
-        color: #ef4444;
-        text-shadow: 0 0 20px rgba(220,38,38,.6);
+
+    .typeline{
+
+        font-size:.98rem;
+
+        line-height:1.9;
+
+        margin-bottom:28px;
     }
 
-    .sound-toggle {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        z-index: 10;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: rgba(20,20,24,.7);
-        border: 1px solid rgba(180,0,0,.35);
-        color: #ef4444;
-        font-size: 1.1rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-        transition: all .3s;
-        box-shadow: 0 0 24px rgba(180,0,0,.2);
-    }
-    .sound-toggle:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 36px rgba(180,0,0,.5);
-    }
-    .sound-toggle.off {
-        color: #52525b;
-        border-color: rgba(255,255,255,.08);
-        box-shadow: none;
+
+    .quote{
+
+        font-size:.98rem;
+
+        padding:
+            27px
+            21px;
     }
 
-    @media (max-width: 600px) {
-        .head h1 { font-size: 1.7rem; }
-        .wrap { padding: 70px 22px 100px; }
-        .typeline { font-size: 1rem; }
-        .ghost-face { width: 100px; height: 130px; bottom: 20px; right: 20px; }
-        .sound-toggle { top: 16px; right: 16px; width: 40px; height: 40px; }
+
+    .sound-toggle{
+
+        top:15px;
+
+        right:15px;
     }
+
+
+    .candle-area{
+
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+}
+
 </style>
 </head>
+
+
 <body>
 
+
 <div class="vignette"></div>
-<div class="ghost-face" id="ghostFace"></div>
-<button class="sound-toggle" id="soundToggle" title="Включить звук">🔇</button>
+
+
+<!-- =======================================================
+     ЗВУК
+======================================================= -->
+
+<button
+    class="sound-toggle off"
+    id="soundToggle"
+    aria-label="Включить звук">
+
+    🔇
+
+</button>
+
 
 <div class="wrap">
 
-    <div class="head">
-        <div class="mark">29 · 07 · 2025</div>
-        <h1>Памяти Павла Мищерякова</h1>
-        <div class="sub">Светлогорск · Калининград</div>
+
+<!-- =======================================================
+     ЗАГОЛОВОК
+======================================================= -->
+
+<header class="head">
+
+    <div class="mark">
+        29 · 07 · 2025
     </div>
 
-    <div class="typeline" data-text="17-летний тхэквондист, член сборной Калининградской области, умер в летнем лагере в Светлогорске 29 июля 2025 года."></div>
+    <h1>
+        Памяти Павла Мищерякова
+    </h1>
 
-    <div class="sep">• • •</div>
-
-    <div class="typeline" data-text="29 июля отцу Павла позвонил главный тренер сборной Алексей Самохин. Он сообщил, что Паше стало плохо и пришлось вызвать скорую."></div>
-
-    <div class="typeline" data-text="Юношу нашли лежащим без сознания. Тренеры и фельдшер лагеря пытались откачать его, делали массаж сердца. Приехали две бригады скорой помощи, проводилась реанимация. Но спасти его не удалось."></div>
-
-    <div class="typeline" data-text="По предварительным данным, подросток резко упал и посинел. Точную причину смерти установит судебно-медицинская экспертиза. Следователи начали проверку инцидента."></div>
-
-    <div class="typeline" data-text="Отец отмечает: у Павла не было заболеваний, которые могли бы препятствовать занятиям спортом. Он уверен, что наставники и медики сделали всё возможное, чтобы спасти сына."></div>
-
-    <div class="sep">• • •</div>
-
-    <div class="typeline" data-text="Кем был Павел"></div>
-
-    <ul class="typelist">
-        <li class="typeline" data-text="Член Федерации тхэквондо и сборной Калининградской области"></li>
-        <li class="typeline" data-text="Призёр и победитель городских и областных соревнований"></li>
-        <li class="typeline" data-text="Призёр СЗФО"></li>
-        <li class="typeline" data-text="Призёр международных фестивалей по тхэквондо и боевым искусствам"></li>
-    </ul>
-
-    <div class="typeline" data-text="По словам отца, в лагере Павлу нравилось: «Он просто жил этим спортом, всегда восторженно рассказывал о лагере и занятиях, любил и уважал своих тренеров — Тимура Мнацаканяна и Дениса Веселова»."></div>
-
-    <blockquote class="quote typeline" data-text="Ему не нужно было ничего взамен. Очень ответственный, не как обычно подростки. Однажды он подошёл ко мне и говорит: «Тимур Эдуардович, можно я на день рождения к другу схожу?» Он за две недели спросил! Конечно, я его тогда отпустил отдохнуть... Знаете, рассказываю и аж ком в горле встаёт...">
-        <span class="author">— Тимур Мнацаканян, тренер</span>
-    </blockquote>
-
-    <div class="sep">• • •</div>
-
-    <div class="typeline" data-text="Семья"></div>
-
-    <div class="typeline" data-text="Родители Паши вместе 25 лет. Отец Александр занимается вопросами безопасности. Мама Марина работала акушером в областном перинатальном центре, сейчас — дома с младшим ребёнком."></div>
-
-    <div class="typeline" data-text="У них большая семья — пятеро детей: старшая Элина, двойняшки Павел и Злата, средняя дочь Дарина и самый младший — Демид."></div>
-
-    <div class="typeline" data-text="Последняя встреча с Пашей произошла накануне трагедии:"></div>
-
-    <blockquote class="quote typeline" data-text="Это был обычный день. Мы встретились в Светлогорске, стояли под дождём, спрашивали, как у него дела, как настроение...">
-        <span class="author">— отец, Александр Матвеевич</span>
-    </blockquote>
-
-    <div class="final">
-        <span class="candle">🕯️</span>
-        <div class="name">Павел Мищеряков</div>
-        <div class="dates">2008 — 2025</div>
+    <div class="sub">
+        Светлогорск · Калининград
     </div>
 
-    <div class="back">
-        <a href="index.html">← вернуться на главную</a>
+</header>
+
+
+
+<!-- =======================================================
+     ТЕКСТ
+======================================================= -->
+
+<div
+    class="typeline"
+    data-reveal
+>
+17-летний тхэквондист, член сборной Калининградской области, умер в летнем лагере в Светлогорске 29 июля 2025 года.
+</div>
+
+
+<div
+    class="sep"
+    data-reveal
+>
+    • • •
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+29 июля отцу Павла позвонил главный тренер сборной Алексей Самохин. Он сообщил, что Паше стало плохо и пришлось вызвать скорую.
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+Юношу нашли лежащим без сознания. Тренеры и фельдшер лагеря пытались оказать ему помощь. Приехали две бригады скорой помощи, проводилась реанимация. Но спасти его не удалось.
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+По предварительным данным, подросток резко упал и посинел. Точную причину смерти должна была установить судебно-медицинская экспертиза. Следователи начали проверку инцидента.
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+Отец отмечает: у Павла не было заболеваний, которые могли бы препятствовать занятиям спортом. Он уверен, что наставники и медики сделали всё возможное, чтобы спасти сына.
+</div>
+
+
+<div
+    class="sep"
+    data-reveal
+>
+    • • •
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+Кем был Павел
+</div>
+
+
+<ul class="typelist">
+
+    <li data-reveal>
+        Член Федерации тхэквондо и сборной Калининградской области
+    </li>
+
+    <li data-reveal>
+        Призёр и победитель городских и областных соревнований
+    </li>
+
+    <li data-reveal>
+        Призёр СЗФО
+    </li>
+
+    <li data-reveal>
+        Призёр международных фестивалей по тхэквондо и боевым искусствам
+    </li>
+
+</ul>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+По словам отца, в лагере Павлу нравилось: «Он просто жил этим спортом, всегда восторженно рассказывал о лагере и занятиях, любил и уважал своих тренеров — Тимура Мнацаканяна и Дениса Веселова».
+</div>
+
+
+<blockquote
+    class="quote"
+    data-reveal
+>
+
+    Ему не нужно было ничего взамен. Очень ответственный, не как обычно подростки. Однажды он подошёл ко мне и говорит: «Тимур Эдуардович, можно я на день рождения к другу схожу?» Он за две недели спросил! Конечно, я его тогда отпустил отдохнуть...
+
+    <span class="author">
+        — Тимур Мнацаканян, тренер
+    </span>
+
+</blockquote>
+
+
+<div
+    class="sep"
+    data-reveal
+>
+    • • •
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+Семья
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+Родители Паши вместе 25 лет. Отец Александр занимается вопросами безопасности. Мама Марина работала акушером в областном перинатальном центре, сейчас — дома с младшим ребёнком.
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+У них большая семья — пятеро детей: старшая Элина, двойняшки Павел и Злата, средняя дочь Дарина и самый младший — Демид.
+</div>
+
+
+<div
+    class="typeline"
+    data-reveal
+>
+Последняя встреча с Пашей произошла накануне трагедии:
+</div>
+
+
+<blockquote
+    class="quote"
+    data-reveal
+>
+
+    Это был обычный день. Мы встретились в Светлогорске, стояли под дождём, спрашивали, как у него дела, как настроение...
+
+    <span class="author">
+        — отец, Александр Матвеевич
+    </span>
+
+</blockquote>
+
+
+
+<!-- =======================================================
+     СВЕЧА ПАМЯТИ
+======================================================= -->
+
+<section
+    class="candle-area"
+    data-reveal
+>
+
+    <div class="candle-title">
+        Зажечь свечу памяти
+    </div>
+
+    <div class="candle-description">
+        Оставьте здесь маленький знак памяти.
+    </div>
+
+
+    <button
+        class="light-candle"
+        id="lightCandle"
+    >
+        🕯 ЗАЖЕЧЬ СВЕЧУ
+    </button>
+
+
+    <div
+        class="candles"
+        id="candles"
+    ></div>
+
+</section>
+
+
+
+<!-- =======================================================
+     ФИНАЛ
+======================================================= -->
+
+<div
+    class="final"
+    data-reveal
+>
+
+    <span class="candle-icon">
+        🕯️
+    </span>
+
+
+    <div class="name">
+        Павел Мищеряков
+    </div>
+
+
+    <div class="dates">
+        2008 — 2025
     </div>
 
 </div>
 
+
+
+<div
+    class="back"
+    data-reveal
+>
+
+    <a href="index.html">
+        ← вернуться на главную
+    </a>
+
+</div>
+
+
+</div>
+
+
+
 <script>
-/* ПЕЧАТНАЯ МАШИНКА */
+
+
+/* =========================================================
+   ПОЯВЛЕНИЕ ТЕКСТА ПРИ ПРОКРУТКЕ
+========================================================= */
+
 (function(){
-    const lines = document.querySelectorAll('.typeline');
-    let queue = [];
-    let isTyping = false;
 
-    function typeLine(el, done){
-        const html = el.dataset.text || '';
-        el.innerHTML = '';
-        const cursor = document.createElement('span');
-        cursor.className = 'cursor-blink';
-        el.appendChild(cursor);
+    const elements =
+        document.querySelectorAll(
+            '[data-reveal]'
+        );
 
+
+    const observer =
+        new IntersectionObserver(
+
+            function(entries){
+
+                entries.forEach(
+                    function(entry){
+
+                        if(
+                            entry.isIntersecting
+                        ){
+
+                            entry.target.classList.add(
+                                'visible'
+                            );
+
+                        }
+
+                    }
+                );
+
+            },
+
+            {
+                /*
+                 * Блок начинает появляться,
+                 * когда примерно 12% элемента
+                 * попадает в экран.
+                 */
+                threshold:.12,
+
+                /*
+                 * Небольшая зона вокруг экрана.
+                 */
+                rootMargin:
+                    '0px 0px -40px 0px'
+            }
+
+        );
+
+
+    elements.forEach(
+        function(element){
+
+            observer.observe(
+                element
+            );
+
+        }
+    );
+
+})();
+
+
+
+/* =========================================================
+   СВЕЧИ ПАМЯТИ
+========================================================= */
+
+(function(){
+
+    const button =
+        document.getElementById(
+            'lightCandle'
+        );
+
+
+    const container =
+        document.getElementById(
+            'candles'
+        );
+
+
+    /*
+     * Загружаем количество свечей,
+     * которое посетитель уже поставил
+     * на этом устройстве.
+     */
+
+    let candleCount =
+        Number(
+            localStorage.getItem(
+                'pavel_memorial_candles'
+            ) || 0
+        );
+
+
+    function createCandle(){
+
+        const candle =
+            document.createElement(
+                'div'
+            );
+
+
+        candle.className =
+            'candle';
+
+
+        container.appendChild(
+            candle
+        );
+    }
+
+
+    /*
+     * Восстанавливаем свечи.
+     */
+
+    const saved =
+        Math.min(
+            candleCount,
+            30
+        );
+
+
+    for(
         let i = 0;
-        const speed = 28;
+        i < saved;
+        i++
+    ){
 
-        function step(){
-            if (i < html.length){
-                const ch = html[i];
-                cursor.insertAdjacentText('beforebegin', ch);
-                i++;
-                let delay = speed;
-                if (ch === '.' || ch === '!' || ch === '?') delay = 380;
-                else if (ch === ',' || ch === ';' || ch === ':') delay = 180;
-                setTimeout(step, delay);
-            } else {
-                cursor.remove();
-                done && done();
+        createCandle();
+
+    }
+
+
+    button.addEventListener(
+        'click',
+        function(){
+
+            /*
+             * Максимум 30 свечей
+             * на одном устройстве.
+             */
+
+            if(
+                candleCount >= 30
+            ){
+
+                return;
+
             }
+
+
+            candleCount++;
+
+
+            localStorage.setItem(
+                'pavel_memorial_candles',
+                candleCount
+            );
+
+
+            createCandle();
+
+
+            /*
+             * Лёгкая вибрация телефона.
+             */
+
+            if(
+                navigator.vibrate
+            ){
+
+                navigator.vibrate(35);
+
+            }
+
         }
-        step();
-    }
+    );
 
-    const obs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.dataset.typed){
-                entry.target.dataset.typed = '1';
-                queue.push(entry.target);
-                processQueue();
-            }
-        });
-    }, { threshold: 0.2 });
-
-    lines.forEach(el => obs.observe(el));
-
-    function processQueue(){
-        if (isTyping) return;
-        if (queue.length === 0) return;
-        isTyping = true;
-        const next = queue.shift();
-        typeLine(next, () => {
-            isTyping = false;
-            setTimeout(processQueue, 250);
-        });
-    }
 })();
 
-/* МЕЛЬКАЮЩЕЕ ЛИЦО */
+
+
+/* =========================================================
+   ТИХИЙ ФОНОВЫЙ ЗВУК
+========================================================= */
+
 (function(){
-    const face = document.getElementById('ghostFace');
-    if (!face) return;
 
-    function flash(){
-        face.classList.remove('flash');
-        void face.offsetWidth;
-        face.classList.add('flash');
-    }
+    const button =
+        document.getElementById(
+            'soundToggle'
+        );
 
-    function scheduleNext(){
-        const delay = 18000 + Math.random() * 22000;
-        setTimeout(() => {
-            flash();
-            if (Math.random() < 0.3) setTimeout(flash, 250);
-            scheduleNext();
-        }, delay);
-    }
 
-    setTimeout(() => {
-        flash();
-        scheduleNext();
-    }, 8000 + Math.random() * 6000);
-})();
+    let context = null;
 
-/* ТИХИЙ ГУЛ */
-(function(){
-    const btn = document.getElementById('soundToggle');
-    let ctx = null;
-    let nodes = [];
-    let isPlaying = false;
+    let master = null;
 
-    function createDrone(){
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        ctx = new AudioCtx();
+    let playing = false;
 
-        const master = ctx.createGain();
-        master.gain.value = 0;
-        master.connect(ctx.destination);
-        nodes.push(master);
 
-        const osc1 = ctx.createOscillator();
-        osc1.type = 'sine';
-        osc1.frequency.value = 55;
-        const g1 = ctx.createGain();
-        g1.gain.value = 0.35;
-        osc1.connect(g1).connect(master);
-        osc1.start();
-        nodes.push(osc1, g1);
+    function createAudio(){
 
-        const osc2 = ctx.createOscillator();
-        osc2.type = 'sine';
-        osc2.frequency.value = 58;
-        const g2 = ctx.createGain();
-        g2.gain.value = 0.25;
-        osc2.connect(g2).connect(master);
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        if(!AudioContext){
+
+            return;
+
+        }
+
+
+        context =
+            new AudioContext();
+
+
+        master =
+            context.createGain();
+
+
+        master.gain.value =
+            0;
+
+
+        master.connect(
+            context.destination
+        );
+
+
+        /*
+         * Очень низкий тон.
+         */
+
+        const osc =
+            context.createOscillator();
+
+
+        osc.type =
+            'sine';
+
+
+        osc.frequency.value =
+            52;
+
+
+        const gain =
+            context.createGain();
+
+
+        gain.gain.value =
+            .10;
+
+
+        osc.connect(gain);
+
+        gain.connect(master);
+
+        osc.start();
+
+
+        /*
+         * Второй очень тихий тон.
+         */
+
+        const osc2 =
+            context.createOscillator();
+
+
+        osc2.type =
+            'sine';
+
+
+        osc2.frequency.value =
+            78;
+
+
+        const gain2 =
+            context.createGain();
+
+
+        gain2.gain.value =
+            .025;
+
+
+        osc2.connect(gain2);
+
+        gain2.connect(master);
+
         osc2.start();
-        nodes.push(osc2, g2);
 
-        const osc3 = ctx.createOscillator();
-        osc3.type = 'triangle';
-        osc3.frequency.value = 220;
-        const g3 = ctx.createGain();
-        g3.gain.value = 0.02;
-        const lfo = ctx.createOscillator();
-        lfo.frequency.value = 0.15;
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 3;
-        lfo.connect(lfoGain).connect(osc3.frequency);
-        lfo.start();
-        osc3.connect(g3).connect(master);
-        osc3.start();
-        nodes.push(osc3, g3, lfo, lfoGain);
-
-        const bufferSize = 2 * ctx.sampleRate;
-        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++){
-            data[i] = (Math.random() * 2 - 1) * 0.5;
-        }
-        const noise = ctx.createBufferSource();
-        noise.buffer = noiseBuffer;
-        noise.loop = true;
-        const noiseFilter = ctx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.value = 400;
-        const noiseGain = ctx.createGain();
-        noiseGain.gain.value = 0.04;
-        noise.connect(noiseFilter).connect(noiseGain).connect(master);
-        noise.start();
-        nodes.push(noise, noiseFilter, noiseGain);
-
-        return master;
     }
+
 
     function start(){
-        if (isPlaying) return;
-        if (!ctx) createDrone();
-        if (ctx.state === 'suspended') ctx.resume();
-        const master = nodes[0];
-        master.gain.cancelScheduledValues(ctx.currentTime);
-        master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-        master.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 3);
-        isPlaying = true;
-        btn.textContent = '🔊';
-        btn.classList.remove('off');
+
+        if(!context){
+
+            createAudio();
+
+        }
+
+
+        if(!context){
+
+            return;
+
+        }
+
+
+        if(
+            context.state ===
+            'suspended'
+        ){
+
+            context.resume();
+
+        }
+
+
+        master.gain.cancelScheduledValues(
+            context.currentTime
+        );
+
+
+        master.gain.linearRampToValueAtTime(
+            .035,
+            context.currentTime + 3
+        );
+
+
+        playing = true;
+
+
+        button.textContent =
+            '🔊';
+
+
+        button.classList.remove(
+            'off'
+        );
+
     }
+
 
     function stop(){
-        if (!isPlaying) return;
-        const master = nodes[0];
-        master.gain.cancelScheduledValues(ctx.currentTime);
-        master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-        master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
-        isPlaying = false;
-        btn.textContent = '🔇';
-        btn.classList.add('off');
+
+        if(!context){
+
+            return;
+
+        }
+
+
+        master.gain.cancelScheduledValues(
+            context.currentTime
+        );
+
+
+        master.gain.linearRampToValueAtTime(
+            0,
+            context.currentTime + 1.5
+        );
+
+
+        playing = false;
+
+
+        button.textContent =
+            '🔇';
+
+
+        button.classList.add(
+            'off'
+        );
+
     }
 
-    btn.addEventListener('click', () => {
-        if (isPlaying) stop();
-        else start();
-    });
+
+    button.addEventListener(
+        'click',
+        function(){
+
+            if(playing){
+
+                stop();
+
+            }else{
+
+                start();
+
+            }
+
+        }
+    );
+
 })();
+
+
 </script>
 
 </body>
