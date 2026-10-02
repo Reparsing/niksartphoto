@@ -196,6 +196,7 @@
             font-size: 3.2rem;
             font-weight: 900;
             letter-spacing: -.03em;
+            color: #fff;
             background: linear-gradient(135deg, #fff 0%, var(--brand) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -283,6 +284,7 @@
             margin-bottom: 8px;
         }
         .blog-card .card-body .title a {
+            color: #fff;
             background: linear-gradient(135deg, #fff, #fff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -435,8 +437,21 @@
             <!-- СЕТКА СТАТЕЙ (от новых к старым) -->
             <div class="blog-grid">
 
-                <!-- 1. НОВАЯ: АНИМАЦИЯ (3 августа 2026) -->
+                <!-- 1. ПРО ДАНЮ И МЕНЯ -->
                 <article class="blog-card" data-delay="0">
+                    <div class="card-body">
+                        <div class="badge-wrap">
+                            <span class="badge">Личное</span>
+                            <span class="badge badge-ghost">Без фильтра</span>
+                        </div>
+                        <h2 class="title"><a href="blog-danya.html">Про Даню, фотографию и усталость</a></h2>
+                        <p class="excerpt">Я пришёл в техникум 31 августа. Даня здесь почти три года. Он фотограф, видеограф, ремонтирует телефоны и планшеты. И он почему-то выбрал меня мишенью. Это не жалоба — это попытка разобраться.</p>
+                        <div class="footer"><span>2 октября 2026</span><a href="blog-danya.html" class="read-more">Читать →</a></div>
+                    </div>
+                </article>
+
+                <!-- 2. АНИМАЦИЯ -->
+                <article class="blog-card" data-delay="100">
                     <div class="card-body">
                         <div class="badge-wrap"><span class="badge">Анимация</span></div>
                         <h2 class="title"><a href="blog-animation.html">Создаю анимации персонажей в Alight Motion</a></h2>
@@ -445,8 +460,8 @@
                     </div>
                 </article>
 
-                <!-- 2. Абилимпикс (3 апреля 2026) -->
-                <article class="blog-card" data-delay="100">
+                <!-- 3. Абилимпикс -->
+                <article class="blog-card" data-delay="200">
                     <div class="card-body">
                         <div class="badge-wrap"><span class="badge">Личное</span></div>
                         <h2 class="title"><a href="blog-abilimpics.html">Абилимпикс 2026: Путь от подарка до разочарования</a></h2>
@@ -455,8 +470,8 @@
                     </div>
                 </article>
 
-                <!-- 3. Canon 600D (7 декабря 2025) -->
-                <article class="blog-card" data-delay="200">
+                <!-- 4. Canon 600D -->
+                <article class="blog-card" data-delay="300">
                     <div class="card-body">
                         <div class="badge-wrap"><span class="badge">Техника</span></div>
                         <h2 class="title"><a href="blog-600d-review.html">Canon EOS 600D: полный обзор</a></h2>
@@ -465,8 +480,8 @@
                     </div>
                 </article>
 
-                <!-- 4. Как выбрать камеру (29 декабря 2024) -->
-                <article class="blog-card" data-delay="300">
+                <!-- 5. Как выбрать камеру -->
+                <article class="blog-card" data-delay="400">
                     <div class="card-body">
                         <div class="badge-wrap"><span class="badge">Техника</span></div>
                         <h2 class="title"><a href="blog-camera.html">Как выбрать первый фотоаппарат</a></h2>
@@ -475,8 +490,8 @@
                     </div>
                 </article>
 
-                <!-- 5. Уличная фотография (15 декабря 2024) -->
-                <article class="blog-card" data-delay="400">
+                <!-- 6. Уличная фотография -->
+                <article class="blog-card" data-delay="500">
                     <div class="card-body">
                         <div class="badge-wrap"><span class="badge">Стрит</span></div>
                         <h2 class="title"><a href="blog-portrait.html">Уличная фотография: ловим момент</a></h2>
@@ -485,8 +500,8 @@
                     </div>
                 </article>
 
-                <!-- 6. Эстетика городских улиц (10 ноября 2024) -->
-                <article class="blog-card" data-delay="500">
+                <!-- 7. Эстетика городских улиц -->
+                <article class="blog-card" data-delay="600">
                     <div class="card-body">
                         <div class="badge-wrap"><span class="badge">Стрит</span></div>
                         <h2 class="title"><a href="blog-street.html">Эстетика городских улиц: Взгляд фотографа</a></h2>
@@ -599,10 +614,15 @@
         })();
     </script>
 
-    <!-- 2. МОБИЛЬНОЕ МЕНЮ -->
+    <!-- 2. МОБИЛЬНОЕ МЕНЮ (с закрытием при клике) -->
     <script>
         document.getElementById('mobileToggle')?.addEventListener('click', function() {
             document.getElementById('mobileMenu').classList.toggle('open');
+        });
+        document.querySelectorAll('#mobileMenu a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                document.getElementById('mobileMenu').classList.remove('open');
+            });
         });
     </script>
 
